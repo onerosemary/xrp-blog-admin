@@ -59,97 +59,188 @@ export default {
                 {
                     icon: 'el-icon-lx-home',
                     index: 'dashboard',
-                    title: '系统首页'
+                    title: '数据预览'
                 },
                 {
                     icon: 'el-icon-lx-cascades',
                     index: 'table',
-                    title: '基础表格'
+                    title: '门店管理'
+                },
+                // {
+                //     icon: 'el-icon-lx-cascades',
+                //     index: 'goodsFolder',
+                //     title: '商品管理',
+                //     subs: [
+                //         {
+                //             index: 'details',
+                //             title: '商品详情''
+                //         }
+                //     ]
+                // },
+                {
+                    icon: 'el-icon-lx-calendar',
+                    index: '1',
+                    title: '商品管理',
+                    subs: [
+                        {
+                            index: 'goodsList',
+                            title: '商品列表'
+                        },
+                        {
+                            index: 'goodsType',
+                            title: '商品分类'
+                        }
+                    ]
                 },
                 {
-                    icon: 'el-icon-lx-copy',
-                    index: 'tabs',
-                    title: 'tab选项卡'
+                    icon: 'el-icon-lx-calendar',
+                    index: '2',
+                    title: '客户管理',
+                    subs: [
+                        {
+                            index: 'customerList',
+                            title: '客户列表'
+                        },
+                        {
+                            index: 'customerChat',
+                            title: '客户资讯'
+                        }
+                    ]
                 },
                 {
                     icon: 'el-icon-lx-calendar',
                     index: '3',
-                    title: '表单相关',
+                    title: '订单管理',
                     subs: [
                         {
-                            index: 'form',
-                            title: '基本表单'
-                        },
-                        {
-                            index: '3-2',
-                            title: '三级菜单',
-                            subs: [
-                                {
-                                    index: 'editor',
-                                    title: '富文本编辑器'
-                                },
-                                {
-                                    index: 'markdown',
-                                    title: 'markdown编辑器'
-                                }
-                            ]
-                        },
-                        {
-                            index: 'upload',
-                            title: '文件上传'
+                            index: 'orderList',
+                            title: '订单列表'
                         }
                     ]
                 },
                 {
-                    icon: 'el-icon-lx-emoji',
-                    index: 'icon',
-                    title: '自定义图标'
-                },
-                {
-                    icon: 'el-icon-pie-chart',
-                    index: 'charts',
-                    title: 'schart图表'
-                },
-                {
-                    icon: 'el-icon-rank',
-                    index: '6',
-                    title: '拖拽组件',
+                    icon: 'el-icon-lx-calendar',
+                    index: '4',
+                    title: '活动管理',
                     subs: [
                         {
-                            index: 'drag',
-                            title: '拖拽列表'
+                            index: 'groupBooking',
+                            title: '拼团'
                         },
                         {
-                            index: 'dialog',
-                            title: '拖拽弹框'
+                            index: 'seckill',
+                            title: '秒杀'
+                        },
+                        {
+                            index: 'distribution',
+                            title: '分销'
                         }
                     ]
                 },
                 {
-                    icon: 'el-icon-lx-global',
-                    index: 'i18n',
-                    title: '国际化功能'
+                    icon: 'el-icon-lx-cascades',
+                    index: 'commission',
+                    title: '佣金管理'
                 },
                 {
-                    icon: 'el-icon-lx-warn',
-                    index: '7',
-                    title: '错误处理',
+                    icon: 'el-icon-lx-calendar',
+                    index: '5',
+                    title: '系统管理',
                     subs: [
                         {
-                            index: 'permission',
-                            title: '权限测试'
+                            index: 'userList',
+                            title: '用户列表'
                         },
                         {
-                            index: '404',
-                            title: '404页面'
+                            index: 'logList',
+                            title: '系统日志'
                         }
                     ]
                 },
-                {
-                    icon: 'el-icon-lx-redpacket_fill',
-                    index: '/donate',
-                    title: '支持作者'
-                }
+                // {
+                //     icon: 'el-icon-lx-copy',
+                //     index: 'tabs',
+                //     title: 'tab选项卡'
+                // },
+                // {
+                //     icon: 'el-icon-lx-calendar',
+                //     index: '3',
+                //     title: '表单相关',
+                //     subs: [
+                //         {
+                //             index: 'form',
+                //             title: '基本表单'
+                //         },
+                //         {
+                //             index: '3-2',
+                //             title: '三级菜单',
+                //             subs: [
+                //                 {
+                //                     index: 'editor',
+                //                     title: '富文本编辑器'
+                //                 },
+                //                 {
+                //                     index: 'markdown',
+                //                     title: 'markdown编辑器'
+                //                 }
+                //             ]
+                //         },
+                //         {
+                //             index: 'upload',
+                //             title: '文件上传'
+                //         }
+                //     ]
+                // },
+                // {
+                //     icon: 'el-icon-lx-emoji',
+                //     index: 'icon',
+                //     title: '自定义图标'
+                // },
+                // {
+                //     icon: 'el-icon-pie-chart',
+                //     index: 'charts',
+                //     title: 'schart图表'
+                // },
+                // {
+                //     icon: 'el-icon-rank',
+                //     index: '6',
+                //     title: '拖拽组件',
+                //     subs: [
+                //         {
+                //             index: 'drag',
+                //             title: '拖拽列表'
+                //         },
+                //         {
+                //             index: 'dialog',
+                //             title: '拖拽弹框'
+                //         }
+                //     ]
+                // },
+                // {
+                //     icon: 'el-icon-lx-global',
+                //     index: 'i18n',
+                //     title: '国际化功能'
+                // },
+                // {
+                //     icon: 'el-icon-lx-warn',
+                //     index: '7',
+                //     title: '错误处理',
+                //     subs: [
+                //         {
+                //             index: 'permission',
+                //             title: '权限测试'
+                //         },
+                //         {
+                //             index: '404',
+                //             title: '404页面'
+                //         }
+                //     ]
+                // },
+                // {
+                //     icon: 'el-icon-lx-redpacket_fill',
+                //     index: '/donate',
+                //     title: '支持作者'
+                // }
             ]
         };
     },
