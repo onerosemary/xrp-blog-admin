@@ -12,21 +12,20 @@
                     </div>
                     <div class="user-info-list">
                         上次登录时间：
-                        <span>2019-11-01</span>
+                        <span>2020-2-20</span>
                     </div>
                     <div class="user-info-list">
                         上次登录地点：
-                        <span>东莞</span>
+                        <span>长沙</span>
                     </div>
                 </el-card>
                 <el-card shadow="hover" style="height:252px;">
                     <div slot="header" class="clearfix">
-                        <span>语言详情</span>
-                    </div>Vue
-                    <el-progress :percentage="71.3" color="#42b983"></el-progress>JavaScript
-                    <el-progress :percentage="24.1" color="#f1e05a"></el-progress>CSS
-                    <el-progress :percentage="13.7"></el-progress>HTML
-                    <el-progress :percentage="5.9" color="#f56c6c"></el-progress>
+                        <span>活动管理</span>
+                    </div>
+                    <el-progress :percentage="71.3" color="#42b983"></el-progress>拼团
+                    <el-progress :percentage="24.1" color="#f1e05a"></el-progress>秒杀
+                    <el-progress :percentage="13.7"></el-progress>分销
                 </el-card>
             </el-col>
             <el-col :span="16">
@@ -37,7 +36,8 @@
                                 <i class="el-icon-lx-people grid-con-icon"></i>
                                 <div class="grid-cont-right">
                                     <div class="grid-num">1234</div>
-                                    <div>用户访问量</div>
+                                    <div>客户</div>
+                                    <p class="grid-sub">日活跃 3252 人</p>
                                 </div>
                             </div>
                         </el-card>
@@ -45,10 +45,11 @@
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content grid-con-2">
-                                <i class="el-icon-lx-notice grid-con-icon"></i>
+                                <i class="el-icon-lx-shop grid-con-icon"></i>
                                 <div class="grid-cont-right">
                                     <div class="grid-num">321</div>
-                                    <div>系统消息</div>
+                                    <div>门店</div>
+                                    <p class="grid-sub">活跃 3 家</p>
                                 </div>
                             </div>
                         </el-card>
@@ -59,7 +60,8 @@
                                 <i class="el-icon-lx-goods grid-con-icon"></i>
                                 <div class="grid-cont-right">
                                     <div class="grid-num">5000</div>
-                                    <div>数量</div>
+                                    <div>收入(万元)</div>
+                                    <p class="grid-sub">昨日 3563</p>
                                 </div>
                             </div>
                         </el-card>
@@ -119,27 +121,27 @@ export default {
             name: localStorage.getItem('ms_username'),
             todoList: [
                 {
-                    title: '今天要修复100个bug',
+                    title: '今天要核销下10个订单',
                     status: false
                 },
                 {
-                    title: '今天要修复100个bug',
+                    title: '今天要核销下10个订单',
                     status: false
                 },
                 {
-                    title: '今天要写100行代码加几个bug吧',
+                    title: '今天要核销下10个订单',
                     status: false
                 },
                 {
-                    title: '今天要修复100个bug',
+                    title: '今天要核销下10个订单',
                     status: false
                 },
                 {
-                    title: '今天要修复100个bug',
+                    title: '今天要核销下10个订单',
                     status: true
                 },
                 {
-                    title: '今天要写100行代码加几个bug吧',
+                    title: '今天要核销下10个订单',
                     status: true
                 }
             ],
@@ -285,6 +287,9 @@ export default {
 .grid-num {
     font-size: 30px;
     font-weight: bold;
+}
+.grid-sub{
+    font-size: 12px;
 }
 
 .grid-con-icon {

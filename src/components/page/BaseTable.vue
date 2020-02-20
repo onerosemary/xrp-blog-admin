@@ -19,8 +19,9 @@
                     <el-option key="1" label="广东省" value="广东省"></el-option>
                     <el-option key="2" label="湖南省" value="湖南省"></el-option>
                 </el-select>
-                <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
+                <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                <el-button type="primary"  @click="handleSearch">添加门店</el-button>
             </div>
             <el-table
                 :data="tableData"
@@ -32,11 +33,7 @@
             >
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="用户名"></el-table-column>
-                <el-table-column label="账户余额">
-                    <template slot-scope="scope">￥{{scope.row.money}}</template>
-                </el-table-column>
-                <el-table-column label="头像(查看大图)" align="center">
+                <el-table-column label="门店(查看大图)" align="center">
                     <template slot-scope="scope">
                         <el-image
                             class="table-td-thumb"
@@ -45,13 +42,18 @@
                         ></el-image>
                     </template>
                 </el-table-column>
+                <el-table-column prop="name" label="门店"></el-table-column>
                 <el-table-column prop="address" label="地址"></el-table-column>
-                <el-table-column label="状态" align="center">
-                    <template slot-scope="scope">
+                <el-table-column label="管理员账号">
+                    <template slot-scope="scope">{{scope.row.money}}</template>
+                </el-table-column>
+                <el-table-column label="管理员密码" align="center">
+                    123456
+                    <!-- <template slot-scope="scope">
                         <el-tag
                             :type="scope.row.state==='成功'?'success':(scope.row.state==='失败'?'danger':'')"
                         >{{scope.row.state}}</el-tag>
-                    </template>
+                    </template> -->
                 </el-table-column>
 
                 <el-table-column prop="date" label="注册时间"></el-table-column>
@@ -84,19 +86,31 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="70px">
-                <el-form-item label="用户名">
+        <el-dialog title="编辑" :visible.sync="editVisible" width="35%">
+            <el-form ref="form" :rules="rules" :model="form" label-width="110px">
+                <el-form-item label="门店名" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="地址">
+                <el-form-item label="地址" prop="address">
                     <el-input v-model="form.address"></el-input>
                 </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
+                <el-form-item label="支付宝 appid" prop="alipay">
+                    <el-input v-model="form.alipay"></el-input>
+                </el-form-item>
+                <el-form-item label="微信 appid" prop="weChat">
+                    <el-input v-model="form.weChat"></el-input>
+                </el-form-item>
+                <el-form-item label="账号" prop="account">
+                    <el-input v-model="form.account"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="form.password"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="editVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveEdit('form')">确 定</el-button>
+                </el-form-item>
+            </el-form> 
         </el-dialog>
     </div>
 </template>
@@ -120,7 +134,15 @@ export default {
             pageTotal: 0,
             form: {},
             idx: -1,
-            id: -1
+            id: -1,
+            rules: {
+                name: [{ required: true, message: '必填项', trigger: 'blur' }],
+                account: [{ required: true, message: '必填项', trigger: 'blur' }],
+                address: [{ required: true, message: '必填项', trigger: 'blur' }],
+                alipay: [{ required: true, message: '必填项', trigger: 'blur' }],
+                weChat: [{ required: true, message: '必填项', trigger: 'blur' }],
+                password: [{ required: true, message: '必填项', trigger: 'blur' }]
+            }
         };
     },
     created() {
@@ -173,10 +195,17 @@ export default {
             this.editVisible = true;
         },
         // 保存编辑
-        saveEdit() {
-            this.editVisible = false;
-            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-            this.$set(this.tableData, this.idx, this.form);
+        saveEdit(formName) {
+            this.$refs[formName].validate((valid) => {
+            if (valid) {
+                this.editVisible = false;
+                this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+                this.$set(this.tableData, this.idx, this.form);
+            } else {
+                console.log('error submit!!');
+                return false;
+            }
+            })
         },
         // 分页导航
         handlePageChange(val) {
