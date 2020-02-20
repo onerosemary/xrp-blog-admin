@@ -21,7 +21,7 @@
                 </el-select>
                 <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary"  @click="handleSearch">添加门店</el-button>
+                <el-button type="primary"  @click="handleEdit">添加门店</el-button>
             </div>
             <el-table
                 :data="tableData"
@@ -86,7 +86,7 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="35%">
+        <el-dialog :title="idx !== -1 ? '编辑': '添加'" :visible.sync="editVisible" width="35%">
             <el-form ref="form" :rules="rules" :model="form" label-width="110px">
                 <el-form-item label="门店名" prop="name">
                     <el-input v-model="form.name"></el-input>
@@ -190,8 +190,10 @@ export default {
         },
         // 编辑操作
         handleEdit(index, row) {
-            this.idx = index;
-            this.form = row;
+            if(row) {
+                this.idx = index;
+                this.form = row;
+            }
             this.editVisible = true;
         },
         // 保存编辑
