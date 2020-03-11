@@ -2,7 +2,8 @@ import axios from 'axios'
 // import { MessageBox, Message } from 'element-ui'
 import { Message } from 'element-ui'
 // import store from '@/store'
-import { getToken, parseTime } from '@/utils/auth'
+import { getToken } from '@/utils/auth'
+import { parseTime } from '@/utils/index'
 
 // 导出接口集合
 const exportApis = ['/standardStatistics/exportData']
