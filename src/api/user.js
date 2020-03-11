@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(params) {
   return request({
-    url: '/user/login',
+    url: '/pc/user/login',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function login(params) {
 
 export function getInfo() {
   return request({
-    url: '/user/getLoginUserInfo',
+    url: '/pc/user/getLoginUserInfo',
     method: 'get'
   })
 }
