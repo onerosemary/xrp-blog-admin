@@ -122,7 +122,7 @@ export default {
   },
   data() {
     return {
-      indexImg: require('@/assets/login-bg.jpg'),
+      indexImg: require('@/static/login-bg.jpg'),
       todoList: [
         {
           title: '今天要核销下10个订单',
