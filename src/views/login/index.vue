@@ -1,45 +1,45 @@
 <template>
- <div class="login-wrap">
-        <div class="ms-login">
-            <div class="ms-title">瑞澜医美后台管理系统</div>
-            <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="ms-content" auto-complete="on" label-position="left" label-width="0px">
-                <el-form-item prop="username">
-                    <el-input
-                    ref="username"
-                    v-model="loginForm.username"
-                    placeholder="用户名"
-                    name="username"
-                    type="text"
-                    tabindex="1"
-                    auto-complete="on"
-                  >
-                    <el-button slot="prepend" icon="el-icon-user"></el-button>
-                  </el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input
-                    :key="passwordType"
-                    ref="password"
-                    v-model="loginForm.password"
-                    :type="passwordType"
-                    placeholder="密码"
-                    name="password"
-                    tabindex="2"
-                    auto-complete="on"
-                    @keyup.enter.native="handleLogin"
-                    >
-                        <el-button slot="prepend" icon="el-icon-lock"></el-button>
-                    </el-input>
-                    <span class="show-pwd" @click="showPwd">
-                      <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-                    </span>
-                </el-form-item>
-                <div class="login-btn">
-                    <el-button :loading="loading" type="primary" @click.native.prevent="handleLogin">登录</el-button>
-                </div>
-            </el-form>
+  <div class="login-wrap">
+    <div class="ms-login">
+      <div class="ms-title">瑞澜医美后台管理系统</div>
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="ms-content" auto-complete="on" label-position="left" label-width="0px">
+        <el-form-item prop="username">
+          <el-input
+            ref="username"
+            v-model="loginForm.username"
+            placeholder="用户名"
+            name="username"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          >
+            <el-button slot="prepend" icon="el-icon-user" />
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="密码"
+            name="password"
+            tabindex="2"
+            auto-complete="on"
+            @keyup.enter.native="handleLogin"
+          >
+            <el-button slot="prepend" icon="el-icon-lock" />
+          </el-input>
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
+        <div class="login-btn">
+          <el-button :loading="loading" type="primary" @click.native.prevent="handleLogin">登录</el-button>
         </div>
+      </el-form>
     </div>
+  </div>
 </template>
 
 <script>
@@ -55,9 +55,9 @@ export default {
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if(!value){
+      if (!value) {
         callback(new Error('密码不能为空'))
-      }else if (value.length < 6) {
+      } else if (value.length < 6) {
         callback(new Error('密码不能小于6位数'))
       } else {
         callback()
@@ -104,7 +104,7 @@ export default {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch((err) => {
-            if(err){
+            if (err) {
               throw err
             }
             this.loading = false
