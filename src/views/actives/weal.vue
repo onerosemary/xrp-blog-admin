@@ -104,7 +104,7 @@
 
 <script>
 export default {
-  name: 'Store',
+  name: 'Product',
   data() {
     return {
       query: {

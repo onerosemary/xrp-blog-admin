@@ -68,109 +68,135 @@ export const constantRoutes = [
   },
 
   {
-    path: '/example',
+    path: '/shopping',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    redirect: '/shopping',
+    name: 'shopping',
+    meta: { title: '商品管理', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'category',
+        name: 'Category',
+        component: () => import('@/views/shopping/category'),
+        meta: { title: '商品分类', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: 'product',
+        name: 'Product',
+        component: () => import('@/views/shopping/product'),
+        meta: { title: '商品列表', icon: 'table' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
+        path: 'orders',
+        name: 'Orders',
+        component: () => import('@/views/shopping/orders'),
+        meta: { title: '订单列表', icon: 'table' }
       }
+      
     ]
   },
-
   {
-    path: 'external-link',
+    path: '/client',
     component: Layout,
+    redirect: '/client',
+    name: 'client',
+    meta: { title: '客户管理', icon: 'example' },
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'list',
+        name: 'List',
+        component: () => import('@/views/client/list'),
+        meta: { title: '客户列表', icon: 'table' }
+      },
+      {
+        path: 'chat',
+        name: 'Chat',
+        component: () => import('@/views/client/chat'),
+        meta: { title: '客户咨询', icon: 'table' }
       }
     ]
   },
-
+  {
+    path: '/actives',
+    component: Layout,
+    redirect: '/actives',
+    name: 'Actives',
+    meta: { title: '活动管理', icon: 'example' },
+    children: [
+      {
+        path: 'discount',
+        name: 'Discount',
+        component: () => import('@/views/actives/discount'),
+        meta: { title: '优惠卷', icon: 'table' }
+      },
+      {
+        path: 'group',
+        name: 'Group',
+        component: () => import('@/views/actives/group'),
+        meta: { title: '拼团', icon: 'table' }
+      },
+      {
+        path: 'seckill',
+        name: 'Seckill',
+        component: () => import('@/views/actives/seckill'),
+        meta: { title: '秒杀', icon: 'table' }
+      },
+      {
+        path: 'distribution',
+        name: 'Distribution',
+        component: () => import('@/views/actives/distribution'),
+        meta: { title: '分销', icon: 'table' }
+      },
+      {
+        path: 'integral',
+        name: 'Integral',
+        component: () => import('@/views/actives/integral'),
+        meta: { title: '积分', icon: 'table' }
+      },
+      {
+        path: 'rebate',
+        name: 'Rebate',
+        component: () => import('@/views/actives/rebate'),
+        meta: { title: '返佣', icon: 'table' }
+      },
+      {
+        path: 'weal',
+        name: 'Weal',
+        component: () => import('@/views/actives/weal'),
+        meta: { title: '福利', icon: 'table' }
+      }
+    ]
+  },
+  {
+    path: '/role',
+    component: Layout,
+    redirect: '/role',
+    name: 'role',
+    meta: { title: '角色管理', icon: 'example' },
+    children: [
+      {
+        path: 'roleList',
+        name: 'RoleList',
+        component: () => import('@/views/role/roleList'),
+        meta: { title: '角色列表', icon: 'table' }
+      }      
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system',
+    name: 'system',
+    meta: { title: '系统用户', icon: 'example' },
+    children: [
+      {
+        path: 'systemList',
+        name: 'SystemList',
+        component: () => import('@/views/system/systemList'),
+        meta: { title: '系统用户列表', icon: 'table' }
+      }      
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
