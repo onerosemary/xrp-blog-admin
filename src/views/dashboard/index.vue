@@ -33,7 +33,7 @@
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{padding: '0px'}">
               <div class="grid-content grid-con-1">
-                <i class="el-icon-lx-people grid-con-icon" />
+                <i class="el-icon-lx-people grid-con-icon el-icon-user-solid" />
                 <div class="grid-cont-right">
                   <div class="grid-num">1234</div>
                   <div>客户</div>
@@ -45,7 +45,7 @@
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{padding: '0px'}">
               <div class="grid-content grid-con-2">
-                <i class="el-icon-lx-shop grid-con-icon" />
+                <i class="el-icon-lx-shop grid-con-icon el-icon-location" />
                 <div class="grid-cont-right">
                   <div class="grid-num">321</div>
                   <div>门店</div>
@@ -57,7 +57,7 @@
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{padding: '0px'}">
               <div class="grid-content grid-con-3">
-                <i class="el-icon-lx-goods grid-con-icon" />
+                <i class="el-icon-lx-goods grid-con-icon el-icon-coin" />
                 <div class="grid-cont-right">
                   <div class="grid-num">5000</div>
                   <div>收入(万元)</div>
@@ -67,7 +67,45 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-card shadow="hover" style="height:403px;">
+        <el-row :gutter="20" class="mgb20">
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{padding: '0px'}">
+              <div class="grid-content grid-con-1">
+                <i class="el-icon-lx-people grid-con-icon el-icon-tickets" />
+                <div class="grid-cont-right">
+                  <div class="grid-num">1234</div>
+                  <div>订单</div>
+                  <p class="grid-sub">今日 23 单</p>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{padding: '0px'}">
+              <div class="grid-content grid-con-2">
+                <i class="el-icon-lx-shop grid-con-icon el-icon-s-custom" />
+                <div class="grid-cont-right">
+                  <div class="grid-num">321</div>
+                  <div>合伙人</div>
+                  <p class="grid-sub">新增 3 人</p>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{padding: '0px'}">
+              <div class="grid-content grid-con-3">
+                <i class="el-icon-lx-goods grid-con-icon el-icon-document-remove" />
+                <div class="grid-cont-right">
+                  <div class="grid-num">5000</div>
+                  <div>返佣(万元)</div>
+                  <p class="grid-sub">昨日 3563</p>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+        <el-card shadow="hover" style="height:340px;">
           <div slot="header" class="clearfix">
             <span>待办事项</span>
             <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
@@ -96,18 +134,18 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-row :gutter="20">
+    <!-- <el-row :gutter="20">
       <el-col :span="12">
         <el-card shadow="hover">
-          <!-- <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart> -->
+          <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
         </el-card>
       </el-col>
       <el-col :span="12">
         <el-card shadow="hover">
-          <!-- <schart ref="line" class="schart" canvasId="line" :options="options2"></schart> -->
+          <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
@@ -143,10 +181,6 @@ export default {
         {
           title: '今天要核销下10个订单',
           status: true
-        },
-        {
-          title: '今天要核销下10个订单',
-          status: true
         }
       ],
       data: [
@@ -178,50 +212,7 @@ export default {
           name: '2018/09/10',
           value: 1065
         }
-      ],
-      options: {
-        type: 'bar',
-        title: {
-          text: '最近一周各品类销售图'
-        },
-        xRorate: 25,
-        labels: ['周一', '周二', '周三', '周四', '周五'],
-        datasets: [
-          {
-            label: '家电',
-            data: [234, 278, 270, 190, 230]
-          },
-          {
-            label: '百货',
-            data: [164, 178, 190, 135, 160]
-          },
-          {
-            label: '食品',
-            data: [144, 198, 150, 235, 120]
-          }
-        ]
-      },
-      options2: {
-        type: 'line',
-        title: {
-          text: '最近几个月各品类销售趋势图'
-        },
-        labels: ['6月', '7月', '8月', '9月', '10月'],
-        datasets: [
-          {
-            label: '家电',
-            data: [234, 278, 270, 190, 230]
-          },
-          {
-            label: '百货',
-            data: [164, 178, 150, 135, 160]
-          },
-          {
-            label: '食品',
-            data: [74, 118, 200, 235, 90]
-          }
-        ]
-      }
+      ]
     }
   },
   computed: {
@@ -302,27 +293,30 @@ export default {
 }
 
 .grid-con-1 .grid-con-icon {
-    background: rgb(45, 140, 240);
+    /* background: rgb(45, 140, 240); */
+    background: #eee;
 }
 
 .grid-con-1 .grid-num {
-    color: rgb(45, 140, 240);
+    color: #FF3F1D;
 }
 
 .grid-con-2 .grid-con-icon {
-    background: rgb(100, 213, 114);
+    /* background: rgb(100, 213, 114); */
+    background: #eee;
 }
 
 .grid-con-2 .grid-num {
-    color: rgb(45, 140, 240);
+    color: #FF3F1D;
 }
 
 .grid-con-3 .grid-con-icon {
-    background: rgb(242, 94, 67);
+    /* background: rgb(242, 94, 67); */
+    background: #eee;
 }
 
 .grid-con-3 .grid-num {
-    color: rgb(242, 94, 67);
+    color: #FF3F1D;
 }
 
 .user-info {
