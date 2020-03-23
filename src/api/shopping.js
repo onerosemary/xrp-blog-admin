@@ -37,7 +37,7 @@ export function deleteGoods(params) {
 }
 
 // 商品添加
-export function add(data) {
+export function addGood(data) {
   return request({
     url: '/pc/goods/add',
     method: 'post',
@@ -51,5 +51,14 @@ export function getGoodsInfo(params) {
     url: '/pc/goods/getGoodsInfo',
     method: 'get',
     params
+  })
+}
+
+// 商品编辑
+export function editorGood(data) {
+  return request({
+    url: '/pc/goods/update',
+    method: 'post',
+    data
   })
 }

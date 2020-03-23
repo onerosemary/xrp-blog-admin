@@ -104,7 +104,7 @@
 import upload from '@/components/upload'
 import goodsType from '@/components/goodsType'
 import editor from '@/components/Editor'
-import { add, getGoodsInfo } from '@/api/shopping'
+import { addGood, editorGood, getGoodsInfo } from '@/api/shopping'
 export default {
   data() {
     const attachments = (rule, value, callback) => {
@@ -210,6 +210,11 @@ export default {
       getGoodsInfo({id: this.queryId}).then(res => {
         const { data } = res
         // 赋值
+        // 商品规格 分
+        data.goodsPropertys.forEach(item => {
+          item.originalPrice = item.originalPrice / 100
+          item.price = item.price / 100
+        })
         this.form = {
           attachments: data.attachments, // 商品图片
           cover: data.cover, // 商品封面
@@ -218,7 +223,7 @@ export default {
           virtualSalesVolume: data.virtualSalesVolume,
           contents: data.contents,
           deliveryType: String(data.deliveryType),
-          deposit: data.deposit,
+          deposit: (data.deposit) / 100,
           goodsPropertys: data.goodsPropertys
         }
       })
@@ -283,17 +288,33 @@ export default {
       console.log('this.form---', this.form)
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          add(this.form).then(res => {
-            this.$message({
-              message: '商品添加成功',
-              type: 'success'
+          if(parseInt(this.queryId) === -1){ // 添加
+            addGood(this.form).then(res => {
+              this.$message({
+                message: '商品添加成功',
+                type: 'success'
+              })
             })
-          })
-          setTimeout(()=>{
-            this.$router.push({
-              path: '/shopping/product'
+            setTimeout(()=>{
+              this.$router.push({
+                path: '/shopping/product'
+              })
+            }, 1500)
+          }else { // 编辑
+            this.form.id = this.queryId
+            editorGood(this.form).then(res => {
+              this.$message({
+                message: '商品编辑成功',
+                type: 'success'
+              })
             })
-          }, 1500)
+            setTimeout(()=>{
+              this.$router.push({
+                path: '/shopping/product'
+              })
+            }, 1500)
+          }
+          
         } else {
           console.log('error submit!!');
           return false
