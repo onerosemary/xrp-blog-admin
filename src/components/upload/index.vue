@@ -68,6 +68,10 @@ export default {
     }
   },
   props: {
+    queryId: {
+      type: Number,
+      default: () => 0
+    },
     attachments: {
       type: Array,
       default: () => []
@@ -76,7 +80,8 @@ export default {
   watch: {
     attachments: {
       handler(value){
-        if(value && this.flag) {
+        // 编辑
+        if(this.queryId !== -1 && value && this.flag) {
           this.flag = false // 只执行一次
           // 组装下数据格式
           value.forEach(item => {

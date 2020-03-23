@@ -7,7 +7,7 @@
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="商品图片" prop="attachments" class="upload-item">
-        <upload :attachments="form.attachments" @uploadSuccess="uploadSuccess"></upload>
+        <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess"></upload>
       </el-form-item>
       <el-form-item label="商品名称" prop="title">
           <el-input v-model="form.title" size="small" placeholder="请填写" />
