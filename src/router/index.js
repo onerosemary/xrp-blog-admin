@@ -64,6 +64,12 @@ export const constantRoutes = [
       name: 'store',
       component: () => import('@/views/store/index'),
       meta: { title: '门店管理', icon: 'dashboard' }
+    }, {
+      path: 'handle',
+      name: 'handle',
+      hidden: true,
+      component: () => import('@/views/store/handle'),
+      meta: { title: '门店管理', icon: 'dashboard' }
     }]
   },
 
@@ -85,6 +91,12 @@ export const constantRoutes = [
         name: 'Product',
         component: () => import('@/views/shopping/product'),
         meta: { title: '商品列表', icon: 'table' }
+      },{
+        path: 'productHandle',
+        name: 'productHandle',
+        hidden: true,
+        component: () => import('@/views/shopping/productHandle'),
+        meta: { title: '商品管理', icon: 'dashboard' }
       },
       {
         path: 'orders',
@@ -92,7 +104,7 @@ export const constantRoutes = [
         component: () => import('@/views/shopping/orders'),
         meta: { title: '订单列表', icon: 'table' }
       }
-      
+
     ]
   },
   {
@@ -179,7 +191,7 @@ export const constantRoutes = [
         name: 'RoleList',
         component: () => import('@/views/role/roleList'),
         meta: { title: '角色列表', icon: 'table' }
-      }      
+      }
     ]
   },
   {
@@ -194,7 +206,7 @@ export const constantRoutes = [
         name: 'SystemList',
         component: () => import('@/views/system/systemList'),
         meta: { title: '系统用户列表', icon: 'table' }
-      }      
+      }
     ]
   },
   // 404 page must be placed at the end !!!

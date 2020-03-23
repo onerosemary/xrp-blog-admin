@@ -1,13 +1,14 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-select v-model="query.address" placeholder="地址" class="handle-select mr10" size="small">
+      <!-- <el-select v-model="query.address" placeholder="地址" class="handle-select mr10" size="small">
         <el-option key="1" label="广东省" value="广东省" />
         <el-option key="2" label="湖南省" value="湖南省" />
-      </el-select>
-      <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" />
+      </el-select> -->
+      <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" size="small" @click="handleEdit">添加门店</el-button>
+      <el-button type="primary" size="small" @click="handle(-1)">添加门店</el-button>
+      <el-button size="small">本店信息修改</el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -16,8 +17,18 @@
       style="width: 100%"
     >
       <el-table-column
-        label="日期"
+        label="序号"
         width="180"
+      >
+        <template slot-scope="scope">
+          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
+      <el-table-column label="店照" width="180" prop="imgUrl" />
+      <el-table-column label="门店" width="180" prop="name" />
+      <el-table-column label="地址" prop="address" />
+      <el-table-column
+        label="管理员账号"
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
@@ -25,60 +36,18 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="日期"
-        width="180"
+        label="管理员密码"
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span style="margin-left: 10px">{{ scope.row.date }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="姓名"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="180">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handle(scope.$index, scope.row)"
           >编辑</el-button>
           <el-button
             size="mini"
@@ -98,51 +67,59 @@
         @current-change="handleCurrentChange"
       />
     </div>
-
   </div>
 </template>
 
 <script>
+import { list } from '../../api/store'
 export default {
   name: 'Store',
   data() {
     return {
       query: {
-        address: '',
+        // address: '',
         name: ''
       },
-      currentPage: 1,
-      pageSize: 2,
-      total: 5,
+      currentPage: 1, // 当前页
+      pageSize: 10, // 每页显示条数
+      total: 0, // 总条数
       loading: false,
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
     }
   },
+  created() {
+    this.getList()
+  },
   methods: {
+    // 列表接口
+    getList() {
+      const params = {
+        name: this.query.name, // 关键词
+        zbPage: {
+          current: this.currentPage,
+          pages: this.pageSize
+        }
+
+      }
+      list(params).then(res => {
+        const { records, total } = res.data
+        this.tableData = records
+        this.total = parseInt(total)
+      })
+    },
     handleSearch() {
-      console.log('search')
+      this.getList()
     },
     handleCurrentChange(val) {
       this.currentPage = val
     },
-    handleEdit(index, row) {
-      console.log(index, row)
+    handle(id, row) {
+      this.$router.push({
+        path: '/store/handle',
+        query: {
+          id: id
+        }
+      })
     },
     handleDelete(index, row) {
       console.log(index, row)
@@ -150,16 +127,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-
-  .handle-box {
-      margin-bottom: 20px;
-  }
-  .handle-select {
-      width: 120px;
-  }
-  .handle-input {
-      width: 300px;
-      display: inline-block;
-  }
-</style>

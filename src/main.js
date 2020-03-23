@@ -17,18 +17,13 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
-/**
- * If you don't want to use mock-server
- * you want to use MockJs for mock api
- * you can execute: mockXHR()
- *
- * Currently MockJs will be used in the production environment,
- * please remove it before going online ! ! !
- */
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+import '@/config/index' // 全局url等配置
+
+// 价格过滤器
+Vue.filter('price', (value) => {
+  const val = (((value*1000) / 100) / 1000).toFixed(2)
+  return val
+})
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
