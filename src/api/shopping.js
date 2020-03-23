@@ -62,3 +62,12 @@ export function editorGood(data) {
     data
   })
 }
+
+// 商品分类列表
+export function categoryList(data) {
+  return request({
+    url: '/pc/classify/list',
+    method: 'post',
+    data
+  })
+}

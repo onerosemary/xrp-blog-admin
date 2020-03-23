@@ -3,11 +3,11 @@
 import request from '@/utils/request'
 
 // 商品分类
-export function goodsTypeList(params) {
+export function goodsTypeList(data) {
     return request({
       url: '/pc/classify/list',
-      method: 'get',
-      params
+      method: 'post',
+      data
     })
   }
   

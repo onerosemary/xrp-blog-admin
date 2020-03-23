@@ -1,15 +1,9 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small">
-        <el-option label="全部" value="0" />
-        <el-option label="展示中" value="1" />
-        <el-option label="已隐藏" value="2" />
-      </el-select>
-      <datePicker @change="datePickerChange"></datePicker>
-      <el-input v-model="query.title" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-input v-model="query.name" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加商品</el-button>
+      <el-button type="primary" size="small" @click="handle(-1)">添加商品分类</el-button>
 
     </div>
     <el-table
@@ -26,67 +20,27 @@
           {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="封面" width="100">
+      <el-table-column label="图标" width="100">
           <template slot-scope="scope">
-            <img class="list-img" :src="scope.row.cover" />
+            <img class="list-img" :src="scope.row.imgUrl" />
           </template>
       </el-table-column>
-      <el-table-column label="名称" prop="title" />
-      <el-table-column label="价格(￥)">
-        <template slot-scope="scope">
-          {{scope.row.minPrice | price}}
-        </template>
-      </el-table-column>
+      <el-table-column label="名称" prop="name" />
       <el-table-column
-        label="库存"
-        prop="stock"
+        label="顺序（倒序）"
+        prop="sort"
       />
-      <el-table-column
-        label="销量"
-        prop="salesVolume"
-      />
-      <el-table-column label="分类" >
-        <template slot-scope="scope">
-          <span>{{scope.row.cname}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" prop="status">
-        <template slot-scope="scope">
-          <span v-if="parseInt(scope.row.status) === 0">下架</span>
-          <div v-else>
-            <span v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 1" class="cblue">首页推荐</span>
-            <span v-else class="cblue">上架</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间">
-        <template slot-scope="scope">
-          {{scope.row.createTime}}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button
-            v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 0"
             size="mini"
-            @click="recommendIndex(scope.row)"
-          >推荐首页</el-button>
+          >修改顺序</el-button>
           <el-button
-            v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 1"
             size="mini"
-            @click="recommendIndex(scope.row)"
-          >取消推荐</el-button>
-          <el-dropdown @command="handleCommand">
-            <span class="el-dropdown-link cblue">
-              更多<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown" class="dropdow-css">
-              <el-dropdown-item v-if="parseInt(scope.row.status) === 1" :command="beforeHandleCommand(scope.row, -1)">下架</el-dropdown-item>
-              <el-dropdown-item v-if="parseInt(scope.row.status) === 0" :command="beforeHandleCommand(scope.row, 1)">上架</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand(scope.row, 2)">编辑</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand(scope.row, 0)">删除</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          >删除</el-button>
+          <el-button
+            size="mini"
+          >编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -104,20 +58,13 @@
 </template>
 
 <script>
-import datePicker from '@/components/datePicker'
-import { goodsList, isNewIndex, isOn, deleteGoods } from '@/api/shopping'
-import { parseTime } from '@/utils'
+import { categoryList, isNewIndex, isOn, deleteGoods } from '@/api/shopping'
 export default {
   name: 'Store',
   data() {
     return {
-      time: '',
       query: {
-        cid: null,
-        status: null,
-        startTime: null,
-        endTime: null,
-        title: null
+        name: null
       },
       currentPage: 1, // 当前页
       pageSize: 5, // 每页显示条数
@@ -127,7 +74,6 @@ export default {
     }
   },
   components: {
-    datePicker
   },
   created() {
     this.getList()
@@ -153,41 +99,6 @@ export default {
            }
         })
       })
-    },
-    beforeHandleCommand(command, num) {
-      return {
-        num: parseInt(num),
-        command
-      }
-    },
-    // 操作
-    handleCommand(command) {
-      console.log('command--', command)
-      const { num } = command
-      switch(num) {
-        case -1:
-          // 下架
-          console.log('下架')
-          this.goodsIsOn(command)
-          break
-        case 1:
-          // 上架
-          console.log('上架')
-          this.goodsIsOn(command)
-          break
-        case 2:
-          // 编辑
-          console.log('编辑')
-          this.handle(command.command.id)
-          break
-        case 0:
-          // 删除
-          console.log('删除')
-          this.deleteGood(command)
-          break
-        default:
-          console.log('error')
-      }
     },
     deleteGood(c) {
       this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
@@ -237,41 +148,21 @@ export default {
         })
       })
     },
-    // 选择日期
-    datePickerChange(time){
-      if(!!time){
-        const [startTime, endTime] = time
-        this.query.startTime = startTime + ' 00:00:00'
-        this.query.endTime = endTime + ' 23:59:59'
-      }else { // 为null
-        this.query.startTime = time
-        this.query.endTime = time
-      }
-      this.getList()
-    },
     // 列表接口
     getList() {
-      const {cid, status, startTime, endTime, title} = this.query
-
+      const {name} = this.query
       const params = {
-        cid: cid, // 关键词
-        status: parseInt(status) === 2 ? null : status,
-        isNew: parseInt(status) === 2 ? 1 : null, // 如果状态是3，代表首页推荐查询
-        startTime: startTime,
-        endTime: endTime,
-        title: title,
+        name,
         zbPage: {
           current: this.currentPage,
           size: this.pageSize
         }
-
       }
-      goodsList(params).then(res => {
+      categoryList(params).then(res => {
         const { records, total } = res.data
         // imgUrl 
         records.forEach((item, index) => {
-          item.cover = this.imgUrl + item.cover
-          item.createTime = parseTime(item.createTime)
+          item.imgUrl = this.imgUrl + item.imgUrl
         })
         this.tableData = records
         this.total = parseInt(total)

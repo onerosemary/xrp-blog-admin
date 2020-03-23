@@ -32,8 +32,15 @@ export default {
     },
     methods: {
         getList() {
-            goodsTypeList().then(res => {
-                this.dataList = res.data
+            const data = {
+                name: '',
+                zbPage: {
+                    current: -1,
+                    size: -1
+                }
+            }
+            goodsTypeList(data).then(res => {
+                this.dataList = res.data.records
             })
         },
         change() {

@@ -63,7 +63,7 @@
         </div>
       </div>
       <el-form-item class="add-form-item">
-        <div class="add-new-input"><span @click="addDomain()">新增表头字段</span></div>
+        <div class="add-new-input"><span @click="addDomain()">新增规格</span></div>
       </el-form-item>
       <div class="goods-type">
         <el-form-item label="分类" prop="cid">
@@ -295,11 +295,9 @@ export default {
                 type: 'success'
               })
             })
-            setTimeout(()=>{
-              this.$router.push({
-                path: '/shopping/product'
-              })
-            }, 1500)
+            this.$router.push({
+              path: '/shopping/product'
+            })
           }else { // 编辑
             this.form.id = this.queryId
             editorGood(this.form).then(res => {
@@ -308,11 +306,9 @@ export default {
                 type: 'success'
               })
             })
-            setTimeout(()=>{
-              this.$router.push({
-                path: '/shopping/product'
-              })
-            }, 1500)
+            this.$router.push({
+              path: '/shopping/product'
+            })
           }
           
         } else {
