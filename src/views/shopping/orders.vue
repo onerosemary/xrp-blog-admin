@@ -1,90 +1,111 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-select v-model="query.address" placeholder="地址" class="handle-select mr10" size="small">
-        <el-option key="1" label="广东省" value="广东省" />
-        <el-option key="2" label="湖南省" value="湖南省" />
+      <store-list @change="storeListChange"></store-list>
+      <el-select v-model="query.orderType" placeholder="订单类型" @change="getList" class="handle-select mr10" size="small">
+        <el-option label="全部" :value="null" />
+        <el-option label="普通 " :value="1" />
+        <el-option label="秒杀" :value="2" />
+        <el-option label="拼团" :value="3" />
+        <el-option label="分销" :value="4" />
+        <el-option label="积分" :value="5" />
       </el-select>
-      <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" />
-      <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" size="small" @click="handleEdit">添加门店</el-button>
+      <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small" style="width: 170px">
+        <el-option label="全部" :value="null" />
+        <el-option label="付定金 " :value="1" />
+        <el-option label="已支付,待使用" :value="2" />
+        <el-option label="已支付,待发货" :value="3" />
+        <el-option label="已完成(发货、使用)" :value="4" />
+        <el-option label="申请退款" :value="5" />
+        <el-option label="退款待财务审核" :value="6" />
+        <el-option label="退款待总经理审核" :value="7" />
+        <el-option label="退款完成" :value="8" />
+      </el-select>
+      <datePicker @change="datePickerChange"></datePicker>
+      <el-input v-model="query.title" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
+
     </div>
     <el-table
       v-loading="loading"
       class="base-table"
       :data="tableData"
-      style="width: 100%"
+
     >
       <el-table-column
-        label="日期"
-        width="180"
+        label="序号"
+        width="50"
       >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
+      <el-table-column label="封面" width="100">
+          <template slot-scope="scope">
+            <img class="list-img" :src="scope.row.goodsCover" />
+          </template>
+      </el-table-column>
+      <el-table-column label="消费门店" prop="storeName" />
+      <el-table-column label="消费(￥)">
+        <template slot-scope="scope">
+          {{scope.row.orderAmount | price}}
         </template>
       </el-table-column>
       <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
+        label="购买人"
+        prop="customerName"
+      />
       <el-table-column
-        label="日期"
-        width="180"
-      >
+        label="规格"
+        prop="goodsSpecs"
+      />
+      <el-table-column label="取货方式" >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span>{{parseInt(scope.row.deliveryType) === 0 ? '门店自提' : '快递到家'}}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      <el-table-column label="数量" >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span>{{scope.row.goodsCnt}}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span v-if="parseInt(scope.row.orderStatus) === 1">付定金</span>
+          <span v-else-if="parseInt(scope.row.orderStatus) === 2">已支付,待使用</span>
+          <span v-else-if="parseInt(scope.row.orderStatus) === 3">已支付,待发货</span>
+          <span v-else-if="parseInt(scope.row.orderStatus) === 4">已完成(发货、使用)</span>
+          <span v-else-if="parseInt(scope.row.orderStatus) === 5">申请退款</span>
+          <span v-else-if="parseInt(scope.row.orderStatus) === 6">退款待财务审核</span>
+          <span v-else-if="parseInt(scope.row.orderStatus) === 7">退款待总经理审核</span>
+          <span v-else-if="parseInt(scope.row.orderStatus) === 8">退款完成</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="姓名"
-        width="180"
-      >
+      <el-table-column label="消费时间">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
+          {{scope.row.payimeTime}}
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="180">
         <template slot-scope="scope">
+          <!-- 退款完成 -->
           <el-button
+            v-if="parseInt(scope.row.status) === 8"
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
-          >编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.row.id)"
           >删除</el-button>
+          <!-- 已支付,待发货 -->
+          <el-button
+            v-else-if="parseInt(scope.row.status) === 3"
+            size="mini"
+            @click="handle(scope.row.id)"
+          >发货</el-button>
+          <!-- 已完成(发货、使用) -->
+          <el-button
+            v-else-if="parseInt(scope.row.status) === 4"
+            size="mini"
+            @click="handleDistribution(scope.row.id)"
+          >关联分销</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -98,68 +119,144 @@
         @current-change="handleCurrentChange"
       />
     </div>
-
   </div>
 </template>
 
 <script>
+import storeList from '@/components/storeList'
+import datePicker from '@/components/datePicker'
+import { orderList, orderDelete } from '@/api/shopping'
+import { parseTime } from '@/utils'
 export default {
-  name: 'Orders',
+  name: 'Store',
   data() {
     return {
+      time: '',
       query: {
-        address: '',
-        name: ''
+        companyId: null,
+        orderType: '',
+        startTime: null,
+        endTime: null,
+        status: '',
+        title: null
       },
-      currentPage: 1,
-      pageSize: 2,
-      total: 5,
+      currentPage: 1, // 当前页
+      pageSize: 5, // 每页显示条数
+      total: 0, // 总条数
       loading: false,
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
     }
   },
+  components: {
+    storeList,
+    datePicker
+  },
+  created() {
+    this.getList()
+  },
   methods: {
+    // 删除订单
+    handleDelete(id) {
+      this.$confirm('此操作将永久删除该商品订单, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 继续删除
+        orderDelete({id}).then(res => {
+          this.$message({
+            message: `删除订单成功！`,
+            type: 'success'
+          })
+          // 删除当前 row
+          this.tableData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(id)){
+              this.tableData.splice(index, 1)
+            }
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消订单删除'
+        })       
+      })
+    },
+    // 获取选择消费门店
+    storeListChange(id) {
+      this.query.companyId = id
+      this.getList()
+    },
+    // 选择日期
+    datePickerChange(time){
+      if(!!time){
+        const [startTime, endTime] = time
+        this.query.startTime = startTime + ' 00:00:00'
+        this.query.endTime = endTime + ' 23:59:59'
+      }else { // 为null
+        this.query.startTime = time
+        this.query.endTime = time
+      }
+      this.getList()
+    },
+    // 列表接口
+    getList() {
+      const {companyId, orderType, startTime, endTime, title, status} = this.query
+
+      const params = {
+        companyId, // 关键词
+        orderType,
+        startTime: startTime,
+        endTime: endTime,
+        status,
+        title: title,
+        zbPage: {
+          current: this.currentPage,
+          size: this.pageSize
+        }
+
+      }
+      orderList(params).then(res => {
+        const { records, total } = res.data
+        records.forEach((item, index) => {
+          item.goodsCover = this.imgUrl + item.goodsCover
+          item.payimeTime = item.payimeTime && parseTime(item.payimeTime)
+        })
+        this.tableData = records
+        this.total = parseInt(total)
+      })
+    },
     handleSearch() {
-      console.log('search')
+      this.getList()
     },
     handleCurrentChange(val) {
       this.currentPage = val
+      this.getList()
     },
-    handleEdit(index, row) {
-      console.log(index, row)
+    // 发货跳转
+    handle(id) {
+      this.$router.push({
+        path: '/shopping/ordersHandleSend',
+        query: {
+          id: id
+        }
+      })
     },
-    handleDelete(index, row) {
-      console.log(index, row)
+    // 关联返佣
+    handleDistribution(id) {
+      this.$router.push({
+        path: '/shopping/ordersHandleDistribution',
+        query: {
+          id: id
+        }
+      })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-
-  .handle-box {
-      margin-bottom: 20px;
-  }
-  .handle-select {
-      width: 120px;
-  }
-  .handle-input {
-      width: 300px;
-      display: inline-block;
+  .el-dropdown-link{
+    cursor: pointer;
+    font-size: 12px;
   }
 </style>

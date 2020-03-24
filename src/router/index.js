@@ -109,6 +109,18 @@ export const constantRoutes = [
         name: 'Orders',
         component: () => import('@/views/shopping/orders'),
         meta: { title: '订单列表', icon: 'table' }
+      },{
+        path: 'ordersHandleSend',
+        name: 'ordersHandleSend',
+        hidden: true,
+        component: () => import('@/views/shopping/ordersHandleSend'),
+        meta: { title: '订单发货', icon: 'dashboard' }
+      },{
+        path: 'ordersHandleDistribution',
+        name: 'ordersHandleDistribution',
+        hidden: true,
+        component: () => import('@/views/shopping/ordersHandleDistribution'),
+        meta: { title: '订单关联返佣', icon: 'dashboard' }
       }
 
     ]

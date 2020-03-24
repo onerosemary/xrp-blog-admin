@@ -9,7 +9,7 @@
       </el-select>
       <datePicker @change="datePickerChange"></datePicker>
       <el-input v-model="query.title" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
-      <el-button type="primary" icon="el-icon-search" size="small" @click="getList">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
       <el-button type="primary" size="small" @click="handle(-1)">添加商品</el-button>
 
     </div>

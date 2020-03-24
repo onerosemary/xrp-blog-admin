@@ -32,6 +32,7 @@ export default {
 <style lang="scss" scoped>
     .date-picker{
         display: inline-block;
+        margin-right: 10px;
         /deep/.el-range-editor--small.el-input__inner{
             width: 250px;
         }

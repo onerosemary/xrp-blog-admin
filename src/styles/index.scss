@@ -86,7 +86,15 @@ div:focus {
 }
 .handle-input {
   width: 200px;
+  margin-right: 0;
   display: inline-block;
+}
+.search-btn{
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  left: -7px;
+  z-index: 1;
+  position: relative;
 }
 /*table*/
 .base-table{

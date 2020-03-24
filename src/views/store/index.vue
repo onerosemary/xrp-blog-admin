@@ -6,7 +6,7 @@
         <el-option key="2" label="湖南省" value="湖南省" />
       </el-select> -->
       <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
-      <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="handleSearch">搜索</el-button>
       <el-button type="primary" size="small" @click="handle(-1)">添加门店</el-button>
       <el-button size="small">本店信息修改</el-button>
     </div>
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { list } from '../../api/store'
+import { storeList } from '@/api/common'
 export default {
   name: 'Store',
   data() {
@@ -101,7 +101,7 @@ export default {
         }
 
       }
-      list(params).then(res => {
+      storeList(params).then(res => {
         const { records, total } = res.data
         this.tableData = records
         this.total = parseInt(total)

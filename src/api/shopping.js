@@ -117,3 +117,49 @@ export function categoryOrder(data) {
     data
   })
 }
+
+// 订单列表
+export function orderList(data) {
+  return request({
+    url: '/pc/order/list',
+    method: 'post',
+    data
+  })
+}
+
+
+// 订单详情
+export function orderDetail(params) {
+  return request({
+    url: '/pc/order/detail',
+    method: 'get',
+    params
+  })
+}
+
+// 订单发货添加
+export function orderSend(data) {
+  return request({
+    url: '/pc/order/deliver',
+    method: 'post',
+    data
+  })
+}
+
+// 订单删除
+export function orderDelete(params) {
+  return request({
+    url: '/pc/order/delete',
+    method: 'get',
+    params
+  })
+}
+
+// 订单 关联分销
+export function buildRake(data) {
+  return request({
+    url: '/pc/rake/buildRake',
+    method: 'post',
+    data
+  })
+}

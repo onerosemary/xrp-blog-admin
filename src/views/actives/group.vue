@@ -6,7 +6,7 @@
         <el-option key="2" label="湖南省" value="湖南省" />
       </el-select>
       <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" />
-      <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="handleSearch">搜索</el-button>
       <el-button type="primary" size="small" @click="handleEdit">添加门店</el-button>
     </div>
     <el-table

@@ -11,3 +11,11 @@ export function goodsTypeList(data) {
     })
   }
   
+// 门店列表
+export function storeList(data) {
+  return request({
+    url: '/pc/company/list',
+    method: 'post',
+    data
+  })
+}
