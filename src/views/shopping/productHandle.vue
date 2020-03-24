@@ -7,7 +7,7 @@
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="商品图片" prop="attachments" class="upload-item">
-        <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess"></upload>
+        <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess" :amount="5" :cover="true"></upload>
       </el-form-item>
       <el-form-item label="商品名称" prop="title">
           <el-input v-model="form.title" size="small" placeholder="请填写" />
@@ -108,8 +108,7 @@ import { addGood, editorGood, getGoodsInfo } from '@/api/shopping'
 export default {
   data() {
     const attachments = (rule, value, callback) => {
-      console.log('value---', value)
-      if (value.length < 0) {
+      if (this.form.attachments.length === 0) {
         callback(new Error('商品图片不可为空'))
       } else {
         callback()

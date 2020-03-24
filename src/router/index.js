@@ -85,6 +85,12 @@ export const constantRoutes = [
         name: 'Category',
         component: () => import('@/views/shopping/category'),
         meta: { title: '商品分类', icon: 'table' }
+      },{
+        path: 'categoryHandle',
+        name: 'categoryHandle',
+        hidden: true,
+        component: () => import('@/views/shopping/categoryHandle'),
+        meta: { title: '商品分类管理', icon: 'dashboard' }
       },
       {
         path: 'product',

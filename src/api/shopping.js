@@ -71,3 +71,49 @@ export function categoryList(data) {
     data
   })
 }
+
+
+// 商品分类添加
+export function categoryAdd(data) {
+  return request({
+    url: '/pc/classify/add',
+    method: 'post',
+    data
+  })
+}
+
+// 商品分类编辑
+export function categoryEditor(data) {
+  return request({
+    url: '/pc/classify/update',
+    method: 'post',
+    data
+  })
+}
+
+// 商品分类删除
+export function categorydelete(params) {
+  return request({
+    url: '/pc/classify/delete',
+    method: 'get',
+    params
+  })
+}
+
+// 获取id商品分类信息
+export function getCategoryInfo(params) {
+  return request({
+    url: '/pc/classify/detail',
+    method: 'get',
+    params
+  })
+}
+
+// 商品分类排序
+export function categoryOrder(data) {
+  return request({
+    url: '/pc/classify/order',
+    method: 'post',
+    data
+  })
+}

@@ -9,22 +9,25 @@
         </div>
         <el-upload
             class="upload-demo"
-            :accept="String(acceptImg)"
+            :accept="format ? String(acceptImg) : String(acceptImgVideo)"
             :action="uploadUrl"
             :before-upload="beforeAvatarUpload"
             :on-progress="uploadProgress"
             :on-success="handleVideoSuccess"
             :show-file-list = false
             >
-            <div v-if="fileList.length < 5" class="upload-file">
+            <div v-if="fileList.length < amount" class="upload-file">
               <el-progress v-if="isShowPercent && imgIndex === -1" type="circle" :percentage="uploadPercent"></el-progress>
               <i v-else class="el-icon-plus"></i>
             </div>
-            <div slot="tip" class="el-upload__tip">只能上传{{String(acceptImg)}}文件，且图片不超过2M, 视频不超过20M</div>
+            <div slot="tip" class="el-upload__tip">
+              <span v-if="format">只能上传{{String(acceptImg)}}，且图片不超过2M</span>
+              <span v-else>只能上传{{String(acceptImgVideo)}}文件，且图片不超过2M, 视频不超过20M</span>
+            </div>
             <ul v-if="fileList.length > 0" class="upload-preview">
               <li v-for="(item, index) in fileList" :key="index">
                 <el-progress v-if="isShowPercent && imgIndex === index" type="circle" :percentage="uploadPercent"></el-progress>
-                <div class="cover" v-if="index === 0">封面</div>
+                <div class="cover" v-if="cover && index === 0">封面</div>
                 <div class="layer-mask" @click="layerHandle($event)">
                   <i class="el-icon-edit" @click="editorUpload(index)"></i>
                   <i class="el-icon-zoom-in" @click.stop="zoomInUpload(index)"></i>
@@ -53,7 +56,8 @@ export default {
       arrType: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'], // 图片类型聚焦管理
       uploadPercent: 0, // 上传加载进度
       isShowPercent: false, // 是否显示进度条
-      acceptImg: ['.mp4','.jpg', '.png', '.gif', '.jpeg'], // 识别上传类型
+      acceptImgVideo: ['.mp4','.jpg', '.png', '.gif', '.jpeg'], // 识别上传图片和视频类型
+      acceptImg: ['.jpg', '.png', '.gif', '.jpeg'], // 识别上传图片类型
       acceptVideo: ['video/mp4'], // 识别上传视频类型
       fileList: [],
       form: {
@@ -68,13 +72,25 @@ export default {
     }
   },
   props: {
-    queryId: {
+    queryId: { // 编辑回传id
       type: Number,
       default: () => 0
     },
-    attachments: {
+    attachments: { // 编辑回传接受的数据
       type: Array,
       default: () => []
+    },
+    format: { // 默认支持视频与图片, 参数为img 为仅支持 图片格式
+      type: String,
+      default: () => ''
+    },
+    amount: { // 默认1， 可设置上传数
+      type: Number,
+      default: () => 1
+    },
+    cover: { // 默认不显示封面 标识
+      type: Boolean,
+      default: () => false
     }
   },
   watch: {
@@ -115,21 +131,33 @@ export default {
       const isIMG = this.arrType.includes(file.type) // 是否支持的图片格式
       const isLt2M = file.size / 1024 / 1024 < 2 // 图片大小
       const isLt20M = file.size / 1024 / 1024 < 20 // 视频大小
-
-      if (isIMG) { // 图片
-        if(!isLt2M){
-          this.$message.error('上传图片大小不能超过 2MB!')
+      if(this.format === 'img') { // 仅支持图片
+        if (isIMG) { // 图片
+          if(!isLt2M){
+            this.$message.error('上传图片大小不能超过 2MB!')
+            isOk = false
+          }
+        }else {
+          this.$message.error(`上传格式只支持 ${String(this.acceptImg)} 格式!`)
           isOk = false
         }
-      }else if(isVideo) { // 视频
-        if(!isLt20M){
-          this.$message.error('上传视频大小不能超过 20MB!')
+      }else { // 支持的多格式
+        if (isIMG) { // 图片
+          if(!isLt2M){
+            this.$message.error('上传图片大小不能超过 2MB!')
+            isOk = false
+          }
+        }else if(isVideo) { // 视频
+          if(!isLt20M){
+            this.$message.error('上传视频大小不能超过 20MB!')
+            isOk = false
+          }
+        }else { // 其它格式
+          this.$message.error(`上传格式只支持 ${String(this.acceptImgVideo)} 格式!`)
           isOk = false
         }
-      }else { // 其它格式
-        this.$message.error(`上传格式只支持 ${String(this.acceptImg)} 格式!`)
-        isOk = false
       }
+      
       // 通过验证
       if(isOk){
         return true
