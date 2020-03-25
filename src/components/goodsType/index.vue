@@ -10,7 +10,7 @@ import { goodsTypeList } from '@/api/common'
 export default {
     data() {
         return {
-            value: null,
+            value: '',
             dataList: []
         }
     },
@@ -40,6 +40,11 @@ export default {
                 }
             }
             goodsTypeList(data).then(res => {
+                const all = {
+                    id: null,
+                    name: '全部'
+                }
+                res.data.records.unshift(all)
                 this.dataList = res.data.records
             })
         },

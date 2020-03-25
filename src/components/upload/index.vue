@@ -10,6 +10,7 @@
         <el-upload
             class="upload-demo"
             :accept="format ? String(acceptImg) : String(acceptImgVideo)"
+            :headers="headers"
             :action="uploadUrl"
             :before-upload="beforeAvatarUpload"
             :on-progress="uploadProgress"
@@ -46,9 +47,13 @@
     </div>
 </template>
 <script>
+import { getToken } from '@/utils/auth'
 export default {
   data() {
     return {
+      headers: {
+        'Authorization': getToken()
+      }, // 设置上传的请求头部
       uploadUrl: `${process.env.VUE_APP_BASE_API}/pc/file/upload`,//你要上传视频到你后台的地址
       imgIndex: -1, // 放大/删除/编辑索引
       currentZoomURI: '', // 当前放大图片/视频

@@ -1,14 +1,9 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <!-- <el-select v-model="query.address" placeholder="地址" class="handle-select mr10" size="small">
-        <el-option key="1" label="广东省" value="广东省" />
-        <el-option key="2" label="湖南省" value="湖南省" />
-      </el-select> -->
       <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="handleSearch">搜索</el-button>
       <el-button type="primary" size="small" @click="handle(-1)">添加门店</el-button>
-      <el-button size="small">本店信息修改</el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -18,41 +13,43 @@
     >
       <el-table-column
         label="序号"
-        width="180"
+        width="50"
       >
         <template slot-scope="scope">
           {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="店照" width="180" prop="imgUrl" />
-      <el-table-column label="门店" width="180" prop="name" />
+      <el-table-column label="店照" width="180">
+        <template slot-scope="scope">
+          <img :src="imgUrl + scope.row.imgUrl" width="60"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="门店" width="180" class-name="name-store">
+        <template slot-scope="scope">
+            <!-- 总店 -->
+            <div v-if="$store.getters.companyId === 1">
+              <div class="self" v-if="scope.row.id === 1">本店</div>
+            </div>
+            <div v-else>
+              <!-- 分店 -->
+              <div class="self" v-if="scope.row.id === 1">总店</div>
+              <div class="self" v-if="scope.row.id === $store.getters.companyId">本店</div>
+            </div>
+            {{scope.row.name}}
+        </template>
+      </el-table-column>
       <el-table-column label="地址" prop="address" />
-      <el-table-column
-        label="管理员账号"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="管理员密码"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column label="操作" width="180" v-if="$store.getters.companyId === 1">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handle(scope.$index, scope.row)"
+            @click="handle(scope.row.id, scope.row.id === $store.getters.companyId)"
           >编辑</el-button>
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            v-if="scope.row.id !== $store.getters.companyId"
+            @click="handleDelete(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -72,6 +69,7 @@
 
 <script>
 import { storeList } from '@/api/common'
+import { deleteStore } from '@/api/store'
 export default {
   name: 'Store',
   data() {
@@ -85,6 +83,11 @@ export default {
       total: 0, // 总条数
       loading: false,
       tableData: []
+    }
+  },
+  computed: {
+    isSelf() {
+
     }
   },
   created() {
@@ -113,17 +116,70 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val
     },
-    handle(id, row) {
-      this.$router.push({
-        path: '/store/handle',
-        query: {
-          id: id
-        }
-      })
+    handle(id, isbendian) {
+      if(isbendian) { // 本店
+        this.$router.push({
+          path: '/store/handle',
+          query: {
+            id: id,
+            isbendian: 1
+          }
+        })
+      }else {
+        this.$router.push({
+          path: '/store/handle',
+          query: {
+            id: id
+          }
+        })
+      }
+      
     },
-    handleDelete(index, row) {
-      console.log(index, row)
+    handleDelete(id) {
+      this.$confirm('此操作将永久删除该门店, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 继续删除
+        deleteStore({id}).then(res => {
+          this.$message({
+            message: `删除门店成功！`,
+            type: 'success'
+          })
+          // 删除当前 row
+          this.tableData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(id)){
+              this.tableData.splice(index, 1)
+            }
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消门店删除'
+        })       
+      })
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+  /deep/.name-store{
+    position: relative;
+    overflow: hidden;
+  }
+  .self{
+    position: absolute;
+    background: #409EFF;
+    height: 20px;
+    color: #fff;
+    width: 60px;
+    transform: rotate(45deg);
+    top: 1px;
+    text-align: center;
+    line-height: 20px;
+    right: -19px;
+    font-size: 11px;
+  }
+</style>

@@ -299,9 +299,6 @@ export default {
           id: id
         }
       })
-    },
-    handleDelete(index, row) {
-      console.log(index, row)
     }
   }
 }
