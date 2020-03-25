@@ -3,12 +3,12 @@
     <div class="handle-box">
       <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small">
         <el-option label="进行中" value="1" />
-        <el-option label="已结束" value="2" />
+        <el-option label="已结束" value="0" />
       </el-select>
       <datePicker @change="datePickerChange"></datePicker>
-      <el-input v-model="query.title" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-input v-model="query.title" placeholder="商品名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加商品</el-button>
+      <el-button type="primary" size="small" @click="handle(-1)">添加拼团</el-button>
 
     </div>
     <el-table
@@ -30,32 +30,34 @@
             <img class="list-img" :src="scope.row.cover" />
           </template>
       </el-table-column>
-      <el-table-column label="名称" prop="title" />
-      <el-table-column label="价格(￥)">
+      <el-table-column label="商品" prop="title" />
+      
+      <el-table-column
+        label="开团人数"
+        prop="stock"
+      />
+      <el-table-column
+        label="已参加"
+        prop="salesVolume"
+      />
+      <el-table-column label="开团时间">
+        <template slot-scope="scope">
+          {{scope.row.createTime}}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="已售数量"
+        prop="salesVolume"
+      />
+      <el-table-column label="已售金额 ">
         <template slot-scope="scope">
           {{scope.row.minPrice | price}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="库存"
-        prop="stock"
-      />
-      <el-table-column
-        label="销量"
-        prop="salesVolume"
-      />
-      <el-table-column label="分类" >
-        <template slot-scope="scope">
-          <span>{{scope.row.cname}}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-          <span v-if="parseInt(scope.row.status) === 0">下架</span>
-          <div v-else>
-            <span v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 1" class="cblue">首页推荐</span>
-            <span v-else class="cblue">上架</span>
-          </div>
+          <span v-if="parseInt(scope.row.status) === 0">已结束</span>
+          <span v-else class="cblue">进行中</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间">
@@ -63,7 +65,7 @@
           {{scope.row.createTime}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180">
+      <!-- <el-table-column label="操作" width="180">
         <template slot-scope="scope">
           <el-button
             v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 0"
@@ -87,7 +89,7 @@
             </el-dropdown-menu>
           </el-dropdown>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <div class="pagination">
       <el-pagination
@@ -104,7 +106,7 @@
 
 <script>
 import datePicker from '@/components/datePicker'
-import { goodsList, isNewIndex, isOn, deleteGoods } from '@/api/shopping'
+import { assembleList, isNewIndex, isOn, deleteGoods } from '@/api/actives'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
@@ -112,7 +114,6 @@ export default {
     return {
       time: '',
       query: {
-        cid: null,
         status: null,
         startTime: null,
         endTime: null,
@@ -250,12 +251,10 @@ export default {
     },
     // 列表接口
     getList() {
-      const {cid, status, startTime, endTime, title} = this.query
+      const {status, startTime, endTime, title} = this.query
 
       const params = {
-        cid: cid, // 关键词
-        status: parseInt(status) === 2 ? null : status,
-        isNew: parseInt(status) === 2 ? 1 : null, // 如果状态是3，代表首页推荐查询
+        status: status,
         startTime: startTime,
         endTime: endTime,
         title: title,
@@ -265,12 +264,12 @@ export default {
         }
 
       }
-      goodsList(params).then(res => {
+      assembleList(params).then(res => {
         const { records, total } = res.data
         // imgUrl 
         records.forEach((item, index) => {
           item.cover = this.imgUrl + item.cover
-          item.createTime = parseTime(item.createTime)
+          item.startTime = parseTime(item.startTime)
         })
         this.tableData = records
         this.total = parseInt(total)

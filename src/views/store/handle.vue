@@ -237,7 +237,6 @@ export default {
             })
           }else { 
             if(this.isbendian) { // 本店编辑
-              alert('本店')
               selfeditorStore(this.form).then(res => {
                 this.$message({
                   message: '本店编辑成功',

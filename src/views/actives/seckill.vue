@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <goods-type @change="goodsTypeChange"></goods-type>
       <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small">
         <el-option label="全部" :value="null" />
-        <el-option label="未开始" :value="0" />
-        <el-option label="正在进行" :value="1" />
-        <el-option label="结束" :value="2" />
+        <el-option label="下架" :value="0" />
+        <el-option label="未开始" :value="1" />
+        <el-option label="正在进行" :value="2" />
+        <el-option label="结束" :value="3" />
       </el-select>
       <datePicker @change="datePickerChange"></datePicker>
       <el-input v-model="query.title" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
@@ -33,8 +33,8 @@
             <img class="list-img" :src="scope.row.cover" />
           </template>
       </el-table-column>
-      <el-table-column label="商品名称" prop="title" />
-      <el-table-column width="70" label="价格(￥)">
+      <el-table-column label="商品" prop="title" />
+      <el-table-column width="70" label="剩余数量">
         <template slot-scope="scope">
           {{scope.row.minPrice | price}}
         </template>
@@ -63,19 +63,14 @@
           <span>{{scope.row.cname}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="70" label="是否结束">
+      <el-table-column width="70" label="状态">
         <template slot-scope="scope">
-          <span class="cblue" v-if="parseInt(scope.row.isEnd) === 0">未开始</span>
-          <span class="cblue" v-else-if="parseInt(scope.row.isEnd) === 1">正在进行</span>
-          <span v-else>结束</span>
+          <span class="cblue" v-if="parseInt(scope.row.status) === 0">下架</span>
+          <span class="cblue" v-else-if="parseInt(scope.row.status) === 1">未开始</span>
+          <span class="cblue" v-else-if="parseInt(scope.row.status) === 2">正在进行</span>
+          <span class="cblue" v-else-if="parseInt(scope.row.status) === 3">结束</span>
         </template>
-      </el-table-column>
-      <!-- <el-table-column label="状态" prop="status">
-        <template slot-scope="scope">
-          <span v-if="parseInt(scope.row.status) === 0">下架</span>
-          <span v-else class="cblue">上架</span>
-        </template>
-      </el-table-column> -->
+      </el-table-column> 
       <el-table-column label="创建时间">
         <template slot-scope="scope">
           {{scope.row.createTime}}
@@ -106,7 +101,6 @@ export default {
     return {
       time: '',
       query: {
-        cid: '',
         status: '',
         startTime: null,
         endTime: null,
@@ -231,11 +225,6 @@ export default {
         })
       })
     },
-    // 获取选择分类
-    goodsTypeChange(id) {
-      this.query.cid = id
-      this.getList()
-    },
     // 选择日期
     datePickerChange(time){
       if(!!time){
@@ -250,10 +239,9 @@ export default {
     },
     // 列表接口
     getList() {
-      const {cid, status, startTime, endTime, title} = this.query
+      const {status, startTime, endTime, title} = this.query
 
       const params = {
-        cid: cid, // 关键词
         status: status,
         startTime: startTime,
         endTime: endTime,
