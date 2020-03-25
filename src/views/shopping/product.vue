@@ -107,7 +107,8 @@
 <script>
 import goodsType from '@/components/goodsType'
 import datePicker from '@/components/datePicker'
-import { goodsList, isNewIndex, isOn, deleteGoods } from '@/api/shopping'
+import { isNewIndex, isOn, deleteGoods } from '@/api/shopping'
+import { goodsList } from '@/api/common'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',

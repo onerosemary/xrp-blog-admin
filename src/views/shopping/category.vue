@@ -48,12 +48,12 @@
           >修改顺序</el-button>
           <el-button
             size="mini"
-            @click="categorydelete(scope.row.id)"
-          >删除</el-button>
-          <el-button
-            size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
+          <el-button
+            size="mini"
+            @click="categorydelete(scope.row.id)"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -1,14 +1,5 @@
 import request from '@/utils/request'
 
-// 商品列表
-export function goodsList(data) {
-  return request({
-    url: '/pc/goods/list',
-    method: 'post',
-    data
-  })
-}
-
 // 推荐首页
 export function isNewIndex(params) {
   return request({

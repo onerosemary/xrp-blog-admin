@@ -15,7 +15,6 @@
       v-loading="loading"
       class="base-table"
       :data="tableData"
-
     >
       <el-table-column
         label="序号"
@@ -65,31 +64,29 @@
           {{scope.row.createTime}}
         </template>
       </el-table-column>
-      <!-- <el-table-column label="操作" width="180">
+      <el-table-column label="操作" width="225">
         <template slot-scope="scope">
           <el-button
-            v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 0"
+            v-if="parseInt(scope.row.status) === 0"
             size="mini"
-            @click="recommendIndex(scope.row)"
-          >推荐首页</el-button>
+            @click="distributionIsOn(scope.row.id, scope.row.status)"
+          >上架</el-button>
           <el-button
-            v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 1"
+            v-if="parseInt(scope.row.status) === 1"
             size="mini"
-            @click="recommendIndex(scope.row)"
-          >取消推荐</el-button>
-          <el-dropdown @command="handleCommand">
-            <span class="el-dropdown-link cblue">
-              更多<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown" class="dropdow-css">
-              <el-dropdown-item v-if="parseInt(scope.row.status) === 1" :command="beforeHandleCommand(scope.row, -1)">下架</el-dropdown-item>
-              <el-dropdown-item v-if="parseInt(scope.row.status) === 0" :command="beforeHandleCommand(scope.row, 1)">上架</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand(scope.row, 2)">编辑</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand(scope.row, 0)">删除</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+            @click="distributionIsOn(scope.row.id, scope.row.status)"
+          >下架</el-button>
+
+          <el-button
+            size="mini"
+            @click="editorHandle(scope.row)"
+          >编辑</el-button>
+          <el-button
+            size="mini"
+            @click="deleteHandle(scope.row)"
+          >删除</el-button>
         </template>
-      </el-table-column> -->
+      </el-table-column>
     </el-table>
     <div class="pagination">
       <el-pagination
@@ -217,14 +214,13 @@ export default {
       })
     },
     // 上下架
-    goodsIsOn(c) {
-      const {id, status} = c.command
+    distributionIsOn(id, status) {
       const text = parseInt(status) === 0 ? '上架' : '下架'
       const params = {
         id,
         status: parseInt(status) === 0 ? 1 : 0 // 1上架， 0下架
       }
-      isOn(params).then(res => {
+      distributionUpdown(params).then(res => {
         this.$message({
           message: `${text}, 成功！`,
           type: 'success'
@@ -284,7 +280,7 @@ export default {
     },
     handle(id) {
       this.$router.push({
-        path: '/shopping/productHandle',
+        path: '/actives/groupHandle',
         query: {
           id: id
         }

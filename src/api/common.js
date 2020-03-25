@@ -1,6 +1,14 @@
 // 全局公用接口
-
 import request from '@/utils/request'
+
+// 商品列表
+export function goodsList(data) {
+  return request({
+    url: '/pc/goods/list',
+    method: 'post',
+    data
+  })
+}
 
 // 商品分类
 export function goodsTypeList(data) {

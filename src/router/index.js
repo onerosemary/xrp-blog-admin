@@ -166,6 +166,13 @@ export const constantRoutes = [
         meta: { title: '拼团', icon: 'table' }
       },
       {
+        path: 'groupHandle',
+        name: 'groupHandle',
+        hidden: true,
+        component: () => import('@/views/actives/groupHandle'),
+        meta: { title: '拼团管理', icon: 'dashboard' }
+      },
+      {
         path: 'seckill',
         name: 'Seckill',
         component: () => import('@/views/actives/seckill'),
