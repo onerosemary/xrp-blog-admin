@@ -17,6 +17,33 @@ export function assembleList(data) {
         data
     })
 }
+// 添加拼团
+export function assembleAdd(data) {
+    return request({
+        url: '/pc/assemble/add',
+        method: 'post',
+        data
+    })
+}
+
+// 编辑拼团
+export function assembleModify(data) {
+    return request({
+        url: '/pc/assemble/modify',
+        method: 'post',
+        data
+    })
+}
+
+// 拼团详情
+export function assembleDetails(params) {
+    return request({
+        url: '/pc/assemble/details',
+        method: 'get',
+        params
+    })
+}
+
 
 //分销列表
 export function distributionList(data) {

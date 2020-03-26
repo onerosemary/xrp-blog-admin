@@ -6,13 +6,52 @@
     </div>
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
-      <el-form-item label="选择拼团商品" prop="name">
-        <select-goods></select-goods>
+      <el-form-item label="选择拼团商品" prop="cover">
+        <select-goods :cover="form.cover" @change="changeGood"></select-goods>
       </el-form-item>
-      <el-form-item label="分类名称" prop="name">
-          <el-input v-model="form.name" size="small" placeholder="请填写" />
-      </el-form-item>
-      
+      <div class="group-item">
+        <el-form-item label="开团人数" prop="needPeop">
+            <el-input v-model="form.needPeop" size="small" placeholder="请填写" />
+        </el-form-item>
+        <el-form-item label="开团结束时间" prop="endTime">
+            <el-date-picker
+              size="small"
+              v-model="form.endTime"
+              type="datetime"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              :picker-options="pickerOptions"
+              >
+            </el-date-picker>
+            <!-- <el-input v-model="form.endTime" size="small" placeholder="请填写" /> -->
+        </el-form-item>
+        <el-form-item label="已参加人数" prop="joinPeop">
+            <el-input v-model="form.joinPeop" size="small" placeholder="请填写" />
+        </el-form-item>
+      </div>
+      <div class="group-property-item" v-if="form.properties.length > 0">
+        <ul class="group-property-title">
+          <li class="w200">规格</li>
+          <li class="w60">价格(￥)</li>
+          <li class="w60">库存</li>
+          <li>拼团价</li>
+        </ul>
+        <ul v-for="(item, index) in form.properties" :key="index">
+          <li class="w200">{{item.name}}</li>
+          <li class="w60">{{item.oriPrice}}</li>
+          <li class="w60">{{item.stock}}</li>
+          <li>
+            <el-form-item 
+              :prop="'properties.' + index + '.price'"
+              :rules="{
+                required: true, message: '不能为空', trigger: 'blur'
+              }"
+            >
+              <el-input v-model="item.price" size="small" placeholder="请填写" />
+            </el-form-item>
+          </li>
+        </ul>
+      </div>
       <el-form-item class="create-btn">
         <el-button type="primary" @click="submitForm('form')">保存</el-button>
       </el-form-item>
@@ -21,34 +60,44 @@
   </div>
 </template>
 <script>
-import { categoryAdd, categoryEditor, getCategoryInfo } from '@/api/shopping'
+import { getCategoryInfo } from '@/api/shopping'
+import { assembleAdd, assembleDetails, assembleModify } from '@/api/actives'
 import selectGoods from '@/components/selectGoods'
 export default {
   data() {
-    const attachments = (rule, value, callback) => {
-      if (this.form.attachments.length === 0) {
-        callback(new Error('商品图片不可为空'))
+    const cover = (rule, value, callback) => {
+      if (this.form.cover === '') {
+        callback(new Error('封面图片不可为空'))
       } else {
         callback()
       }
     }
     return {
+      selectOne: null, // 选中的商品
       form: {
-        attachments:[], // 分类图片
-        imgUrl: '', // 分类图片（后端）
-        name: '', // 分类名称
-        order: 0 // 默认
+        goodsId: '', // 商品id
+        cover: '', // 商品封面
+        needPeop: '', // 开团人数
+        endTime: '', // 拼团开始时间
+        joinPeop: '', // 已参数人数
+        properties: [], // 商品规格
+      },
+      pickerOptions: {
+          disabledDate(time) { // 禁止当前日期前一天
+            return time.getTime() < Date.now() - 8.64e7
+          }
       },
       rules: {
-        attachments: [
-          {
-            type: 'array',
-            required: true,
-            validator: attachments,
-            trigger: 'change'
-          }
+        cover: [
+          { required: true, validator: cover, trigger: 'change' }
         ],
-        name: [
+        needPeop: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        endTime: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        joinPeop: [
           { required: true, message: '不能为空', trigger: 'blur' }
         ]
       }
@@ -58,11 +107,11 @@ export default {
       selectGoods
   },
   watch: {
-    'form.attachments': {
+    'form.cover': {
       handler(value) {
-        if(value.length > 0){
+        if(value){
           // 校验 图片方法
-          this.$refs.form.validateField('attachments')
+          this.$refs.form.validateField('cover')
         }
       },
       deep: true
@@ -70,7 +119,7 @@ export default {
   },
   mounted() {
     if(parseInt(this.queryId) !== -1){ // 编辑
-      this.getCategoryInfo()
+      this.assembleDetails()
     }
   },
   computed: {
@@ -79,52 +128,81 @@ export default {
     }
   },
   methods: {
-    //  获取商品信息
-    getCategoryInfo() {
-      getCategoryInfo({id: this.queryId}).then(res => {
-        const { name, imgUrl, sort  } = res.data
+    //  获取选中商品详情
+    changeGood(data) {
+      this.form.properties = [] //  初始化
+      this.selectOne = data // 赋值
+      
+      // 封面赋值
+      this.form.cover = data.cover
+      // 商品id
+      this.form.goodsId = data.id
+      
+      // 组装后端需要商品规格的数据
+      const properties = []
+      data.goodsPropertys.forEach(item => {
+        properties.push({
+          propertyId: item.id, // 商品规格id
+          isShow: 1, // 是否参与分销 1-参与 0-未参与
+          name: item.name,
+          oriPrice: item.price, // 现价
+          // price: '', // 定义拼团价格
+          stock: item.stock // 库存数量
+        })
+      })
+
+      this.form.properties = properties
+    },
+    //  获取拼团详情信息
+    assembleDetails() {
+      assembleDetails({assembleId: this.queryId}).then(res => {
+        const { id, goodsId, cover, needPeop, endTime, joinPeop, properties } = res.data
+        properties.forEach(item => { // 价格 单位 元
+          item.oriPrice = item.oriPrice / 100
+          item.price = item.price / 100
+        })
+
         this.form = {
-            id: this.queryId,
-            attachments:[{
-                attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
-                attachmentType: 0, // 回选文件类型
-                attachmentUrl: imgUrl // 回选文件地址
-            }], // 分类图片
-            imgUrl, // 分类图片（后端）
-            name, // 分类名称
-            order: sort // 排序
+            id, // 拼团返回id
+            goodsId: '', // 商品id
+            cover: this.imgUrl  + cover, // 商品封面
+            needPeop, // 开团人数
+            endTime, // 拼团开始时间
+            joinPeop, // 已参数人数
+            properties, // 商品规格
         }
       })
     },
 
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if(this.form.attachments.length > 0){
-            this.form.imgUrl = this.form.attachments[0].attachmentUrl
-        }else {
-            this.form.imgUrl = ''
-        }
+
+      this.$refs[formName].validate((valid) => {      
         if (valid) {
+          // 设置平团价格 单位 分
+          this.form.properties.forEach(item => {
+            item.oriPrice = item.oriPrice * 100
+            item.price = item.price * 100
+          })
+
           if(parseInt(this.queryId) === -1){ // 添加
-            categoryAdd(this.form).then(res => {
+            assembleAdd(this.form).then(res => {
               this.$message({
-                message: '商品分类新增成功',
+                message: '拼团添加成功',
                 type: 'success'
               })
             })
             this.$router.push({
-              path: '/shopping/category'
+              path: '/actives/group'
             })
           }else { // 编辑
-            this.form.id = this.queryId
-            categoryEditor(this.form).then(res => {
+            assembleModify(this.form).then(res => {
               this.$message({
-                message: '商品分类编辑成功',
+                message: '拼团编辑成功',
                 type: 'success'
               })
             })
             this.$router.push({
-              path: '/shopping/category'
+              path: '/actives/group'
             })
           }
           
@@ -141,40 +219,43 @@ export default {
     .body-span{
       width: 707px;
       padding-top: 15px;
-      .specification{
+      .group-item{
         display: flex;
-        /deep/.g1{
-          margin-bottom: 22px;
-        }
-        /deep/.g2{
-          width: 100px;
+        /deep/.el-form-item{
           margin-right: 20px;
-          margin-bottom: 22px;
-          .el-form-item__content{
-            width: 100px;
+        }
+      }
+      // .el-form-item{
+      //     margin-bottom: 0;
+      // }
+      .group-property-item{
+        /deep/.el-form-item{
+            margin-bottom: 0;
+        }
+        margin-top: 40px;
+        .group-property-title{
+          margin-bottom: 15px;
+        }
+        ul{
+          display: flex;
+          padding: 0;
+          margin: 0 0 22px 0;
+          li{
+            list-style: none;
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            font-size: 13px;
+            color: #606266;
           }
-          /deep/ .el-input__inner{
-            width: 100px;
-            height: 30px;
-            line-height: 30px;
-            font-size: 12px;
+          .w200{
+            width: 200px;
+          }
+          .w60{
+            width: 60px;
           }
         }
       }
-      
-      .el-form-item{
-          margin-bottom: 0;
-      }
-      .upload-item{
-        /deep/.el-form-item__content{
-          line-height: inherit;
-          margin-bottom: 10px;
-          .el-upload__tip{
-            color: #ADB1B5;
-          }
-        }
-      }
-      
       /deep/ .form-item-header{
         color: #ADB1B5;
         margin-bottom: 0;
@@ -202,73 +283,5 @@ export default {
         }
       }
 
-      .sort-del{
-        width: 150px;
-        height: 30px;
-        line-height: 30px;
-        margin-top: 7px;
-        color: #333;
-        .jt-bottom{
-          transform: rotate(-180deg);
-          display: inline-block;
-        }
-        .el-icon-close{
-          color: #FF3F1D;
-        }
-        span{
-          cursor: pointer;
-          text-align: center;
-          font-size: 16px;
-          margin: 0 2px;
-          font-weight: bold;
-        }
-        .el-icon-top{
-          color: #9EA1A9;
-        }
-      }
-      .title{
-        line-height: 30px;
-        margin-top: 10px;
-        font-size: 14px;
-        color: #ADB1B5;
-        span{
-          font-size: 12px;
-          display: inline-block;
-          width: 100px;
-          margin-right: 20px;
-        }
-        .first{
-          width: 250px;
-        }
-      }
-      .goods-type{
-        display: flex;
-      }
-      .delivery-type{
-        display: flex;
-        margin-right: 20px;
-        /deep/.el-radio-group{
-          margin-top: 12px;
-          margin-right: 20px;
-        }
-        /deep/.el-radio__label{
-          font-size: 12px;
-        }
-      }
-      .detail-msg{
-        margin: 10px 0;
-        /deep/ .el-form-item__content{
-          display: block;
-        }
-        .custom__error{
-          color: #F56C6C;
-          font-size: 12px;
-          line-height: 1;
-          padding-top: 4px;
-          position: absolute;
-          top: 100%;
-          left: 0;
-        }
-      }
     }
 </style>

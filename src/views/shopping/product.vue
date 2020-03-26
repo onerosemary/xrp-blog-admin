@@ -8,7 +8,7 @@
         <el-option label="推荐首页" value="2" />
       </el-select>
       <datePicker @change="datePickerChange"></datePicker>
-      <el-input v-model="query.title" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-input v-model="query.title" placeholder="搜索商品" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
       <el-button type="primary" size="small" @click="handle(-1)">添加商品</el-button>
 

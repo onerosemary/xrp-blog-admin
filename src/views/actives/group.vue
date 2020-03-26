@@ -33,15 +33,15 @@
       
       <el-table-column
         label="开团人数"
-        prop="stock"
+        prop="needPeop"
       />
       <el-table-column
-        label="已参加"
-        prop="salesVolume"
+        label="已参人数"
+        prop="joinPeop"
       />
       <el-table-column label="开团时间">
         <template slot-scope="scope">
-          {{scope.row.createTime}}
+          {{scope.row.endTime}}
         </template>
       </el-table-column>
       <el-table-column
@@ -61,7 +61,7 @@
       </el-table-column>
       <el-table-column label="创建时间">
         <template slot-scope="scope">
-          {{scope.row.createTime}}
+          <!-- {{scope.row.createTime}} -->
         </template>
       </el-table-column>
       <el-table-column label="操作" width="225">
@@ -79,7 +79,7 @@
 
           <el-button
             size="mini"
-            @click="editorHandle(scope.row)"
+            @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
             size="mini"
@@ -265,7 +265,7 @@ export default {
         // imgUrl 
         records.forEach((item, index) => {
           item.cover = this.imgUrl + item.cover
-          item.startTime = parseTime(item.startTime)
+          item.endTime = parseTime(item.endTime)
         })
         this.tableData = records
         this.total = parseInt(total)
