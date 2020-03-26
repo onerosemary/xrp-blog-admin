@@ -179,6 +179,13 @@ export const constantRoutes = [
         meta: { title: '秒杀', icon: 'table' }
       },
       {
+        path: 'seckillHandle',
+        name: 'seckillHandle',
+        hidden: true,
+        component: () => import('@/views/actives/seckillHandle'),
+        meta: { title: '秒杀管理', icon: 'dashboard' }
+      },
+      {
         path: 'distribution',
         name: 'Distribution',
         component: () => import('@/views/actives/distribution'),

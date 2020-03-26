@@ -9,6 +9,24 @@ export function seckillList(data) {
     })
 }
 
+// 秒杀列表删除
+export function seckillIsDelete(params) {
+    return request({
+        url: '/pc/seckill/delete',
+        method: 'get',
+        params
+    })
+}
+
+// 秒杀上下架
+export function seckillIsOn(params) {
+    return request({
+        url: '/pc/seckill/isOn',
+        method: 'get',
+        params
+    })
+}
+
 //拼团列表
 export function assembleList(data) {
     return request({

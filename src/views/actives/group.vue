@@ -38,31 +38,28 @@
       />
       <el-table-column
         label="已参人数"
-        prop="joinPeop"
+        prop="totalCnt"
       />
-      <el-table-column label="开团时间">
+      <el-table-column label="上架时间">
         <template slot-scope="scope">
-          {{scope.row.endTime}}
+          {{scope.row.startTime}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="已售数量"
-        prop="salesVolume"
-      />
       <el-table-column label="已售金额 ">
         <template slot-scope="scope">
-          {{scope.row.minPrice | price}}
+          {{scope.row.totalSales | price}}
         </template>
       </el-table-column>
       <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-          <span v-if="parseInt(scope.row.status) === 0">已结束</span>
-          <span v-else class="cblue">进行中</span>
+          <span v-if="parseInt(scope.row.status) === 0">已下架</span>
+          <span v-if="parseInt(scope.row.status) === 1">进行中</span>
+          <span v-if="parseInt(scope.row.status) === 2" class="cblue">结束</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间">
         <template slot-scope="scope">
-          <!-- {{scope.row.createTime}} -->
+          {{scope.row.createTime}}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="225">
@@ -230,7 +227,9 @@ export default {
         // imgUrl 
         records.forEach((item, index) => {
           item.cover = this.imgUrl + item.cover
-          item.endTime = parseTime(item.endTime)
+          
+          item.startTime = item.startTime && parseTime(item.startTime)
+          item.createTime = parseTime(item.createTime)
         })
         this.tableData = records
         this.total = parseInt(total)

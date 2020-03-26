@@ -36,14 +36,9 @@
       <el-table-column label="商品" prop="title" />
       <el-table-column width="70" label="剩余数量">
         <template slot-scope="scope">
-          {{scope.row.minPrice | price}}
+          {{scope.row.stockSy}}
         </template>
       </el-table-column>
-      <el-table-column
-        width="70"
-        label="已售"
-        prop="stock"
-      />
       <el-table-column label="开始时间">
         <template slot-scope="scope">
           {{scope.row.startTime}}
@@ -60,7 +55,7 @@
       />
       <el-table-column width="100" label="已售价格(￥)" >
         <template slot-scope="scope">
-          <span>{{scope.row.cname}}</span>
+          <span>{{scope.row.salesAmount | price}}</span>
         </template>
       </el-table-column>
       <el-table-column width="70" label="状态">
@@ -74,6 +69,29 @@
       <el-table-column label="创建时间">
         <template slot-scope="scope">
           {{scope.row.createTime}}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="225">
+        <template slot-scope="scope">
+          <el-button
+            v-if="parseInt(scope.row.status) === 0"
+            size="mini"
+            @click="seckillIsOn(scope.row.id, scope.row.status)"
+          >上架</el-button>
+          <el-button
+            v-if="parseInt(scope.row.status) > 0"
+            size="mini"
+            @click="seckillIsOn(scope.row.id, scope.row.status)"
+          >下架</el-button>
+
+          <el-button
+            size="mini"
+            @click="handle(scope.row.id)"
+          >编辑</el-button>
+          <el-button
+            size="mini"
+            @click="deleteHandle(scope.row.id)"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,7 +111,7 @@
 <script>
 import goodsType from '@/components/goodsType'
 import datePicker from '@/components/datePicker'
-import { seckillList, isNewIndex, isOn, deleteGoods } from '@/api/actives'
+import { seckillList, isNewIndex, seckillIsOn, seckillIsDelete } from '@/api/actives'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
@@ -142,50 +160,14 @@ export default {
         })
       })
     },
-    beforeHandleCommand(command, num) {
-      return {
-        num: parseInt(num),
-        command
-      }
-    },
-    // 操作
-    handleCommand(command) {
-      console.log('command--', command)
-      const { num } = command
-      switch(num) {
-        case -1:
-          // 下架
-          console.log('下架')
-          this.goodsIsOn(command)
-          break
-        case 1:
-          // 上架
-          console.log('上架')
-          this.goodsIsOn(command)
-          break
-        case 2:
-          // 编辑
-          console.log('编辑')
-          this.handle(command.command.id)
-          break
-        case 0:
-          // 删除
-          console.log('删除')
-          this.deleteGood(command)
-          break
-        default:
-          console.log('error')
-      }
-    },
-    deleteGood(c) {
-      this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+    deleteHandle(id) {
+      this.$confirm('此操作将永久删除该秒杀商品, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         // 继续删除
-        const {id} = c.command
-        deleteGoods({id}).then(res => {
+        seckillIsDelete({id}).then(res => {
           this.$message({
             message: `删除成功！`,
             type: 'success'
@@ -205,14 +187,13 @@ export default {
       })
     },
     // 上下架
-    goodsIsOn(c) {
-      const {id, status} = c.command
+    seckillIsOn(id, status) {
       const text = parseInt(status) === 0 ? '上架' : '下架'
       const params = {
         id,
         status: parseInt(status) === 0 ? 1 : 0 // 1上架， 0下架
       }
-      isOn(params).then(res => {
+      seckillIsOn(params).then(res => {
         this.$message({
           message: `${text}, 成功！`,
           type: 'success'
@@ -274,7 +255,7 @@ export default {
     },
     handle(id) {
       this.$router.push({
-        path: '/shopping/productHandle',
+        path: '/actives/seckillHandle',
         query: {
           id: id
         }

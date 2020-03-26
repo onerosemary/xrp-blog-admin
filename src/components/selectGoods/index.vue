@@ -72,7 +72,7 @@ export default {
     data() {
         return {
             dialogVisible: false,
-            chooseImg: null, // 展示图片
+            chooseImg: '', // 展示图片
             goodOne: null, // 选中商品整个详情
             query: {
               cid: null,
@@ -114,6 +114,7 @@ export default {
         await this.getGoodsInfo(id)
         if(this.goodOne) {
           this.hidden()
+          console.log('this.goodOne---', this.goodOne)
           this.$emit('change', this.goodOne)
         }
       },

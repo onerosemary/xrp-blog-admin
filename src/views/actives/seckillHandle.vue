@@ -1,29 +1,32 @@
 <template>
   <div class="container">
     <div class="head-span">
-      <div class="head-span-title">拼团设置</div>
-      <p class="head-span-sub">{{queryId === -1 ? '添加拼团信息': '编辑拼团信息'}}</p>
+      <div class="head-span-title">秒杀设置</div>
+      <p class="head-span-sub">{{queryId === -1 ? '添加秒杀信息': '编辑秒杀信息'}}</p>
     </div>
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
-      <el-form-item label="选择拼团商品" prop="cover">
+      <el-form-item label="选择秒杀商品" prop="cover">
         <select-goods :cover="form.cover" @change="changeGood"></select-goods>
       </el-form-item>
       <div class="group-item">
-        <el-form-item label="开团人数" prop="needPeop">
-            <el-input v-model="form.needPeop" size="small" placeholder="请填写" />
-        </el-form-item>
-        <!-- <el-form-item label="开团结束时间" prop="endTime">
+        <el-form-item label="秒杀时间设置" prop="endTime">
             <el-date-picker
+              @change="changeTime"
               size="small"
-              v-model="form.endTime"
-              type="datetime"
-              placeholder="选择时间"
+              v-model="form.time"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
               value-format="yyyy-MM-dd HH:mm:ss"
-              :picker-options="pickerOptions"
               >
             </el-date-picker>
-        </el-form-item> -->
+            <!-- <el-input v-model="form.endTime" size="small" placeholder="请填写" /> -->
+        </el-form-item>
+        <el-form-item label="每人限购" prop="needPeop">
+            <el-input v-model="form.needPeop" size="small" placeholder="请填写" />
+        </el-form-item>
         <el-form-item label="已参加人数" prop="joinPeop">
             <el-input v-model="form.joinPeop" size="small" placeholder="请填写" />
         </el-form-item>
@@ -73,11 +76,12 @@ export default {
     }
     return {
       selectOne: null, // 选中的商品
+      time: null,
       form: {
         goodsId: '', // 商品id
         cover: '', // 商品封面
         needPeop: '', // 开团人数
-        // endTime: '', // 拼团开始时间
+        endTime: '', // 拼团开始时间
         joinPeop: '', // 已参数人数
         properties: [], // 商品规格
       },
@@ -127,13 +131,16 @@ export default {
     }
   },
   methods: {
+    changeTime() {
+        console.log(this.time)
+    },
     //  获取选中商品详情
     changeGood(data) {
       this.form.properties = [] //  初始化
       this.selectOne = data // 赋值
       
       // 封面赋值
-      this.form.cover = this.imgUrl + data.cover
+      this.form.cover = data.cover
       // 商品id
       this.form.goodsId = data.id
       
@@ -155,7 +162,7 @@ export default {
     //  获取拼团详情信息
     assembleDetails() {
       assembleDetails({assembleId: this.queryId}).then(res => {
-        const { id, goodsId, cover, needPeop, joinPeop, properties } = res.data
+        const { id, goodsId, cover, needPeop, endTime, joinPeop, properties } = res.data
         properties.forEach(item => { // 价格 单位 元
           item.oriPrice = item.oriPrice / 100
           item.price = item.price / 100
@@ -166,7 +173,7 @@ export default {
             goodsId: '', // 商品id
             cover: this.imgUrl  + cover, // 商品封面
             needPeop, // 开团人数
-            // endTime, // 拼团开始时间
+            endTime, // 拼团开始时间
             joinPeop, // 已参数人数
             properties, // 商品规格
         }
