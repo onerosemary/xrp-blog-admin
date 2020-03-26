@@ -35,6 +35,26 @@ export function assembleModify(data) {
     })
 }
 
+// 拼团列表删除
+export function assembleDelete(params) {
+    return request({
+        url: '/pc/assemble/delete',
+        method: 'get',
+        params
+    })
+}
+
+// 拼团列表上下架
+export function assembleUpdown(params) {
+    return request({
+        url: '/pc/assemble/updown',
+        method: 'get',
+        params
+    })
+}
+
+
+
 // 拼团详情
 export function assembleDetails(params) {
     return request({

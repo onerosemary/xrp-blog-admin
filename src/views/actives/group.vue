@@ -2,8 +2,9 @@
   <div class="container">
     <div class="handle-box">
       <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small">
-        <el-option label="进行中" value="1" />
-        <el-option label="已结束" value="0" />
+        <el-option label="全部" :value="null" />
+        <el-option label="进行中" :value="1" />
+        <el-option label="已结束" :value="0" />
       </el-select>
       <datePicker @change="datePickerChange"></datePicker>
       <el-input v-model="query.title" placeholder="商品名称" class="handle-input mr10" size="small" clearable @clear="getList" />
@@ -69,12 +70,12 @@
           <el-button
             v-if="parseInt(scope.row.status) === 0"
             size="mini"
-            @click="distributionIsOn(scope.row.id, scope.row.status)"
+            @click="assembleUpdown(scope.row.id, scope.row.status)"
           >上架</el-button>
           <el-button
             v-if="parseInt(scope.row.status) === 1"
             size="mini"
-            @click="distributionIsOn(scope.row.id, scope.row.status)"
+            @click="assembleUpdown(scope.row.id, scope.row.status)"
           >下架</el-button>
 
           <el-button
@@ -83,7 +84,7 @@
           >编辑</el-button>
           <el-button
             size="mini"
-            @click="deleteHandle(scope.row)"
+            @click="deleteHandle(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -103,7 +104,7 @@
 
 <script>
 import datePicker from '@/components/datePicker'
-import { assembleList, isNewIndex, isOn, deleteGoods } from '@/api/actives'
+import { assembleList, isNewIndex, isOn, assembleDelete, assembleUpdown } from '@/api/actives'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
@@ -111,7 +112,7 @@ export default {
     return {
       time: '',
       query: {
-        status: null,
+        status: '',
         startTime: null,
         endTime: null,
         title: null
@@ -151,57 +152,21 @@ export default {
         })
       })
     },
-    beforeHandleCommand(command, num) {
-      return {
-        num: parseInt(num),
-        command
-      }
-    },
-    // 操作
-    handleCommand(command) {
-      console.log('command--', command)
-      const { num } = command
-      switch(num) {
-        case -1:
-          // 下架
-          console.log('下架')
-          this.goodsIsOn(command)
-          break
-        case 1:
-          // 上架
-          console.log('上架')
-          this.goodsIsOn(command)
-          break
-        case 2:
-          // 编辑
-          console.log('编辑')
-          this.handle(command.command.id)
-          break
-        case 0:
-          // 删除
-          console.log('删除')
-          this.deleteGood(command)
-          break
-        default:
-          console.log('error')
-      }
-    },
-    deleteGood(c) {
-      this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+    deleteHandle(assembleId) {
+      this.$confirm('此操作将永久删除该拼团商品, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         // 继续删除
-        const {id} = c.command
-        deleteGoods({id}).then(res => {
+        assembleDelete({assembleId}).then(res => {
           this.$message({
             message: `删除成功！`,
             type: 'success'
           })
           // 删除当前 row
           this.tableData.forEach((item, index) => {
-            if(parseInt(item.id) === parseInt(id)){
+            if(parseInt(item.id) === parseInt(assembleId)){
               this.tableData.splice(index, 1)
             }
           })
@@ -214,20 +179,20 @@ export default {
       })
     },
     // 上下架
-    distributionIsOn(id, status) {
+    assembleUpdown(assembleId, status) {
       const text = parseInt(status) === 0 ? '上架' : '下架'
       const params = {
-        id,
+        assembleId,
         status: parseInt(status) === 0 ? 1 : 0 // 1上架， 0下架
       }
-      distributionUpdown(params).then(res => {
+      assembleUpdown(params).then(res => {
         this.$message({
           message: `${text}, 成功！`,
           type: 'success'
         })
         // 更新当前 row
         this.tableData.forEach((item, index) => {
-           if(parseInt(item.id) === parseInt(id)){
+           if(parseInt(item.id) === parseInt(assembleId)){
              this.$set(this.tableData[index], 'status', params.status)
            }
         })
