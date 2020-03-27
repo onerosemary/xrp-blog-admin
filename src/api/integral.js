@@ -53,3 +53,41 @@ export function deleteIntegral(params) {
         params
     })
 }
+
+// 积分等级管理
+
+// 积分日志列表
+export function logListIntegral(data) {
+    return request({
+        url: '/pc/points/details/list',
+        method: 'post',
+        data
+    })
+}
+
+// 积分等级添加
+export function mallAddIntegral(data) {
+    return request({
+        url: '/pc/points/details/add',
+        method: 'post',
+        data
+    })
+}
+
+// 积分等级编辑
+export function mallUpdateIntegral(data) {
+    return request({
+        url: '/pc/points/details/update',
+        method: 'post',
+        data
+    })
+}
+
+// 获取积分-等级规则设置
+export function mallGetInfoIntegral(params) {
+    return request({
+        url: '/pc/points/details/getInfo',
+        method: 'get',
+        params
+    })
+}

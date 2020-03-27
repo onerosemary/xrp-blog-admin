@@ -10,6 +10,7 @@
       <el-input v-model="query.title" placeholder="搜索积分商品" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
       <el-button type="primary" size="small" @click="handle(-1)">添加积分商品</el-button>
+      <el-button type="primary" size="small" @click="handle2">积分规则设置</el-button>
 
     </div>
     <el-table
@@ -226,6 +227,12 @@ export default {
         query: {
           id: id
         }
+      })
+    },
+    // 设置积分规则
+    handle2() {
+      this.$router.push({
+        path: '/integral/mallRuleHandle'
       })
     }
   }

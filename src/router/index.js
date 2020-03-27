@@ -196,12 +196,6 @@ export const constantRoutes = [
         name: 'Rebate',
         component: () => import('@/views/actives/rebate'),
         meta: { title: '返佣', icon: 'table' }
-      },
-      {
-        path: 'weal',
-        name: 'Weal',
-        component: () => import('@/views/actives/weal'),
-        meta: { title: '福利', icon: 'table' }
       }
     ]
   },
@@ -232,11 +226,11 @@ export const constantRoutes = [
         meta: { title: '积分日志', icon: 'table' }
       },
       {
-        path: 'logHandle',
-        name: 'logHandle',
+        path: 'mallRuleHandle',
+        name: 'mallRuleHandle',
         hidden: true,
-        component: () => import('@/views/integral/logHandle'),
-        meta: { title: '积分日志管理', icon: 'table' }
+        component: () => import('@/views/integral/mallRuleHandle'),
+        meta: { title: '积分规则设置', icon: 'table' }
       }
     ]
   },
