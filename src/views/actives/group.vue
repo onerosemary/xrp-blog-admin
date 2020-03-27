@@ -4,10 +4,10 @@
       <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small">
         <el-option label="全部" :value="null" />
         <el-option label="进行中" :value="1" />
-        <el-option label="已结束" :value="0" />
+        <el-option label="已结束" :value="2" />
       </el-select>
       <datePicker @change="datePickerChange"></datePicker>
-      <el-input v-model="query.title" placeholder="商品名称" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-input v-model="query.title" placeholder="拼团商品名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
       <el-button type="primary" size="small" @click="handle(-1)">添加拼团</el-button>
 

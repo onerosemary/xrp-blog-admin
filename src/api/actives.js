@@ -18,12 +18,39 @@ export function seckillIsDelete(params) {
     })
 }
 
+// 秒杀详情查询
+export function seckillIsGetInfo(params) {
+    return request({
+        url: '/pc/seckill/getInfo',
+        method: 'get',
+        params
+    })
+}
+
 // 秒杀上下架
 export function seckillIsOn(params) {
     return request({
         url: '/pc/seckill/isOn',
         method: 'get',
         params
+    })
+}
+
+// 秒杀添加
+export function seckillAdd(data) {
+    return request({
+        url: '/pc/seckill/add',
+        method: 'post',
+        data
+    })
+}
+
+// 秒杀编辑
+export function seckillUpdate(data) {
+    return request({
+        url: '/pc/seckill/update',
+        method: 'post',
+        data
     })
 }
 
