@@ -192,12 +192,6 @@ export const constantRoutes = [
         meta: { title: '分销', icon: 'table' }
       },
       {
-        path: 'integral',
-        name: 'Integral',
-        component: () => import('@/views/actives/integral'),
-        meta: { title: '积分', icon: 'table' }
-      },
-      {
         path: 'rebate',
         name: 'Rebate',
         component: () => import('@/views/actives/rebate'),
@@ -208,6 +202,41 @@ export const constantRoutes = [
         name: 'Weal',
         component: () => import('@/views/actives/weal'),
         meta: { title: '福利', icon: 'table' }
+      }
+    ]
+  },
+  {
+    path: '/integral',
+    component: Layout,
+    redirect: '/integral',
+    name: 'integral',
+    meta: { title: '积分管理', icon: 'example' },
+    children: [
+      {
+        path: 'mall',
+        name: 'mall',
+        component: () => import('@/views/integral/mall'),
+        meta: { title: '积分商城', icon: 'table' }
+      },
+      {
+        path: 'mallHandle',
+        name: 'mallHandle',
+        hidden: true,
+        component: () => import('@/views/integral/mallHandle'),
+        meta: { title: '积分商城管理', icon: 'table' }
+      },
+      {
+        path: 'log',
+        name: 'log',
+        component: () => import('@/views/integral/log'),
+        meta: { title: '积分日志', icon: 'table' }
+      },
+      {
+        path: 'logHandle',
+        name: 'logHandle',
+        hidden: true,
+        component: () => import('@/views/integral/logHandle'),
+        meta: { title: '积分日志管理', icon: 'table' }
       }
     ]
   },
