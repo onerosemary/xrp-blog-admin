@@ -143,7 +143,7 @@ export default {
     this.initMap()
     if(parseInt(this.queryId) !== -1 && this.isbendian !== 1){ // 编辑
       this.getCurrentStoreDetailInfo()
-    }else { // 本店 编辑
+    }else if(parseInt(this.queryId) !== -1 && this.isbendian === 1) { // 本店 编辑
       this.getbendianStoreDetailInfo()
     }    
   },

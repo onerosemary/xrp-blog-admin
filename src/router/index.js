@@ -160,6 +160,13 @@ export const constantRoutes = [
         meta: { title: '优惠卷', icon: 'table' }
       },
       {
+        path: 'discountHandle',
+        name: 'discountHandle',
+        hidden: true,
+        component: () => import('@/views/actives/discountHandle'),
+        meta: { title: '优惠卷管理', icon: 'dashboard' }
+      },
+      {
         path: 'group',
         name: 'Group',
         component: () => import('@/views/actives/group'),
@@ -190,6 +197,13 @@ export const constantRoutes = [
         name: 'Distribution',
         component: () => import('@/views/actives/distribution'),
         meta: { title: '分销', icon: 'table' }
+      },
+      {
+        path: 'distributionHandle',
+        name: 'distributionHandle',
+        hidden: true,
+        component: () => import('@/views/actives/distributionHandle'),
+        meta: { title: '分销管理', icon: 'dashboard' }
       },
       {
         path: 'rebate',

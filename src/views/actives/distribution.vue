@@ -287,7 +287,7 @@ export default {
     },
     handle(id) {
       this.$router.push({
-        path: '/shopping/productHandle',
+        path: '/actives/distributionHandle',
         query: {
           id: id
         }
