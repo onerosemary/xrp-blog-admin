@@ -86,27 +86,32 @@
           {{scope.row.payimeTime}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="180">
+      <el-table-column label="操作" width="280">
         <template slot-scope="scope">
           <!-- 退款完成 -->
           <el-button
-            v-if="parseInt(scope.row.status) === 8"
-            size="mini"
-            @click="handleDelete(scope.row.id)"
+          v-if="parseInt(scope.row.status) === 8"
+          size="mini"
+          @click="handleDelete(scope.row.id)"
           >删除</el-button>
           <!-- 已支付,待发货 -->
           <el-button
-            v-else-if="parseInt(scope.row.status) === 3"
-            size="mini"
-            @click="handle(scope.row.id)"
+          v-else-if="parseInt(scope.row.status) === 3"
+          size="mini"
+          @click="handle(scope.row.id)"
           >发货</el-button>
           <!-- 已完成(发货、使用) -->
           <el-button
-            v-else-if="parseInt(scope.row.status) === 4"
-            size="mini"
-            @click="handleDistribution(scope.row.id)"
+          v-else-if="parseInt(scope.row.status) === 4"
+          size="mini"
+          @click="handleDistribution(scope.row.id)"
           >关联分销</el-button>
-        </template>
+          <el-button
+          type="text"
+          size="mini"
+          @click="handleDetail(scope.row.id)"
+          >详情</el-button>
+      </template>
       </el-table-column>
     </el-table>
     <div class="pagination">
@@ -237,6 +242,15 @@ export default {
     handle(id) {
       this.$router.push({
         path: '/shopping/ordersHandleSend',
+        query: {
+          id: id
+        }
+      })
+    },
+    // 详情跳转
+    handleDetail(id) {
+      this.$router.push({
+        path: '/shopping/ordersDetail',
         query: {
           id: id
         }
