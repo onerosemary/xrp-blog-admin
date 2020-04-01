@@ -37,7 +37,11 @@
         width="70"
         label="已售"
         prop="totalCnt"
-      />
+      >
+        <template slot-scope="scope">
+          {{scope.row.totalCnt || 0}}
+        </template>
+      </el-table-column>
       <el-table-column label="开始时间">
         <template slot-scope="scope">
           {{scope.row.startTime}}
@@ -84,11 +88,11 @@
 
           <el-button
             size="mini"
-            @click="editorHandle(scope.row)"
+            @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
             size="mini"
-            @click="deleteHandle(scope.row)"
+            @click="distributionDelete(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -108,7 +112,7 @@
 
 <script>
 import datePicker from '@/components/datePicker'
-import { distributionList, distributionUpdown, isOn, deleteGoods } from '@/api/actives'
+import { distributionList, distributionUpdown, distributionDelete } from '@/api/actives'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
@@ -185,21 +189,20 @@ export default {
         case 0:
           // 删除
           console.log('删除')
-          this.deleteGood(command)
+          this.distributionDelete(command)
           break
         default:
           console.log('error')
       }
     },
-    deleteGood(c) {
+    distributionDelete(id) {
       this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         // 继续删除
-        const {id} = c.command
-        deleteGoods({id}).then(res => {
+        distributionDelete({id}).then(res => {
           this.$message({
             message: `删除成功！`,
             type: 'success'

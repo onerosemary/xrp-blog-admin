@@ -128,6 +128,40 @@ export function distributionUpdown(params) {
     })
 }
 
+// 分销删除
+export function distributionDelete(params) {
+    return request({
+        url: '/pc/dist/delete',
+        method: 'get',
+        params
+    })
+}
+
+// 分销添加
+export function distributionAdd(data) {
+    return request({
+        url: '/pc/dist/add',
+        method: 'post',
+        data
+    })
+}
+// 分销编辑
+export function distributionModify(data) {
+    return request({
+        url: '/pc/dist/modify',
+        method: 'post',
+        data
+    })
+}
+
+// 分销详情
+export function distributionDetail(params) {
+    return request({
+        url: '/pc/dist/detail',
+        method: 'get',
+        params
+    })
+}
 
 // 优惠劵列表
 export function discountList(data) {

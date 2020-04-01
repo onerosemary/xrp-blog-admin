@@ -25,20 +25,20 @@
             </el-date-picker>
         </el-form-item>
       </div>
-      <div class="group-property-item" v-if="form.seckillGoodsProperty.length > 0">
+      <div class="group-property-item" v-if="form.properties.length > 0">
         <ul class="group-property-title">
           <li class="w200">规格</li>
           <li class="w80">价格(￥)</li>
           <li class="w80">库存</li>
           <li class="w130">佣金(￥)</li>
         </ul>
-        <ul v-for="(item, index) in form.seckillGoodsProperty" :key="index">
+        <ul v-for="(item, index) in form.properties" :key="index">
           <li class="w200">{{item.name}}</li>
           <li class="w80">{{item.oriPrice}}</li>
           <li class="w80">{{item.stock}}</li>
           <li class="w130">
             <el-form-item 
-              :prop="'seckillGoodsProperty.' + index + '.price'"
+              :prop="'properties.' + index + '.price'"
               :rules="{
                 required: true, message: '不能为空', trigger: 'blur'
               }"
@@ -57,7 +57,7 @@
 </template>
 <script>
 import { getCategoryInfo } from '@/api/shopping'
-import { seckillAdd, seckillIsGetInfo, seckillUpdate } from '@/api/actives'
+import { distributionAdd, distributionDetail, distributionModify } from '@/api/actives'
 import selectGoods from '@/components/selectGoods'
 import { parseTime } from '@/utils/index'
 export default {
@@ -78,7 +78,8 @@ export default {
         endTime: '', // 结束时间
         goodsId: '', // 商品id
         cover: '', // 商品封面
-        seckillGoodsProperty: [], // 商品规格
+        properties: [], // 商品规格
+        title: '' // 商品名称
       },
       pickerOptions: {
           disabledDate(time) { // 禁止当前日期前一天
@@ -114,7 +115,7 @@ export default {
   },
   mounted() {
     if(parseInt(this.queryId) !== -1){ // 编辑
-      this.seckillIsGetInfo()
+      this.distributionDetail()
     }
   },
   computed: {
@@ -135,19 +136,20 @@ export default {
     },
     //  获取选中商品详情
     changeGood(data) {
-      this.form.seckillGoodsProperty = [] //  初始化
+      this.form.properties = [] //  初始化
       this.selectOne = data // 赋值
       
       // 封面赋值
       this.form.cover =this.imgUrl + data.cover
-      // 商品id
+      // 商品id/title
       this.form.goodsId = data.id
+      this.form.title = data.title
       
       // 组装后端需要商品规格的数据
-      const seckillGoodsProperty = []
+      const properties = []
       data.goodsPropertys.forEach(item => {
-        seckillGoodsProperty.push({
-          goodsId: data.id, //  商品id
+        properties.push({
+          // goodsId: data.id, //  商品id
           propertyId: item.id, // 商品规格id
           isShow: 1, // 是否参与分销 1-参与 0-未参与
           name: item.name,
@@ -156,15 +158,15 @@ export default {
         })
       })
 
-      this.form.seckillGoodsProperty = seckillGoodsProperty
+      this.form.properties = properties
     },
     //  获取拼团详情信息
-    seckillIsGetInfo() {
-      seckillIsGetInfo({id: this.queryId}).then(res => {
-        let { id, goodsId, cover, startTime, endTime, propertyVOS:seckillGoodsProperty } = res.data
-        seckillGoodsProperty.forEach(item => { // 价格 单位 元
+    distributionDetail() {
+      distributionDetail({distId: this.queryId}).then(res => {
+        let { id, goodsId, cover, startTime, endTime, properties } = res.data
+        properties.forEach(item => { // 价格 单位 元
           item.goodsId = goodsId
-          item.oriPrice = item.originalPrice / 100
+          item.oriPrice = item.oriPrice / 100
           item.price = item.price / 100
         })
         // 时间解析格式
@@ -179,7 +181,7 @@ export default {
             time: [startTime, endTime], // 秒杀时间
             startTime, // 开始时间
             endTime, // 结束时间
-            seckillGoodsProperty, // 商品规格
+            properties, // 商品规格
         }
       })
     },
@@ -189,32 +191,32 @@ export default {
 
         if (valid) {
           // 设置平团价格 单位 分
-          this.form.seckillGoodsProperty.forEach(item => {
+          this.form.properties.forEach(item => {
             item.oriPrice = item.oriPrice * 100
             item.price = item.price * 100
           })
 
           if(parseInt(this.queryId) === -1){ // 添加
             this.form.cover = this.selectOne && this.selectOne.cover // 重新赋值(没有url)
-            seckillAdd(this.form).then(res => {
+            distributionAdd(this.form).then(res => {
               this.$message({
-                message: '秒杀添加成功',
+                message: '分销添加成功',
                 type: 'success'
               })
             })
             this.$router.push({
-              path: '/actives/seckill'
+              path: '/actives/distribution'
             })
           }else { // 编辑
             this.form.cover = this.form.cover1 // 重新赋值(没有url)
-            seckillUpdate(this.form).then(res => {
+            distributionModify(this.form).then(res => {
               this.$message({
-                message: '秒杀编辑成功',
+                message: '分销编辑成功',
                 type: 'success'
               })
             })
             this.$router.push({
-              path: '/actives/seckill'
+              path: '/actives/distribution'
             })
           }
           

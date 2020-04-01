@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '瑞澜医美APP管理后台',
+  title: '瑞澜医美后台管理系统',
 
   /**
    * @type {boolean} true | false
