@@ -1,90 +1,63 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-select v-model="query.address" placeholder="地址" class="handle-select mr10" size="small">
-        <el-option key="1" label="广东省" value="广东省" />
-        <el-option key="2" label="湖南省" value="湖南省" />
+      <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small">
+        <el-option label="全部" :value="null" />
+        <el-option label="待审核" :value="1" />
+        <el-option label="已审核" :value="2" />
+        <el-option label="已审批" :value="3" />
       </el-select>
-      <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" />
-      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" size="small" @click="handleEdit">添加门店</el-button>
+      <datePicker @change="datePickerChange"></datePicker>
+      <el-input v-model="query.title" placeholder="商品名称" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
+
     </div>
     <el-table
       v-loading="loading"
       class="base-table"
       :data="tableData"
-      style="width: 100%"
+
     >
       <el-table-column
-        label="日期"
-        width="180"
+        label="序号"
+        width="50"
       >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      <el-table-column label="封面" width="100">
+          <template slot-scope="scope">
+            <img class="list-img" :src="scope.row.cover" />
+          </template>
+      </el-table-column>
+      <el-table-column label="商品" prop="title" />
+
+      <el-table-column label="价格(￥)">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{scope.row.orderAmount | price}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      <el-table-column label="数量" prop="goodsCnt" />
+      <el-table-column label="佣金(￥)">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{scope.row.distAmt | price}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      <el-table-column label="分销人" prop="customerPhone" />
+      <el-table-column label="创建人" prop="createName" />
+      <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <span v-if="parseInt(scope.row.status) === 1">待审核</span>
+          <span v-if="parseInt(scope.row.status) === 2">已审核</span>
+          <span v-if="parseInt(scope.row.status) === 3">已审批</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      <el-table-column label="审核人" prop="verifyName" />
+      <el-table-column label="审批人" prop="approveName" />
+      <el-table-column label="创建时间" width="150">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="姓名"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
-          >编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
-          >删除</el-button>
+          {{scope.row.createTime}}
         </template>
       </el-table-column>
     </el-table>
@@ -98,68 +71,89 @@
         @current-change="handleCurrentChange"
       />
     </div>
-
   </div>
 </template>
 
 <script>
+import datePicker from '@/components/datePicker'
+import { rebateList } from '@/api/actives'
+import { parseTime } from '@/utils'
 export default {
-  name: 'Product',
+  name: 'Rebate',
   data() {
     return {
+      time: '',
       query: {
-        address: '',
-        name: ''
+        status: '',
+        startTime: null,
+        endTime: null,
+        title: null
       },
-      currentPage: 1,
-      pageSize: 2,
-      total: 5,
+      currentPage: 1, // 当前页
+      pageSize: 5, // 每页显示条数
+      total: 0, // 总条数
       loading: false,
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
     }
   },
+  components: {
+    datePicker
+  },
+  created() {
+    this.getList()
+  },
   methods: {
+    // 选择日期
+    datePickerChange(time){
+      if(!!time){
+        const [startTime, endTime] = time
+        this.query.startTime = startTime + ' 00:00:00'
+        this.query.endTime = endTime + ' 23:59:59'
+      }else { // 为null
+        this.query.startTime = time
+        this.query.endTime = time
+      }
+      this.getList()
+    },
+    // 列表接口
+    getList() {
+      const {status, startTime, endTime, title} = this.query
+
+      const params = {
+        status: status,
+        startTime: startTime,
+        endTime: endTime,
+        title: title,
+        zbPage: {
+          current: this.currentPage,
+          size: this.pageSize
+        }
+
+      }
+      rebateList(params).then(res => {
+        const { records, total } = res.data
+        // imgUrl 
+        records.forEach((item, index) => {
+          item.cover = this.imgUrl + item.cover
+          item.createTime = parseTime(item.createTime)
+        })
+        this.tableData = records
+        this.total = parseInt(total)
+      })
+    },
     handleSearch() {
-      console.log('search')
+      this.getList()
     },
     handleCurrentChange(val) {
       this.currentPage = val
-    },
-    handleEdit(index, row) {
-      console.log(index, row)
-    },
-    handleDelete(index, row) {
-      console.log(index, row)
+      this.getList()
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-
-  .handle-box {
-      margin-bottom: 20px;
-  }
-  .handle-select {
-      width: 120px;
-  }
-  .handle-input {
-      width: 300px;
-      display: inline-block;
+  .el-dropdown-link{
+    cursor: pointer;
+    font-size: 12px;
   }
 </style>

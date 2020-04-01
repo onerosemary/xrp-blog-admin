@@ -225,3 +225,12 @@ export function discountOrder(params) {
         params
     })
 }
+
+// 返佣列表
+export function rebateList(data) {
+    return request({
+        url: '/pc/rake/list',
+        method: 'post',
+        data
+    })
+}
