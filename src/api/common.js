@@ -27,3 +27,13 @@ export function storeList(data) {
     data
   })
 }
+
+// 角色列表
+export function roleList(data) {
+  return request({
+    url: '/pc/role/list',
+    method: 'post',
+    data
+  })
+}
+

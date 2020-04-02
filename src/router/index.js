@@ -281,6 +281,13 @@ export const constantRoutes = [
         name: 'SystemList',
         component: () => import('@/views/system/systemList'),
         meta: { title: '系统用户列表', icon: 'table' }
+      },
+      {
+        path: 'systemHandle',
+        name: 'systemHandle',
+        hidden: true,
+        component: () => import('@/views/system/systemHandle'),
+        meta: { title: '系统用户操作', icon: 'table' }
       }
     ]
   },

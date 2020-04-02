@@ -1,0 +1,66 @@
+<template>
+    <div class="store-type">
+        <el-select v-model="value" placeholder="角色" class="handle-select mr10" size="small" @change="change">
+            <el-option v-for="(item, index) in dataList" :key="index" :label="item.name" :value="item.id" />
+        </el-select>
+    </div>
+</template>
+<script>
+import { roleList } from '@/api/common'
+export default {
+    data() {
+        return {
+            value: null,
+            dataList: []
+        }
+    },
+    props: {
+        cid: {
+            type: String,
+            default: () => ''
+        },
+        all: { // 是否显示全部
+            type: Boolean,
+            default: true
+        }
+    },
+    watch: {
+        cid(val){
+            if(val){
+                this.value = parseInt(val)
+            }
+        }
+    },
+    mounted () {
+        this.getList()
+    },
+    methods: {
+        getList() {
+            const data = {
+                name: '',
+                zbPage: {
+                    current: 1,
+                    size: 10000
+                }
+            }
+            roleList(data).then(res => {
+                if(this.all) {
+                    res.data.records.unshift({
+                        id: null,
+                        name: '全部'
+                    })
+                }
+                this.dataList = res.data.records
+            })
+        },
+        change() {
+            this.$emit('change', this.value)
+        }
+    }
+}
+</script>
+<style lang="scss" scoped>
+    .store-type{
+        display: inline-block;
+    }
+</style>

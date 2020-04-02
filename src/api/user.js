@@ -8,6 +8,7 @@ export function login(params) {
   })
 }
 
+// 获取登录人信息
 export function getInfo() {
   return request({
     url: '/pc/user/getLoginUserInfo',
@@ -15,3 +16,10 @@ export function getInfo() {
   })
 }
 
+// 修改登录人密码
+export function updatePwd() {
+  return request({
+    url: '/pc/user/updatePwd',
+    method: 'get'
+  })
+}
