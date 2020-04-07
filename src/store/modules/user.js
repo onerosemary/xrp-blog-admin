@@ -1,12 +1,18 @@
 import { login, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { generaMenu } from '@/utils/index'
+
+import router from '@/router'
 import { resetRouter } from '@/router'
+
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    companyId: ''
+    companyId: '',
+    routers: [], // 动态路由
+    permissionBtns: [], // 动态按钮权限
   }
 }
 
@@ -24,6 +30,12 @@ const mutations = {
   },
   SET_COMPANYID: (state, companyId) => {
     state.companyId = companyId
+  },
+  SET_ROUTERS: (state, routers) => {
+    state.routers = routers
+  },
+  SETPERMISSIONBTNS: (state, myPermissionBtns) => {
+    state.permissionBtns = myPermissionBtns
   }
 }
 
@@ -48,8 +60,21 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
         const { data } = response
-        const { name, companyId } = data
+        const { name, companyId, roleDetail } = data
 
+        let routers = []
+        // 组装路由数据
+        generaMenu(routers, roleDetail.resourceList).then(data => {
+          const {myrouters, myPermissionBtns} = data
+          console.log('myPermissionBtns---', myPermissionBtns)
+          routers = myrouters
+          commit ('SETPERMISSIONBTNS', myPermissionBtns) // 动态按钮权限存储vuex中
+        }).catch(err => {
+          console.log('err---', err)
+        })
+        commit('SET_ROUTERS', routers) // 动态路由存储vuex中
+        
+ 
         commit('SET_NAME', name)
         commit('SET_COMPANYID', companyId)
         resolve(data)
@@ -63,7 +88,7 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       removeToken() // must remove  token  first
-      resetRouter()
+      resetRouter([])
       commit('RESET_STATE')
       resolve()
     })

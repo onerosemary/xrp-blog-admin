@@ -25,6 +25,25 @@ Vue.filter('price', (value) => {
   return val
 })
 
+// 通过指令判断按钮是否有权限
+Vue.directive('has', {
+  inserted: function(el, binding) {
+    if(!permissionJudge(binding.value)){
+      el.parentNode.removeChild(el)
+    }
+    function permissionJudge(value) {
+      // 此处store.getters.dynPermissionBtns代表vuex中储存的按钮菜单数据
+      let list = store.getters.dynPermissionBtns
+      for (let item of list) {
+        if (item.value === value) {
+          return true
+        }
+      }
+      return false
+    }
+  }
+})
+
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明

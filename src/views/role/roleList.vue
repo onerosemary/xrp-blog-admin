@@ -1,89 +1,48 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-select v-model="query.address" placeholder="地址" class="handle-select mr10" size="small">
-        <el-option key="1" label="广东省" value="广东省" />
-        <el-option key="2" label="湖南省" value="湖南省" />
-      </el-select>
-      <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" />
-      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" size="small" @click="handleEdit">添加门店</el-button>
+      <el-input v-model="query.name" placeholder="角色" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
+      <el-button type="primary" size="small" @click="handle(-1)">添加角色</el-button>
     </div>
     <el-table
       v-loading="loading"
       class="base-table"
       :data="tableData"
-      style="width: 100%"
+
     >
       <el-table-column
-        label="日期"
-        width="180"
+        label="序号"
+        width="50"
       >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      <el-table-column label="角色" prop="name" />
+
+      <el-table-column label="备注">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{scope.row.companyName}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
+      
+      <el-table-column label="创建时间">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{scope.row.createTime}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="姓名"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button
+            v-if="scope.row.companyId !== 0"
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
             size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            v-if="scope.row.companyId !== 0"
+            @click="deleteHandle(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -98,68 +57,101 @@
         @current-change="handleCurrentChange"
       />
     </div>
-
   </div>
 </template>
 
 <script>
+import { list, delete1 } from '@/api/role'
+import { parseTime } from '@/utils'
 export default {
-  name: 'Category',
+  name: 'Rebate',
   data() {
     return {
       query: {
-        address: '',
-        name: ''
+        name: null
       },
-      currentPage: 1,
-      pageSize: 2,
-      total: 5,
+      currentPage: 1, // 当前页
+      pageSize: 5, // 每页显示条数
+      total: 0, // 总条数
       loading: false,
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
     }
   },
+  components: {
+
+  },
+  created() {
+    this.getList()
+  },
   methods: {
+    // 列表接口
+    getList() {
+      const {name} = this.query
+
+      const params = {
+        name,
+        zbPage: {
+          current: this.currentPage,
+          size: this.pageSize
+        }
+
+      }
+      list(params).then(res => {
+        const { records, total } = res.data
+        records.forEach((item, index) => {
+          item.createTime = parseTime(item.createTime)
+        })
+        this.tableData = records
+        this.total = parseInt(total)
+      })
+    },
     handleSearch() {
-      console.log('search')
+      this.getList()
     },
     handleCurrentChange(val) {
       this.currentPage = val
+      this.getList()
     },
-    handleEdit(index, row) {
-      console.log(index, row)
+    deleteHandle(roleId) {
+      this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 继续删除
+        delete1({roleId}).then(res => {
+          this.$message({
+            message: `删除成功！`,
+            type: 'success'
+          })
+          // 删除当前 row
+          this.tableData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(roleId)){
+              this.tableData.splice(index, 1)
+            }
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })       
+      })
     },
-    handleDelete(index, row) {
-      console.log(index, row)
+    handle(id) {
+      this.$router.push({
+        path: '/role/roleHandle',
+        query: {
+          id: id
+        }
+      })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-
-  .handle-box {
-      margin-bottom: 20px;
-  }
-  .handle-select {
-      width: 120px;
-  }
-  .handle-input {
-      width: 300px;
-      display: inline-block;
+  .el-dropdown-link{
+    cursor: pointer;
+    font-size: 12px;
   }
 </style>

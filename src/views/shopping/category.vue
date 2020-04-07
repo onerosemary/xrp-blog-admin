@@ -3,7 +3,7 @@
     <div class="handle-box">
       <el-input v-model="query.name" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加商品分类</el-button>
+      <el-button v-has="'categoryAdd'" type="primary" size="small" @click="handle(-1)">添加商品分类</el-button>
 
     </div>
     <el-table
@@ -47,10 +47,12 @@
             @click="categoryorder(scope.row)"
           >修改顺序</el-button>
           <el-button
+            v-has="'categoryUpdate'"
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
+            v-has="'categoryDelete'"
             size="mini"
             @click="categorydelete(scope.row.id)"
           >删除</el-button>

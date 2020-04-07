@@ -37,3 +37,11 @@ export function roleList(data) {
   })
 }
 
+// 获取资源数据(角色配置tree)
+export function getTree(params) {
+  return request({
+    url: '/pc/resource/getTree',
+    method: 'get',
+    params
+  })
+}

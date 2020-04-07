@@ -3,7 +3,7 @@
     <div class="handle-box">
       <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加门店</el-button>
+      <el-button v-has="'storeAdd'" type="primary" size="small" @click="handle(-1)">添加门店</el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -41,11 +41,14 @@
       <el-table-column label="地址" prop="address" />
       <el-table-column label="操作" width="180" v-if="$store.getters.companyId === 1">
         <template slot-scope="scope">
+
           <el-button
+            v-has="'storeUpdate'"
             size="mini"
             @click="handle(scope.row.id, scope.row.id === $store.getters.companyId)"
           >编辑</el-button>
           <el-button
+            v-has="'storeDelete'"
             size="mini"
             type="danger"
             v-if="scope.row.id !== $store.getters.companyId"
