@@ -1,89 +1,117 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-select v-model="query.address" placeholder="地址" class="handle-select mr10" size="small">
-        <el-option key="1" label="广东省" value="广东省" />
-        <el-option key="2" label="湖南省" value="湖南省" />
+      <!-- 注册门店 -->
+      <store-list @changeRegister="changeRegister" :type="0"></store-list>
+      <!-- 消费门店 -->
+      <store-list @change="storeListChange"></store-list>
+      <el-select v-model="query.level" placeholder="等级" @change="getList" class="handle-select mr10" size="small">
+        <el-option label="全部" :value="null" />
+        <el-option label="Lv 1" :value="1" />
+        <el-option label="Lv 2" :value="2" />
+        <el-option label="Lv 3" :value="3" />
       </el-select>
-      <el-input v-model="query.name" placeholder="门店名" class="handle-input mr10" size="small" />
-      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" size="small" @click="handleEdit">添加门店</el-button>
+      <el-select v-model="query.identity" placeholder="身份" @change="getList" class="handle-select mr10" size="small">
+        <el-option label="全部" :value="null" />
+        <el-option label="客户" :value="0" />
+        <el-option label="合伙人" :value="1" />
+      </el-select>
+      <datePicker @change="datePickerChange"></datePicker>
+
+      <el-input v-model="query.name" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
+      <el-button type="primary" size="small">清空所有积分</el-button>
+
     </div>
     <el-table
       v-loading="loading"
       class="base-table"
       :data="tableData"
-      style="width: 100%"
+
     >
       <el-table-column
-        label="日期"
-        width="180"
+        label="序号"
+        width="50"
       >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
+      </el-table-column>
+      <el-table-column label="金额(￥)" width="80">
+          <template slot-scope="scope">
+            {{scope.row.couponPrice | price}}
+          </template>
+      </el-table-column>
+      <el-table-column label="名称" prop="title" />
+      <el-table-column label="类型">
+          <template slot-scope="scope">
+            <span v-if="parseInt(scope.row.couponType) === 1">商品优惠券</span>
+            <span v-if="parseInt(scope.row.couponType) === 2">无门槛抵扣券</span>
+            <span v-if="parseInt(scope.row.couponType) === 3">满减券</span>
+            <span v-if="parseInt(scope.row.couponType) === 4">现金红包</span>
+          </template>
+      </el-table-column>
+      <el-table-column label="内容" prop="name">
+        <template slot-scope="scope">
+          <span v-if="parseInt(scope.row.couponType) === 1">{{scope.row.goodsName}}</span>
+          <span v-if="parseInt(scope.row.couponType) === 2">无门槛抵扣券</span>
+          <span v-if="parseInt(scope.row.couponType) === 3">满{{scope.row.minPrice | price}}减{{scope.row.couponPrice | price}}</span>
+          <span v-if="parseInt(scope.row.couponType) === 4">现金红包</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="已领/总数量">
+          <template slot-scope="scope">
+            {{scope.row.receivedNumber || 0}}/{{scope.row.stock}}
+          </template>
+      </el-table-column>
+      <el-table-column label="创建时间">
+          <template slot-scope="scope">
+            {{scope.row.createTime}}
+          </template>
+      </el-table-column>
+      <el-table-column label="状态" width="60">
+          <template slot-scope="scope">
+            {{parseInt(scope.row.status) === 0 ? '下架' : '上架'}}
+          </template>
       </el-table-column>
       <el-table-column
-        label="日期"
-        width="180"
+        label="顺序"
+        width="150"
       >
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+          <div v-if="orderIndex === scope.row.id" class="sort-box">
+            <el-input v-model="orderValue" placeholder="请输入内容"></el-input>
+            <el-button type="text" @click="saveOrder">保存</el-button>
+            <el-button type="text" class="order-cancel" @click="orderCancel">取消</el-button>
+          </div>
+          <div v-else>
+            {{scope.row.indexNumber}}
+          </div>
         </template>
       </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="日期"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="姓名"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
-            <p>姓名: {{ scope.row.name }}</p>
-            <p>住址: {{ scope.row.address }}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.name }}</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="330">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="discountOrder(scope.row)"
+          >修改顺序</el-button>
+          <el-button
+            v-if="scope.row.status === 0"
+            size="mini"
+            @click="discountUpdown(scope.row.id, scope.row.status)"
+          >上架</el-button>
+          <el-button
+            v-if="scope.row.status === 1"
+            size="mini"
+            @click="discountUpdown(scope.row.id, scope.row.status)"
+          >下架</el-button>
+          <el-button
+            size="mini"
+            @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
             size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="discountDelete(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -98,68 +126,204 @@
         @current-change="handleCurrentChange"
       />
     </div>
-
   </div>
 </template>
 
 <script>
+import storeList from '@/components/storeList'
+import datePicker from '@/components/datePicker'
+import { discountList, discountOrder, discountIsOn, discountDelete } from '@/api/actives'
+import { parseTime } from '@/utils'
 export default {
-  name: 'Product',
+  name: 'Store',
   data() {
     return {
+      orderIndex: -1, // 排序索引
+      orderValue: '', // 排序绑定order
+      time: '',
       query: {
-        address: '',
-        name: ''
+        companyId: null, // 注册门店id
+        saleCompanyId: null, // 消费门店id
+        identity: '', // 身份
+        level: '', // 等级
+        name: null, // 搜索
+        startTime: null,
+        endTime: null
       },
-      currentPage: 1,
-      pageSize: 2,
-      total: 5,
+      currentPage: 1, // 当前页
+      pageSize: 10, // 每页显示条数
+      total: 0, // 总条数
       loading: false,
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
     }
   },
+  components: {
+    storeList,
+    datePicker
+  },
+  created() {
+    this.getList()
+  },
   methods: {
+    // 获取选择消费门店
+    storeListChange(id) {
+      this.query.companyId = id
+      this.getList()
+    },
+    // 获取选择注册门店
+    changeRegister(id) {
+      this.query.companyId = id
+      this.getList()
+    },
+    // 排序修改
+    discountOrder(row) {
+      const {id, indexNumber} = row
+      this.orderIndex = id // 索引显示
+      this.orderValue = indexNumber // 文本赋值      
+    },
+    // 保存排序
+    saveOrder() {
+      const data = {
+        id: this.orderIndex,
+        indexNumber: this.orderValue
+      }
+      discountOrder(data).then(res => {
+        this.$message({
+          message: `修改顺序成功！`,
+          type: 'success'
+        })
+        this.orderIndex = -1 // 重置
+        this.getList()
+      })
+    },
+    // 上下架
+    discountUpdown(id, status) {
+      const text = parseInt(status) === 0 ? '上架' : '下架'
+      const params = {
+        id,
+        status: parseInt(status) === 0 ? 1 : 0 // 1上架， 0下架
+      }
+      discountIsOn(params).then(res => {
+        this.$message({
+          message: `${text}, 成功！`,
+          type: 'success'
+        })
+        // 更新当前 row
+        this.tableData.forEach((item, index) => {
+           if(parseInt(item.id) === parseInt(id)){
+             this.$set(this.tableData[index], 'status', params.status)
+           }
+        })
+      })
+    },
+    // 取消排序
+    orderCancel() {
+      this.orderIndex = -1
+    },
+    discountDelete(id) {
+      this.$confirm('此操作将永久删除该商品分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 继续删除
+        discountDelete({id}).then(res => {
+          this.$message({
+            message: `删除成功！`,
+            type: 'success'
+          })
+          // 删除当前 row
+          this.tableData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(id)){
+              this.tableData.splice(index, 1)
+            }
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })       
+      })
+    },
+    // 选择日期
+    datePickerChange(time){
+      if(!!time){
+        const [startTime, endTime] = time
+        this.query.startTime = startTime + ' 00:00:00'
+        this.query.endTime = endTime + ' 23:59:59'
+      }else { // 为null
+        this.query.startTime = time
+        this.query.endTime = time
+      }
+      this.getList()
+    },
+    // 列表接口
+    getList() {
+      const {title, status, type, startTime, endTime,} = this.query
+      const params = {
+        type,
+        status,
+        title,
+        startTime,
+        endTime,
+        zbPage: {
+          current: this.currentPage,
+          size: this.pageSize
+        }
+      }
+      discountList(params).then(res => {
+        const { records, total } = res.data
+        // imgUrl 
+        records.forEach((item, index) => {
+          item.createTime = item.createTime && parseTime(item.createTime)
+        })
+        this.tableData = records
+        this.total = parseInt(total)
+      })
+    },
     handleSearch() {
-      console.log('search')
+      this.getList()
     },
     handleCurrentChange(val) {
       this.currentPage = val
+      this.getList()
     },
-    handleEdit(index, row) {
-      console.log(index, row)
-    },
-    handleDelete(index, row) {
-      console.log(index, row)
+    // 添加/编辑 跳转
+    handle(id) {
+      this.$router.push({
+        path: '/actives/discountHandle',
+        query: {
+          id: id
+        }
+      })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-
-  .handle-box {
-      margin-bottom: 20px;
+  .el-dropdown-link{
+    cursor: pointer;
+    font-size: 12px;
   }
-  .handle-select {
-      width: 120px;
-  }
-  .handle-input {
-      width: 300px;
-      display: inline-block;
+  .sort-box{
+    display: flex; 
+    align-items: center;
+    /deep/ .el-input{
+      width: 100px;
+      margin-right: 8px;
+    }
+    /deep/.el-input__inner{
+      width: 50px;
+      line-height: 30px;
+      height: 30px;
+      font-size: 12px;
+    }
+    /deep/.el-button--text{
+      font-size: 13px;
+    }
+    .order-cancel{
+      color: #999;
+    }
   }
 </style>

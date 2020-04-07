@@ -262,9 +262,9 @@ export const constantRoutes = [
     meta: { title: '角色管理', icon: 'example' },
     children: [
       {
-        path: 'roleList',
-        name: 'RoleList',
-        component: () => import('@/views/role/roleList'),
+        path: 'role',
+        name: 'role',
+        component: () => import('@/views/role/index'),
         meta: { title: '角色列表', icon: 'table' }
       },
       {
@@ -284,9 +284,9 @@ export const constantRoutes = [
     meta: { title: '系统用户', icon: 'example' },
     children: [
       {
-        path: 'systemList',
-        name: 'SystemList',
-        component: () => import('@/views/system/systemList'),
+        path: 'system',
+        name: 'system',
+        component: () => import('@/views/system/index'),
         meta: { title: '系统用户列表', icon: 'table' }
       },
       {
@@ -297,6 +297,17 @@ export const constantRoutes = [
         meta: { title: '系统用户操作', icon: 'table' }
       }
     ]
+  },
+  { // 新增
+    path: '/systemLog',
+    component: Layout,
+    redirect: '/systemLog',
+    children: [{
+      path: 'systemLog',
+      name: 'systemLog',
+      component: () => import('@/views/systemLog/index'),
+      meta: { title: '系统日志', icon: 'dashboard' }
+    }]
   },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

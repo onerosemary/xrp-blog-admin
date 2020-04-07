@@ -1,6 +1,6 @@
 <template>
     <div class="store-type">
-        <el-select v-model="value" placeholder="消费门店" class="handle-select mr10" size="small" @change="change">
+        <el-select v-model="value" :placeholder=" type ?'消费门店' : '注册门店'" class="handle-select mr10" size="small" @change="change">
             <el-option v-for="(item, index) in dataList" :key="index" :label="item.name" :value="item.id" />
         </el-select>
     </div>
@@ -18,6 +18,10 @@ export default {
         cid: {
             type: String,
             default: () => ''
+        },
+        type: { // 1是默认的 消费门店, 0是注册门店
+            type: Number,
+            default: () => 1
         }
     },
     watch: {
@@ -40,11 +44,20 @@ export default {
                 }
             }
             storeList(data).then(res => {
+                // res.data.records.unshift({
+                //     id: null,
+                //     name: '全部'
+                // })
                 this.dataList = res.data.records
             })
         },
         change() {
-            this.$emit('change', this.value)
+            if(this.type) { // 消费门店 1
+                this.$emit('change', this.value)
+            }else { // 注册门店 0
+                this.$emit('changeRegister', this.value)
+            }
+            
         }
     }
 }

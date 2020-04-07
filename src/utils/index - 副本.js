@@ -1,9 +1,4 @@
-/**
- * Created by PanJiaChen on 16/11/18.
- */
-/* Layout */
 import Layout from '@/layout'
-const importRouter = require('@/router/import_router')
 
 /**
  * Parse the time to string
@@ -123,40 +118,55 @@ export function debounce(fn, delay) {
 }
 
 // 组装动态路由
+let myPermissionBtns = []
 export function generaMenu (routers, data) {
   return new Promise((resolve, reject) => {
-    const arr = generaFn(routers, data)
-    resolve(arr)
+    const myrouters = generaFn(routers, data)
+    resolve({
+      myrouters,
+      myPermissionBtns
+    })
   })
 }
-// 递归
+// 递归组装路由
 function generaFn(routers, data) {
   data.forEach((item) => {
     if(item.type !== 1) { // 排除按钮
-      const comp = item.value === '/' ? 'dashboard' : item.value.replace('/', '')
+      const comp = item.value === '/' ? '/dashboard' : ('/' + item.value)
       let childrenOne = [{
         path: item.value === '/' ? 'dashboard' : item.value,
-        component: () => import(`@/views/${comp}/index.vue`), // 报错 https://blog.csdn.net/weixin_42406046/article/details/103718293
-        // component: importRouter(`${item.value === '/' ? 'dashboard' : item.value.replace('/', '')}/index`),
-        // component: resolve => require([resolve => require(['@/views/'+ comp +'/index'], resolve)], resolve),
+        name: item.value === '/' ? 'dashboard' : item.value,
+        component: () => import(`@/views${comp}/index.vue`), // (注意坑)(当前解决方案, 指定版本 "babel-eslint": "^7.2.3",)报错 https://blog.csdn.net/weixin_42406046/article/details/103718293
         meta: { title: item.name, icon: 'example' }
       }]
-      let redirectOne = item.value === '/' ? '/dashboard' : item.value
-      let menu = {
-        path: item.value,
-        component: item.type === 0 &&  item.level === 1 ? Layout : () => import(`@/views${item.value}.vue`),
-        // component: item.type === 0 &&  item.level === 1 ? Layout : resolve => require([resolve => require([`@/views${item.value}`], resolve)], resolve),
-        // component: item.type === 0 &&  item.level === 1 ? Layout : importRouter(item.value),
-        redirect: item.level === 1 ? redirectOne : '',
-        name: item.name,
-        meta: { title: item.name, icon: 'example' },
-        children: item.type === 0 &&  item.level === 1 ? childrenOne : []
+      let redirectOne = item.value === '/' ? '/dashboard' : ('/' + item.value)
+      let menu = {}
+      if(item.type === 0 &&  item.level === 1) { // 一级菜单
+        menu = {
+          path: item.value === '/' ? item.value : ('/' + item.value),
+          component: Layout,
+          redirect: redirectOne,
+          name: item.value === '/' ? 'dashboard' : item.value,
+          meta: { title: item.name, icon: 'example' },
+          children: !item.isNext ? childrenOne : [] // 判断一级单独的一级菜单(主要避免有二级的菜单，没有选列表，只选择 二级菜单 比如添加按钮)
+        }
+      }else { // 二级菜单
+        menu = {
+          path: ('/' + item.value),
+          component: () => import(`@/views/${item.value}.vue`),
+          name: item.value,
+          meta: { title: item.name, icon: 'example' },
+          children: []
+        }
       }
+      
       if (item.childMenus) {
         let arr = generaFn(menu.children, item.childMenus)
         menu.children = arr
       }
       routers.push(menu)
+    }else { // 收集所有权限按钮
+      myPermissionBtns.push(item)
     }
     
   })

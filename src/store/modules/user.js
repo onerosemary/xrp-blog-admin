@@ -1,6 +1,7 @@
 import { login, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { generaMenu } from '@/utils/index'
+import _ from 'lodash'
 
 import router from '@/router'
 import { resetRouter } from '@/router'
@@ -66,9 +67,9 @@ const actions = {
         // 组装路由数据
         generaMenu(routers, roleDetail.resourceList).then(data => {
           const {myrouters, myPermissionBtns} = data
-          console.log('myPermissionBtns---', myPermissionBtns)
+          console.log('myPermissionBtns---', _.uniq(myPermissionBtns))
           routers = myrouters
-          commit ('SETPERMISSIONBTNS', myPermissionBtns) // 动态按钮权限存储vuex中
+          commit ('SETPERMISSIONBTNS',  _.uniq(myPermissionBtns)) // 动态按钮权限存储vuex中
         }).catch(err => {
           console.log('err---', err)
         })
