@@ -7,29 +7,6 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 export const constantRoutes = [
-  
-  {
-    path: '/role',
-    component: Layout,
-    redirect: '/role',
-    name: 'role',
-    meta: { title: '角色管理', icon: 'example' },
-    children: [
-      {
-        path: 'roleList',
-        name: 'RoleList',
-        component: () => import('@/views/role/roleList'),
-        meta: { title: '角色列表', icon: 'table' }
-      },
-      {
-        path: 'roleHandle',
-        name: 'roleHandle',
-        hidden: true,
-        component: () => import('@/views/role/roleHandle'),
-        meta: { title: '角色操作', icon: 'table' }
-      }
-    ]
-  },
   {
     path: '/login',
     component: () => import('@/views/login/index'),
