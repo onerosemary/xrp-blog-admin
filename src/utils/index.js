@@ -131,7 +131,8 @@ export function generaMenu (routers, data) {
 }
 // 递归组装路由
 function generaFn(routers, data) {
-  data.forEach((item) => {
+  data.forEach((item, index) => {
+
       const comp = item.value === '/' ? '/dashboard' : ('/' + item.value)
       let childrenOne = [{
         path: item.value === '/' ? 'dashboard' : item.value,
@@ -150,6 +151,7 @@ function generaFn(routers, data) {
           meta: { title: item.name, icon: 'example' },
           children: !item.isNext ? childrenOne : [] // 判断一级单独的一级菜单(主要避免有二级的菜单，没有选列表，只选择 二级菜单 比如添加按钮)
         }
+
       }else if(item.type === 0 &&  item.level === 2) { // 二级菜单
         menu = {
           path: ('/' + item.value),
@@ -158,6 +160,7 @@ function generaFn(routers, data) {
           meta: { title: item.name, icon: 'example' },
           children: []
         }
+        
       }else if(item.type === 1) { // 按钮
         if(item.path) { // 只针对 添加与编辑， 删除，排序等排除
           menu = {
@@ -174,19 +177,16 @@ function generaFn(routers, data) {
         myPermissionBtns.push(item)
       }
       
+      
       if (item.childMenus) {
         let arr = generaFn(menu.children, item.childMenus)
+
         menu.children = arr
       }
-
       // (坑)排除 按钮 可能是 空对象， 会添加到children
       if(menu.path) {
         routers.push(menu)
       }
-      
-    // else { // 收集所有权限按钮
-    //   myPermissionBtns.push(item)
-    // }
     
   })
   return routers
