@@ -28,17 +28,17 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  // {
-  //   path: '/systemLog',
-  //   component: Layout,
-  //   redirect: '/systemLog',
-  //   children: [{
-  //     path: 'systemLog',
-  //     name: 'systemLog',
-  //     component: () => import('@/views/systemLog/index'),
-  //     meta: { title: '系统日志', icon: 'dashboard' }
-  //   }]
-  // },
+  {
+    path: '/systemLog',
+    component: Layout,
+    redirect: '/systemLog',
+    children: [{
+      path: 'systemLog',
+      name: 'systemLog',
+      component: () => import('@/views/systemLog/index'),
+      meta: { title: '系统日志', icon: 'dashboard' }
+    }]
+  },
   {
     path: '/login',
     component: () => import('@/views/login/index'),
