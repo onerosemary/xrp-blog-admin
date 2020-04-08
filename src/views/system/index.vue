@@ -4,7 +4,7 @@
       <role-list @change="changeRole"></role-list>
       <el-input v-model="query.name" placeholder="账号" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加用户</el-button>
+      <el-button v-has="'systemAdd'" type="primary" size="small" @click="handle(-1)">添加用户</el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -42,10 +42,12 @@
       <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button
+            v-has="'systemUpdate'"
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
+            v-has="'systemDelete'"
             size="mini"
             @click="deleteHandle(scope.row.id)"
           >删除</el-button>

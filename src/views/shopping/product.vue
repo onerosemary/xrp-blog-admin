@@ -10,7 +10,7 @@
       <datePicker @change="datePickerChange"></datePicker>
       <el-input v-model="query.title" placeholder="搜索商品" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加商品</el-button>
+      <el-button type="primary" v-has="'productAdd'" size="small" @click="handle(-1)">添加商品</el-button>
 
     </div>
     <el-table
@@ -68,11 +68,13 @@
       <el-table-column label="操作" width="180">
         <template slot-scope="scope">
           <el-button
+            v-has="'productShow'"
             v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 0"
             size="mini"
             @click="recommendIndex(scope.row)"
           >推荐首页</el-button>
           <el-button
+            v-has="'productShow'"
             v-if="parseInt(scope.row.status) === 1 && parseInt(scope.row.isNew) === 1"
             size="mini"
             @click="recommendIndex(scope.row)"
@@ -82,10 +84,10 @@
               更多<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown" class="dropdow-css">
-              <el-dropdown-item v-if="parseInt(scope.row.status) === 1" :command="beforeHandleCommand(scope.row, -1)">下架</el-dropdown-item>
-              <el-dropdown-item v-if="parseInt(scope.row.status) === 0" :command="beforeHandleCommand(scope.row, 1)">上架</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand(scope.row, 2)">编辑</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand(scope.row, 0)">删除</el-dropdown-item>
+              <el-dropdown-item v-has="'productDown'" v-if="parseInt(scope.row.status) === 1" :command="beforeHandleCommand(scope.row, -1)">下架</el-dropdown-item>
+              <el-dropdown-item v-has="'productUp'" v-if="parseInt(scope.row.status) === 0" :command="beforeHandleCommand(scope.row, 1)">上架</el-dropdown-item>
+              <el-dropdown-item v-has="'productUpdate'" :command="beforeHandleCommand(scope.row, 2)">编辑</el-dropdown-item>
+              <el-dropdown-item v-has="'productDelete'" :command="beforeHandleCommand(scope.row, 0)">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>

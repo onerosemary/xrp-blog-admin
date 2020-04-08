@@ -9,7 +9,7 @@
       <datePicker @change="datePickerChange"></datePicker>
       <el-input v-model="query.title" placeholder="商品名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加分销</el-button>
+      <el-button v-has="'distributionAdd'" type="primary" size="small" @click="handle(-1)">添加分销</el-button>
 
     </div>
     <el-table
@@ -76,21 +76,25 @@
       <el-table-column label="操作" width="225">
         <template slot-scope="scope">
           <el-button
+            v-has="'distributionUpDown'"
             v-if="parseInt(scope.row.status) === 0"
             size="mini"
             @click="distributionIsOn(scope.row.id, scope.row.status)"
           >上架</el-button>
           <el-button
+            v-has="'distributionUpDown'"
             v-if="parseInt(scope.row.status) === 1"
             size="mini"
             @click="distributionIsOn(scope.row.id, scope.row.status)"
           >下架</el-button>
 
           <el-button
+            v-has="'distributionUpdate'"
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
+            v-has="'distributionDelete'"
             size="mini"
             @click="distributionDelete(scope.row.id)"
           >删除</el-button>

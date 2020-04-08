@@ -161,7 +161,7 @@ export default {
               })
             })
             this.$router.push({
-              path: '/role/roleList'
+              path: '/role/role'
             })
           }else { // 编辑
             this.form.id = this.queryId
@@ -172,7 +172,7 @@ export default {
               })
             })
             this.$router.push({
-              path: '/role/roleList'
+              path: '/role/role'
             })
           }
           

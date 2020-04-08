@@ -122,7 +122,7 @@ let myPermissionBtns = []
 export function generaMenu (routers, data) {
   return new Promise((resolve, reject) => {
     const myrouters = generaFn(routers, data)
-    console.log('myrouters----', myrouters)
+
     resolve({
       myrouters,
       myPermissionBtns
@@ -141,6 +141,7 @@ function generaFn(routers, data) {
         meta: { title: item.name, icon: 'example' }
       }]
       let redirectOne = item.value === '/' ? '/dashboard' : ('/' + item.value)
+
       let menu = {}
       if(item.type === 0 &&  item.level === 1) { // 一级菜单
         menu = {
@@ -154,19 +155,20 @@ function generaFn(routers, data) {
 
       }else if(item.type === 0 &&  item.level === 2) { // 二级菜单
         menu = {
-          path: ('/' + item.value),
+          path: item.value.substring(item.value.indexOf('/') +1 ),
           component: () => import(`@/views/${item.value}.vue`),
-          name: item.value,
+          name: item.value.substring(item.value.indexOf('/') +1 ),
           meta: { title: item.name, icon: 'example' },
           children: []
         }
         
       }else if(item.type === 1) { // 按钮
+
         if(item.path) { // 只针对 添加与编辑， 删除，排序等排除
           menu = {
-            path: ('/' + item.path),
+            path: (item.name.indexOf('修改') >= 0 || item.name.indexOf('编辑') >= 0) ? ('/' + item.path.substring(item.path.indexOf('/') +1 )) : item.path.substring(item.path.indexOf('/') +1 ),  // 添加和编辑 只需要一个作为路由，否则报keys重复错误
             component: () => import(`@/views/${item.path}.vue`),
-            name: item.path,
+            name: item.path.substring(item.path.indexOf('/') +1 ),
             hidden: true,
             meta: { title: item.name, icon: 'example' },
             children: null

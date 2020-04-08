@@ -17,7 +17,7 @@
 
       <el-input v-model="query.title" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加优惠券</el-button>
+      <el-button v-has="'couponAdd'" type="primary" size="small" @click="handle(-1)">添加优惠券</el-button>
 
     </div>
     <el-table
@@ -89,24 +89,29 @@
       <el-table-column label="操作" width="330">
         <template slot-scope="scope">
           <el-button
+            v-has="'couponOrder'"
             size="mini"
             @click="discountOrder(scope.row)"
           >修改顺序</el-button>
           <el-button
+            v-has="'couponUpDown'"
             v-if="scope.row.status === 0"
             size="mini"
             @click="discountUpdown(scope.row.id, scope.row.status)"
           >上架</el-button>
           <el-button
+            v-has="'couponUpDown'"
             v-if="scope.row.status === 1"
             size="mini"
             @click="discountUpdown(scope.row.id, scope.row.status)"
           >下架</el-button>
           <el-button
+            v-has="'couponUpdate'"
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
+            v-has="'couponDelete'"
             size="mini"
             @click="discountDelete(scope.row.id)"
           >删除</el-button>

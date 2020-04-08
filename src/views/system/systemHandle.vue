@@ -112,7 +112,7 @@ export default {
               })
             })
             this.$router.push({
-              path: '/system/systemList'
+              path: '/system/system'
             })
           }else { // 编辑
             this.form.id = this.queryId
@@ -123,7 +123,7 @@ export default {
               })
             })
             this.$router.push({
-              path: '/system/systemList'
+              path: '/system/system'
             })
           }
           

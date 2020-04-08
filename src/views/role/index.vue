@@ -3,7 +3,7 @@
     <div class="handle-box">
       <el-input v-model="query.name" placeholder="角色" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="handle(-1)">添加角色</el-button>
+      <el-button v-has="'roleAdd'" type="primary" size="small" @click="handle(-1)">添加角色</el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -35,11 +35,13 @@
       <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button
+            v-has="'roleUpdate'"
             v-if="scope.row.companyId !== 0"
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
+            v-has="'roleDelete'"
             size="mini"
             v-if="scope.row.companyId !== 0"
             @click="deleteHandle(scope.row.id)"

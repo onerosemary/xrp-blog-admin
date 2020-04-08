@@ -37,7 +37,7 @@ router.beforeEach(async(to, from, next) => {
           
           if(store.getters.dynRouters.length > 0){
             //这里将动态组装的路由添加到路由里面
-            console.log('store.getters.dynRouters', store.getters.dynRouters)
+
             const lasterRouters = store.getters.dynRouters.concat(constantRoutes) // 最终生成的路由
             
             // 防止动态添加的路由刷新页面跳转notFound页面
@@ -48,7 +48,7 @@ router.beforeEach(async(to, from, next) => {
 
             resetRouter(lasterRouters) // 动态添加可访问路由表
             router.options.routes = lasterRouters // 更新侧边栏
-            // console.log('router.options.routes---', router.options.routes)
+            console.log('router.options.routes---', router.options.routes)
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 并刷新页面防止返回指定首页(注意坑, 不然页面会空白)
           }
           // next()

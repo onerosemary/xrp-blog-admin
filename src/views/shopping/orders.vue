@@ -90,23 +90,27 @@
         <template slot-scope="scope">
           <!-- 退款完成 -->
           <el-button
+          v-has="'orderDelete'"
           v-if="parseInt(scope.row.status) === 8"
           size="mini"
           @click="handleDelete(scope.row.id)"
           >删除</el-button>
           <!-- 已支付,待发货 -->
           <el-button
+          v-has="'orderSend'"
           v-else-if="parseInt(scope.row.status) === 3"
           size="mini"
           @click="handle(scope.row.id)"
           >发货</el-button>
           <!-- 已完成(发货、使用) -->
           <el-button
+          v-has="'ordersDistribution'"
           v-else-if="parseInt(scope.row.status) === 4"
           size="mini"
           @click="handleDistribution(scope.row.id)"
           >关联分销</el-button>
           <el-button
+          v-has="'orderDetail'"
           type="text"
           size="mini"
           @click="handleDetail(scope.row.id)"
