@@ -19,6 +19,7 @@ import '@/permission' // permission control
 
 import '@/config/index' // 全局url等配置
 
+
 // 价格过滤器
 Vue.filter('price', (value) => {
   const val = (((value*1000) / 100) / 1000).toFixed(2)

@@ -155,3 +155,24 @@ div:focus {
 .create-btn{
   margin-top: 20px;
 }
+
+// 滚动加载 样式
+.infinite-list-wrapper{
+  background:#fff;
+  .el-scrollbar__wrap{
+    overflow-x: hidden;
+  }
+}
+.tips-loading{
+  text-align: center;
+  font-size: 12px;
+  color: #ADB1B5;
+  padding: 10px 0;
+}
+.no-datas{
+  height: 500px;
+  line-height: 500px;
+  text-align: center;
+  font-size: 12px;
+  color: #ADB1B5;
+}
