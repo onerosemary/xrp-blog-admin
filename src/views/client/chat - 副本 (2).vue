@@ -42,13 +42,11 @@
           <p class="name">{{customerNickname}}</p>
           <!-- <p class="tel">18888888888</p> -->
         </div>
-        <el-scrollbar ref="myScrollbar" class="infinite-list-wrapper" :style="{overflowY: 'auto', height: heightV(230)}">
-          <div class="more-msg" v-if="loading2">查看更多消息</div>
-          <div class="more-msg" v-if="noMore2">没有更多消息</div>
-          <ul class="right-ul">
+        <el-scrollbar class="infinite-list-wrapper" :style="{overflowY: 'auto', height: heightV(230)}" ref="msg-box">
+          <ul>
             <li v-for="(Ritem, i) in rightListData" :key="i">
               <!-- 商品信息 -->
-              <div class="client-msg shopping-msg" v-if="parseInt(Ritem.type) === 1">
+              <div class="client-msg shopping-msg" v-if="Ritem.type === 1">
                 <div class="client-header">
                   <img class="list-img" :src="Ritem.customerrHeadPic" />
                   <p>{{Ritem.sendTime}}</p>
@@ -61,7 +59,7 @@
               </div>
 
               <!-- 客户发送过来 -->
-              <div class="client-msg" v-if="(parseInt(Ritem.type) === 0 || parseInt(Ritem.type) === 2) && Ritem.fromOrTo === 0">
+              <div class="client-msg" v-if="Ritem.type === 0 && Ritem.fromOrTo === 0">
                 <div class="client-header">
                   <img class="list-img" :src="Ritem.customerrHeadPic" />
                   <p>{{Ritem.sendTime}}</p>
@@ -71,11 +69,12 @@
                 </div>
               </div>
               <!-- 我发送的信息 -->
-              <div class="me-msg" v-if="(parseInt(Ritem.type) === 0 || parseInt(Ritem.type) === 2) && Ritem.fromOrTo === 1">
+              <div class="me-msg" v-if="Ritem.type === 0 && Ritem.fromOrTo === 1">
                 <p>{{Ritem.content}}</p>
               </div>
             </li>
           </ul>
+          
           
         </el-scrollbar>
         <!-- 本地文本域发送信息 -->
@@ -111,7 +110,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import {serviceList, serviceGetLogs} from '@/api/client'
 import { formatTime, debounce } from '@/utils'
 
@@ -119,13 +117,6 @@ export default {
   name: 'Chat',
   data() {
     return {
-      timeout: 540000, // 9分钟发一次心跳
-      timeoutObj: null,
-      serverTimeoutObj: null,
-
-      ws: null, // 实列
-      wsUrl: '', // ws连接地址
-      lockReconnect: false, // 避免ws重复连接
       noData: require('@/assets/404_images/chat.png'),
       textarea: '', // 发送信息
       toId: '', // 接收信息的客户id
@@ -137,173 +128,68 @@ export default {
       sizePage: 10, // 每页显示条数(left)
       totalPage: 0, // 总页数(left)
 
-      loading2: false,
-      endFlag: false,
-
       rightListData: [], // (right)
       currentPage2: 1, // 当前页(right)
       sizePage2: 10, // 每页显示条数(right)
       totalPage2: 0, // 总页数(right)
     }
   },
-
   computed: {
       noMore() {
           return this.currentPage > this.totalPage
       },
       disabled() {
           return this.loading || this.noMore
-      },
-      noMore2() {
-          return this.currentPage2 > this.totalPage2
-      },
+      }
   },
   mounted() {
     this.leftList()
     window.addEventListener('resize', this.resize, true)
-    window.addEventListener('scroll', this.onscroll, true)
+  },
+  created() {
+    clearInterval(window.timer)
+    // this.heartbeat()
+    // window.timer = setInterval(this.heartbeat, 3000)
   },
   beforeDestroy() {
       window.removeEventListener('resize', this.resize, true)
-      window.removeEventListener('scroll', this.resize, true)
   },
   methods: {
-    //  监听聊天窗口滚动事件
-    onscroll: debounce(function() {
-        // 判断是否滚动到顶部
-        const myScrollbar = this.$refs['myScrollbar'].wrap.scrollHeight // 记录滚动条总高度
-        const scrollTop = this.$refs['myScrollbar'].wrap.scrollTop // 记录当前滚动位置
-        if(!this.noMore2 && parseFloat(scrollTop) === 0) {
-          // 加载分页
-          this.rightList()
-
-          setTimeout(() => {
-            // 每次加载，如果有下一页，当前滚动前一页位置
-            this.$refs['myScrollbar'].wrap.scrollTop = this.$refs['myScrollbar'].wrap.scrollHeight - myScrollbar
-          }, 500)
-        }
-    }, 300),
-    // 初始化ws
-    createWebSocket(userId, toId) {
-      try{
-          if('WebSocket' in window){
-              this.wsUrl = `ws://120.25.247.94:8088/webSocket?fid=${userId}&toid=${toId}&eid=0&source=1`
-              
-              this.ws = new WebSocket(this.wsUrl)
-          }else if('MozWebSocket' in window){  
-              this.ws = new MozWebSocket(this.wsUrl)
-          }else{
-              console.log('您的浏览器不支持websocket协议')
-          }
-          this.initEventHandle()
-      }catch(e){
-          this.reconnect(this.wsUrl)
-          console.log(e)
-      }     
+    heartbeat() {
+      console.log("心跳")
+      this.socketApi.sendSock(
+        {
+          type: 0,
+          content: 'heartbeat',
+          eid: 0,
+          fid: this.$store.getters.userId,
+          toid: this.toId,
+          source: 0
+        },
+        this.test
+      )
     },
-    initEventHandle() {
-      const _this = this
-      _this.ws.onclose = function () {
-          _this.reconnect(_this.wsUrl)
-          console.log("ws连接关闭!"+ new Date().toLocaleString())
-      }
-      _this.ws.onerror = function () {
-          _this.reconnect(_this.wsUrl);
-          console.log("ws连接错误!")
-      }
-      _this.ws.onopen = function () {
-          _this.heartCheck()      // 心跳检测重置
-          console.log("ws连接成功!" + new Date().toLocaleString())
-      }
-      _this.ws.onmessage = function (event) {    // 如果获取到消息，心跳检测重置
-          // this.heartCheck.reset().start() // 拿到任何消息都说明当前连接是正常的
-          console.log('接受到信息', event.data)
-          const serverData = JSON.parse(event.data)
-          let showData = {}
-          if(parseInt(serverData.type) === 1) { // 商品信息
-            // 组装本地显示数据
-            showData = {
-              customerrHeadPic: serverData.avatarUrl,
-              sendTime: '',
-              titleUrl: serverData.message.titleUrl,
-              title: serverData.message.title,
-              type: serverData.type
-            }
-          }else { // App消息
-            // 组装本地显示数据
-            showData = {
-              customerrHeadPic: serverData.avatarUrl,
-              sendTime: '',
-              content: serverData.message,
-              type: serverData.type,
-              fromOrTo: 0 // 前端自己的标识，自己对应列表
-            }
-          }
-          
-          _this.rightListData.push(showData)
-
-          _this.heartCheck()     
-          console.log("ws收到消息啦:" + event.data)
-          window.setTimeout(()=> {
-            _this.scrollBottm()
-          }, 500)
-      }
-    },
-    reconnect() {
-      if(this.lockReconnect) return
-      this.lockReconnect = true
-      setTimeout(()=> {
-        this.createWebSocket(this.$store.getters.userId, this.toId)
-        this.lockReconnect = false
-      }, 3000)
-    },
-    heartCheck() { 
-      window.clearTimeout(this.timeoutObj)
-      window.clearTimeout(this.serverTimeoutObj)
-      this.timeoutObj = setTimeout(()=> {
-        // 这里发送一个心跳，后端收到后，返回一个心跳消息，
-        // onmessage拿到返回的心跳就说明连接正常
-        this.ws.send('HeartBeat')
-        console.log('HeartBeat')
-        this.serverTimeoutObj = setTimeout(()=> {
-          // 如果超过一定时间还没重置，说明后端主动断开了
-          this.ws.close()  // 如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
-        }, this.timeout)
-      }, this.timeout)
-      
-    },
-    // 滚动条到底部
-    scrollBottm() {
-      this.$nextTick(() => {
-        this.$refs['myScrollbar'].wrap.scrollTop = this.$refs['myScrollbar'].wrap.scrollHeight
-      })
-      
+    test() {
+      console.log('test...')
     },
     // 发送信息
     sendText() {
-      // 组装本地显示数据
-      const showData = {
-        content: this.textarea,
-        type: 0,
-        fromOrTo: 1 // 前端自己的标识，自己对应列表
-      }
-      this.rightListData.push(showData)
-
-      this.ws.send(this.textarea)
-      this.textarea = '' // 清空
-      setTimeout(()=> {
-        this.scrollBottm()
-      }, 500)
+      this.socketApi.sendSock(
+        {
+          type: 0,
+          content: this.textarea,
+          eid: 0,
+          fid: this.$store.getters.userId,
+          toid: this.toid,
+          source: 0
+        },
+        this.test
+      )
     },
     resize: debounce(function() {
         this.currentPage = 1
         this.leftListData = [] // 先清空
         this.leftList()
-
-        // right 重置
-        this.currentPage2 = 1
-        this.customerNickname = ''
-        this.rightListData = []
     }, 300),
     // 左边客户头像列表 搜索
     searchHandle() {
@@ -339,30 +225,26 @@ export default {
 
         })
     },
+    
     // 右边详情列表数据
     rightList(item, event) {
- 
-      if(event && event.type === 'click') {
+      if(event.type === 'click') {
         this.customerNickname = item.customerNickname
         // 重置
         this.currentPage2 = 1
         this.rightListData = []
       }
       // 保存客户id, 用于ws
-      if(item && item.customerId) {
-        this.toId = item.customerId
-      }
-      
-      if(event && event.type === 'click') {
-        // 初始化ws
-        this.createWebSocket(this.$store.getters.userId, this.toId)
-      }
-      
+      this.toId = item.customerId
+      // 初始化ws
+      this.socketApi.initWebSocket(this.$store.getters.userId, this.toId)
+      this.heartbeat()
+      window.timer = setInterval(this.heartbeat, 3000)
 
-      this.loading2 = true
+      this.loading = true
       let params= {
           companyId: this.$store.getters.companyId,
-          customerId: this.toId,
+          customerId: item.customerId,
           zbPage: {
               current: this.currentPage2,
               size: this.sizePage2
@@ -375,20 +257,11 @@ export default {
           })
           if (records.length > 0) {
               this.currentPage2++
-              this.rightListData = [...records, ...this.rightListData]
-
-              this.loading2 = false
+              this.rightListData = this.rightListData.concat(records)
               this.totalPage2 = parseInt(pages)
-
-              if(event && event.type === 'click') { // 初始化第一次
-                // 滚动到底部
-                setTimeout(()=> {
-                  this.scrollBottm()
-                }, 500)
-              }
-              
+              this.loading = false
           } else {
-              this.loading2 = true
+              this.loading = true
           }
 
       })
@@ -397,15 +270,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.right-ul{
-  padding-bottom: 20px!important;
-}
-.more-msg {
-    color: rgb(64, 158, 255);
-    text-align: center;
-    font-size: 12px;
-    line-height: 22px;
-}
 .container{
   padding: 0 20px;
   ul, li, p{
@@ -425,8 +289,7 @@ export default {
     }
   }
   .chat-title{
-    position: relative;
-    top: 20px;
+    margin-top: 20px;
     display: flex;
     align-items: center;
     h4{

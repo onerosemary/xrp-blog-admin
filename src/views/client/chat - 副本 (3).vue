@@ -43,9 +43,10 @@
           <!-- <p class="tel">18888888888</p> -->
         </div>
         <el-scrollbar ref="myScrollbar" class="infinite-list-wrapper" :style="{overflowY: 'auto', height: heightV(230)}">
-          <div class="more-msg" v-if="loading2">查看更多消息</div>
-          <div class="more-msg" v-if="noMore2">没有更多消息</div>
-          <ul class="right-ul">
+          <ul
+          v-infinite-scroll="rightList"
+          infinite-scroll-distance="40"
+          infinite-scroll-disabled="disabled2">
             <li v-for="(Ritem, i) in rightListData" :key="i">
               <!-- 商品信息 -->
               <div class="client-msg shopping-msg" v-if="parseInt(Ritem.type) === 1">
@@ -76,6 +77,8 @@
               </div>
             </li>
           </ul>
+          <p v-if="rightListData.length > 0 && loading2" class="tips-loading">加载中...</p>
+          <p v-if="rightListData.length > 0 && noMore2" class="tips-loading" style="padding: 15px 0">没有更多了</p>
           
         </el-scrollbar>
         <!-- 本地文本域发送信息 -->
@@ -111,7 +114,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import {serviceList, serviceGetLogs} from '@/api/client'
 import { formatTime, debounce } from '@/utils'
 
@@ -138,15 +140,12 @@ export default {
       totalPage: 0, // 总页数(left)
 
       loading2: false,
-      endFlag: false,
-
       rightListData: [], // (right)
       currentPage2: 1, // 当前页(right)
       sizePage2: 10, // 每页显示条数(right)
       totalPage2: 0, // 总页数(right)
     }
   },
-
   computed: {
       noMore() {
           return this.currentPage > this.totalPage
@@ -157,63 +156,52 @@ export default {
       noMore2() {
           return this.currentPage2 > this.totalPage2
       },
+      disabled2() {
+          return this.loading2 || this.noMore2
+      }
   },
   mounted() {
     this.leftList()
     window.addEventListener('resize', this.resize, true)
-    window.addEventListener('scroll', this.onscroll, true)
+  },
+  created() {
   },
   beforeDestroy() {
       window.removeEventListener('resize', this.resize, true)
-      window.removeEventListener('scroll', this.resize, true)
   },
   methods: {
-    //  监听聊天窗口滚动事件
-    onscroll: debounce(function() {
-        // 判断是否滚动到顶部
-        const myScrollbar = this.$refs['myScrollbar'].wrap.scrollHeight // 记录滚动条总高度
-        const scrollTop = this.$refs['myScrollbar'].wrap.scrollTop // 记录当前滚动位置
-        if(!this.noMore2 && parseFloat(scrollTop) === 0) {
-          // 加载分页
-          this.rightList()
-
-          setTimeout(() => {
-            // 每次加载，如果有下一页，当前滚动前一页位置
-            this.$refs['myScrollbar'].wrap.scrollTop = this.$refs['myScrollbar'].wrap.scrollHeight - myScrollbar
-          }, 500)
-        }
-    }, 300),
     // 初始化ws
     createWebSocket(userId, toId) {
       try{
           if('WebSocket' in window){
               this.wsUrl = `ws://120.25.247.94:8088/webSocket?fid=${userId}&toid=${toId}&eid=0&source=1`
               
-              this.ws = new WebSocket(this.wsUrl)
+              this.ws = new WebSocket(this.wsUrl);
           }else if('MozWebSocket' in window){  
-              this.ws = new MozWebSocket(this.wsUrl)
+              this.ws = new MozWebSocket(this.wsUrl);
           }else{
               console.log('您的浏览器不支持websocket协议')
           }
-          this.initEventHandle()
+          this.initEventHandle();
       }catch(e){
-          this.reconnect(this.wsUrl)
-          console.log(e)
+          this.reconnect(this.wsUrl);
+          console.log(e);
       }     
     },
     initEventHandle() {
       const _this = this
       _this.ws.onclose = function () {
+          console.log('_this.wsUrl', _this.wsUrl)
           _this.reconnect(_this.wsUrl)
-          console.log("ws连接关闭!"+ new Date().toLocaleString())
+          console.log("llws连接关闭!"+new Date().toUTCString())
       }
       _this.ws.onerror = function () {
           _this.reconnect(_this.wsUrl);
-          console.log("ws连接错误!")
+          console.log("llws连接错误!")
       }
       _this.ws.onopen = function () {
           _this.heartCheck()      // 心跳检测重置
-          console.log("ws连接成功!" + new Date().toLocaleString())
+          console.log("llws连接成功!"+ new Date().toUTCString())
       }
       _this.ws.onmessage = function (event) {    // 如果获取到消息，心跳检测重置
           // this.heartCheck.reset().start() // 拿到任何消息都说明当前连接是正常的
@@ -242,9 +230,11 @@ export default {
           
           _this.rightListData.push(showData)
 
+         
+          console.log('this.rightListData----', _this.rightListData)
           _this.heartCheck()     
-          console.log("ws收到消息啦:" + event.data)
-          window.setTimeout(()=> {
+          console.log("llws收到消息啦:" + event.data)
+           window.setTimeout(()=> {
             _this.scrollBottm()
           }, 500)
       }
@@ -274,10 +264,7 @@ export default {
     },
     // 滚动条到底部
     scrollBottm() {
-      this.$nextTick(() => {
-        this.$refs['myScrollbar'].wrap.scrollTop = this.$refs['myScrollbar'].wrap.scrollHeight
-      })
-      
+      this.$refs['myScrollbar'].wrap.scrollTop = this.$refs['myScrollbar'].wrap.scrollHeight
     },
     // 发送信息
     sendText() {
@@ -299,11 +286,6 @@ export default {
         this.currentPage = 1
         this.leftListData = [] // 先清空
         this.leftList()
-
-        // right 重置
-        this.currentPage2 = 1
-        this.customerNickname = ''
-        this.rightListData = []
     }, 300),
     // 左边客户头像列表 搜索
     searchHandle() {
@@ -353,11 +335,8 @@ export default {
         this.toId = item.customerId
       }
       
-      if(event && event.type === 'click') {
-        // 初始化ws
-        this.createWebSocket(this.$store.getters.userId, this.toId)
-      }
-      
+      // 初始化ws
+      this.createWebSocket(this.$store.getters.userId, this.toId)
 
       this.loading2 = true
       let params= {
@@ -375,18 +354,9 @@ export default {
           })
           if (records.length > 0) {
               this.currentPage2++
-              this.rightListData = [...records, ...this.rightListData]
-
-              this.loading2 = false
+              this.rightListData = this.rightListData.concat(records)
               this.totalPage2 = parseInt(pages)
-
-              if(event && event.type === 'click') { // 初始化第一次
-                // 滚动到底部
-                setTimeout(()=> {
-                  this.scrollBottm()
-                }, 500)
-              }
-              
+              this.loading2 = false
           } else {
               this.loading2 = true
           }
@@ -397,15 +367,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.right-ul{
-  padding-bottom: 20px!important;
-}
-.more-msg {
-    color: rgb(64, 158, 255);
-    text-align: center;
-    font-size: 12px;
-    line-height: 22px;
-}
 .container{
   padding: 0 20px;
   ul, li, p{
@@ -425,8 +386,7 @@ export default {
     }
   }
   .chat-title{
-    position: relative;
-    top: 20px;
+    margin-top: 20px;
     display: flex;
     align-items: center;
     h4{

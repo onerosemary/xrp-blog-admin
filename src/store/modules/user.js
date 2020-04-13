@@ -10,6 +10,7 @@ import { resetRouter } from '@/router'
 const getDefaultState = () => {
   return {
     token: getToken(),
+    userId: '', // 当前登录用户id
     name: '',
     companyId: '',
     routers: [], // 动态路由
@@ -25,6 +26,9 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_USERID: (state, id) => {
+    state.userId = id
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -62,7 +66,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
         const { data } = response
-        const { name, companyId, roleDetail } = data
+        const {id, name, companyId, roleDetail } = data
 
         let routers = []
         // 组装路由数据
@@ -76,7 +80,7 @@ const actions = {
         })
         commit('SET_ROUTERS', routers) // 动态路由存储vuex中
         
- 
+        commit('SET_USERID', id)
         commit('SET_NAME', name)
         commit('SET_COMPANYID', companyId)
         resolve(data)

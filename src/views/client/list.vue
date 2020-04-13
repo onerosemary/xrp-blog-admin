@@ -20,7 +20,7 @@
 
       <el-input v-model="query.name" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small">清空所有积分</el-button>
+      <el-button type="primary" size="small" @click="clientClearAllPoints">清空所有积分</el-button>
 
     </div>
     <el-table
@@ -37,81 +37,61 @@
           {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="金额(￥)" width="80">
+      <el-table-column label="头像" width="100">
           <template slot-scope="scope">
-            {{scope.row.couponPrice | price}}
+            <img class="list-img" :src="imgUrl + scope.row.headPic" />
           </template>
       </el-table-column>
-      <el-table-column label="名称" prop="title" />
-      <el-table-column label="类型">
+      <el-table-column label="姓名" prop="name" />
+      <el-table-column label="注册门店" prop="companyName" />
+      <el-table-column label="消费金额(￥)/消费门店">
           <template slot-scope="scope">
-            <span v-if="parseInt(scope.row.couponType) === 1">商品优惠券</span>
-            <span v-if="parseInt(scope.row.couponType) === 2">无门槛抵扣券</span>
-            <span v-if="parseInt(scope.row.couponType) === 3">满减券</span>
-            <span v-if="parseInt(scope.row.couponType) === 4">现金红包</span>
+            {{scope.row.totalMoney | price}} / {{scope.row.totalCompanyNumber}}
           </template>
       </el-table-column>
-      <el-table-column label="内容" prop="name">
+      <el-table-column label="积分" prop="points" />
+      <el-table-column label="分销次数" prop="shareNumber" />
+      <el-table-column label="已赚佣金(￥)">
+          <template slot-scope="scope">
+            {{scope.row.totalCash | price}}
+          </template>
+      </el-table-column>
+      <el-table-column label="账户佣金(￥)">
+          <template slot-scope="scope">
+            {{scope.row.balance | price}}
+          </template>
+      </el-table-column>
+      <el-table-column label="等级" prop="level">
         <template slot-scope="scope">
-          <span v-if="parseInt(scope.row.couponType) === 1">{{scope.row.goodsName}}</span>
-          <span v-if="parseInt(scope.row.couponType) === 2">无门槛抵扣券</span>
-          <span v-if="parseInt(scope.row.couponType) === 3">满{{scope.row.minPrice | price}}减{{scope.row.couponPrice | price}}</span>
-          <span v-if="parseInt(scope.row.couponType) === 4">现金红包</span>
+          <span v-if="parseInt(scope.row.level) === 1">Lv 1</span>
+          <span v-if="parseInt(scope.row.level) === 2">Lv 2</span>
+          <span v-if="parseInt(scope.row.level) === 3">Lv 3</span>
         </template>
       </el-table-column>
-      <el-table-column label="已领/总数量">
-          <template slot-scope="scope">
-            {{scope.row.receivedNumber || 0}}/{{scope.row.stock}}
-          </template>
-      </el-table-column>
-      <el-table-column label="创建时间">
+      <el-table-column label="身份" prop="identityStr"/>
+      <el-table-column label="注册时间">
           <template slot-scope="scope">
             {{scope.row.createTime}}
           </template>
       </el-table-column>
-      <el-table-column label="状态" width="60">
-          <template slot-scope="scope">
-            {{parseInt(scope.row.status) === 0 ? '下架' : '上架'}}
-          </template>
-      </el-table-column>
-      <el-table-column
-        label="顺序"
-        width="150"
-      >
-        <template slot-scope="scope">
-          <div v-if="orderIndex === scope.row.id" class="sort-box">
-            <el-input v-model="orderValue" placeholder="请输入内容"></el-input>
-            <el-button type="text" @click="saveOrder">保存</el-button>
-            <el-button type="text" class="order-cancel" @click="orderCancel">取消</el-button>
-          </div>
-          <div v-else>
-            {{scope.row.indexNumber}}
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="330">
+      <el-table-column label="操作" width="280">
         <template slot-scope="scope">
           <el-button
+            type="text"
             size="mini"
-            @click="discountOrder(scope.row)"
-          >修改顺序</el-button>
+            @click="handleDetail(scope.row.id)"
+            >详情</el-button>
           <el-button
-            v-if="scope.row.status === 0"
             size="mini"
-            @click="discountUpdown(scope.row.id, scope.row.status)"
-          >上架</el-button>
-          <el-button
-            v-if="scope.row.status === 1"
-            size="mini"
-            @click="discountUpdown(scope.row.id, scope.row.status)"
-          >下架</el-button>
+            @click="clientClearPoints(scope.row.id)"
+          >清空积分</el-button>
           <el-button
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
             size="mini"
-            @click="discountDelete(scope.row.id)"
+            @click="clientDeletet(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -132,14 +112,12 @@
 <script>
 import storeList from '@/components/storeList'
 import datePicker from '@/components/datePicker'
-import { discountList, discountOrder, discountIsOn, discountDelete } from '@/api/actives'
+import { clientList, clientDeletet, clientClearPoints, clientClearAllPoints } from '@/api/client'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
   data() {
     return {
-      orderIndex: -1, // 排序索引
-      orderValue: '', // 排序绑定order
       time: '',
       query: {
         companyId: null, // 注册门店id
@@ -167,7 +145,7 @@ export default {
   methods: {
     // 获取选择消费门店
     storeListChange(id) {
-      this.query.companyId = id
+      this.query.saleCompanyId = id
       this.getList()
     },
     // 获取选择注册门店
@@ -175,59 +153,64 @@ export default {
       this.query.companyId = id
       this.getList()
     },
-    // 排序修改
-    discountOrder(row) {
-      const {id, indexNumber} = row
-      this.orderIndex = id // 索引显示
-      this.orderValue = indexNumber // 文本赋值      
-    },
-    // 保存排序
-    saveOrder() {
-      const data = {
-        id: this.orderIndex,
-        indexNumber: this.orderValue
-      }
-      discountOrder(data).then(res => {
-        this.$message({
-          message: `修改顺序成功！`,
-          type: 'success'
+    // 清空所有客户积分
+    clientClearAllPoints() {
+      this.$confirm('此操作将清空所有客户的积分, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 继续
+        clientClearAllPoints().then(res => {
+          this.$message({
+            message: `所有客户积分已全部清空成功！`,
+            type: 'success'
+          })
+          // 更新列表
+          this.getList()
         })
-        this.orderIndex = -1 // 重置
-        this.getList()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消清空客户积分'
+        })       
       })
     },
-    // 上下架
-    discountUpdown(id, status) {
-      const text = parseInt(status) === 0 ? '上架' : '下架'
-      const params = {
-        id,
-        status: parseInt(status) === 0 ? 1 : 0 // 1上架， 0下架
-      }
-      discountIsOn(params).then(res => {
+    // 清空积分
+    clientClearPoints(id) {
+      this.$confirm('此操作将清空该客户的积分, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 继续
+        clientClearPoints({id}).then(res => {
+          this.$message({
+            message: `积分清空成功！`,
+            type: 'success'
+          })
+          // 删除当前 row
+          this.tableData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(id)){
+              this.tableData.splice(index, 1)
+            }
+          })
+        })
+      }).catch(() => {
         this.$message({
-          message: `${text}, 成功！`,
-          type: 'success'
-        })
-        // 更新当前 row
-        this.tableData.forEach((item, index) => {
-           if(parseInt(item.id) === parseInt(id)){
-             this.$set(this.tableData[index], 'status', params.status)
-           }
-        })
+          type: 'info',
+          message: '已取消清空'
+        })       
       })
     },
-    // 取消排序
-    orderCancel() {
-      this.orderIndex = -1
-    },
-    discountDelete(id) {
-      this.$confirm('此操作将永久删除该商品分类, 是否继续?', '提示', {
+    clientDeletet(id) {
+      this.$confirm('此操作将永久删除该客户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         // 继续删除
-        discountDelete({id}).then(res => {
+        clientDeletet({id}).then(res => {
           this.$message({
             message: `删除成功！`,
             type: 'success'
@@ -260,11 +243,13 @@ export default {
     },
     // 列表接口
     getList() {
-      const {title, status, type, startTime, endTime,} = this.query
+      const {companyId, saleCompanyId, identity, level, name, startTime, endTime,} = this.query
       const params = {
-        type,
-        status,
-        title,
+        companyId,
+        saleCompanyId,
+        identity,
+        level,
+        name,
         startTime,
         endTime,
         zbPage: {
@@ -272,7 +257,7 @@ export default {
           size: this.pageSize
         }
       }
-      discountList(params).then(res => {
+      clientList(params).then(res => {
         const { records, total } = res.data
         // imgUrl 
         records.forEach((item, index) => {
@@ -288,6 +273,15 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val
       this.getList()
+    },
+    // 详情跳转
+    handleDetail(id) {
+      this.$router.push({
+        path: '/client/clientDetail',
+        query: {
+          id: id
+        }
+      })
     },
     // 添加/编辑 跳转
     handle(id) {

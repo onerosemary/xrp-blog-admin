@@ -7,29 +7,36 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 export const constantRoutes = [
-  // {
-  //   path: '/client',
-  //   component: Layout,
-  //   redirect: '/client',
-  //   name: 'client',
-  //   meta: { title: '客户管理', icon: 'example' },
-  //   children: [
-  //     {
-  //       path: 'list',
-  //       name: 'List',
-  //       component: () => import('@/views/client/list'),
-  //       meta: { title: '客户列表', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'chat',
-  //       name: 'Chat',
-  //       component: () => import('@/views/client/chat'),
-  //       meta: { title: '客户咨询', icon: 'table' }
-  //     }
-  //   ]
-  // },
   {
-    path: '/systemLog',
+    path: '/client',
+    component: Layout,
+    redirect: '/client',
+    name: 'client',
+    meta: { title: '客户管理', icon: 'example' },
+    children: [
+      {
+        path: 'list',
+        name: 'List',
+        component: () => import('@/views/client/list'),
+        meta: { title: '客户列表', icon: 'table' }
+      },
+      { // 客户详情 (new)
+        path: 'clientDetail',
+        name: 'clientDetail',
+        hidden: true,
+        component: () => import('@/views/client/clientDetail'),
+        meta: { title: '客户详情', icon: 'table' }
+      },
+      {
+        path: 'chat',
+        name: 'Chat',
+        component: () => import('@/views/client/chat'),
+        meta: { title: '客户咨询', icon: 'table' }
+      }
+    ]
+  },
+  {
+    path: '/systemLog', // (new)
     component: Layout,
     redirect: '/systemLog',
     children: [{

@@ -3,6 +3,7 @@ const getters = {
   device: state => state.app.device,
   token: state => state.user.token,
   companyId: state => state.user.companyId,
+  userId: state => state.user.userId,
   name: state => state.user.name,
   dynRouters: state => state.user.routers,
   dynPermissionBtns: state => state.user.permissionBtns
