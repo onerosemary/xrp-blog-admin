@@ -187,11 +187,7 @@ export default {
     createWebSocket(userId, toId) {
       try{
           if('WebSocket' in window){
-              if(process.env.NODE_ENV === 'development') {
-                this.wsUrl = `ws://120.25.247.94:8088/webSocket?fid=${userId}&toid=${toId}&eid=0&source=1`
-              }else {// 测试线上环境
-                this.wsUrl = `ws://medicalbeauty-back.bx-cy.com/webSocket?fid=${userId}&toid=${toId}&eid=0&source=1`
-              }
+              this.wsUrl = `ws://120.25.247.94:8088/webSocket?fid=${userId}&toid=${toId}&eid=0&source=1`
               
               this.ws = new WebSocket(this.wsUrl)
           }else if('MozWebSocket' in window){  
