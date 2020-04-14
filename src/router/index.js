@@ -32,6 +32,13 @@ export const constantRoutes = [
         name: 'Chat',
         component: () => import('@/views/client/chat'),
         meta: { title: '客户咨询', icon: 'table' }
+      },
+      { // 客服聊天设置 (new)
+        path: 'chatSet',
+        name: 'chatSet',
+        hidden: true,
+        component: () => import('@/views/client/chatSet'),
+        meta: { title: '客服设置', icon: 'table' }
       }
     ]
   },

@@ -2,7 +2,7 @@
   <div class="container">
     <div class="chat-title">
       <h4>客户咨询</h4>
-      <router-link class="set" to="home"><i class="el-icon-setting"></i>设置</router-link>
+      <router-link class="set" to="/client/chatSet"><i class="el-icon-setting"></i>设置</router-link>
     </div>
     <div class="chat-box" v-if="leftListData.length > 0 || searchText">
       <div class="chat-left">

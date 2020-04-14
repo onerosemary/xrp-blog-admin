@@ -91,3 +91,30 @@ export function serviceGetLogs(data) {
         data
     })
 }
+
+// 客服设置 个人信息
+export function chatSetGetInfo(params) {
+    return request({
+        url: '/pc/service/getInfo',
+        method: 'get',
+        params
+    })
+}
+
+// 客服设置 添加
+export function chatSetAdd(data) {
+    return request({
+        url: '/pc/service/add',
+        method: 'post',
+        data
+    })
+}
+
+// 客服设置 编辑
+export function chatSetUpdate(data) {
+    return request({
+        url: '/pc/service/update',
+        method: 'post',
+        data
+    })
+}
