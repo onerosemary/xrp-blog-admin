@@ -1,43 +1,16 @@
 <template>
   <div class="container">
     <el-row :gutter="20">
-      <el-col :span="8">
-        <el-card shadow="hover" class="mgb20" style="height:252px;">
-          <div class="user-info">
-            <img :src="indexImg" class="user-avator" alt>
-            <div class="user-info-cont">
-              <div class="user-info-name">{{ name }}</div>
-              <div>超级管理员</div>
-            </div>
-          </div>
-          <div class="user-info-list">
-            上次登录时间：
-            <span>2020-2-20</span>
-          </div>
-          <div class="user-info-list">
-            上次登录地点：
-            <span>长沙</span>
-          </div>
-        </el-card>
-        <el-card shadow="hover" style="height:252px;">
-          <div slot="header" class="clearfix">
-            <span>活动管理</span>
-          </div>
-          <el-progress :percentage="71.3" color="#42b983" />拼团
-          <el-progress :percentage="24.1" color="#f1e05a" />秒杀
-          <el-progress :percentage="13.7" />分销
-        </el-card>
-      </el-col>
-      <el-col :span="16">
+      <el-col :span="15">
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{padding: '0px'}">
               <div class="grid-content grid-con-1">
-                <i class="el-icon-lx-people grid-con-icon el-icon-user-solid" />
+                <i class="el-icon-lx-shop grid-con-icon el-icon-location" />
                 <div class="grid-cont-right">
-                  <div class="grid-num">1234</div>
-                  <div>客户</div>
-                  <p class="grid-sub">日活跃 3252 人</p>
+                  <div class="grid-num">{{totalData.companyNumber}}</div>
+                  <div>门店</div>
+                  <p v-if="totalData.companyActiveNumber" class="grid-sub">近七日活跃 {{totalData.companyActiveNumber}} 家</p>
                 </div>
               </div>
             </el-card>
@@ -45,11 +18,12 @@
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{padding: '0px'}">
               <div class="grid-content grid-con-2">
-                <i class="el-icon-lx-shop grid-con-icon el-icon-location" />
+                
+                <i class="el-icon-lx-people grid-con-icon el-icon-user-solid" />
                 <div class="grid-cont-right">
-                  <div class="grid-num">321</div>
-                  <div>门店</div>
-                  <p class="grid-sub">活跃 3 家</p>
+                  <div class="grid-num">{{totalData.customerNumber}}</div>
+                  <div>客户</div>
+                  <p v-if="totalData.customerActiveNumber" class="grid-sub">昨日活跃 {{totalData.customerActiveNumber}} 人</p>
                 </div>
               </div>
             </el-card>
@@ -59,9 +33,9 @@
               <div class="grid-content grid-con-3">
                 <i class="el-icon-lx-goods grid-con-icon el-icon-coin" />
                 <div class="grid-cont-right">
-                  <div class="grid-num">5000</div>
+                  <div class="grid-num">{{totalData.totalAmont / 100}}</div>
                   <div>收入(万元)</div>
-                  <p class="grid-sub">昨日 3563</p>
+                  <p v-if="totalData.totalYesterdayAmont" class="grid-sub">昨日 {{totalData.totalYesterdayAmont  / 100}}</p>
                 </div>
               </div>
             </el-card>
@@ -73,9 +47,9 @@
               <div class="grid-content grid-con-1">
                 <i class="el-icon-lx-people grid-con-icon el-icon-tickets" />
                 <div class="grid-cont-right">
-                  <div class="grid-num">1234</div>
+                  <div class="grid-num">{{totalData.orderNumber}}</div>
                   <div>订单</div>
-                  <p class="grid-sub">今日 23 单</p>
+                  <p v-if="totalData.orderAddNumber" class="grid-sub">今日新增 {{totalData.orderAddNumber}} 单</p>
                 </div>
               </div>
             </el-card>
@@ -85,9 +59,9 @@
               <div class="grid-content grid-con-2">
                 <i class="el-icon-lx-shop grid-con-icon el-icon-s-custom" />
                 <div class="grid-cont-right">
-                  <div class="grid-num">321</div>
+                  <div class="grid-num">{{totalData.partnerNumber}}</div>
                   <div>合伙人</div>
-                  <p class="grid-sub">新增 3 人</p>
+                  <p v-if="totalData.partnerAddNumber" class="grid-sub">近七日新增 {{totalData.partnerAddNumber}} 人</p>
                 </div>
               </div>
             </el-card>
@@ -97,167 +71,234 @@
               <div class="grid-content grid-con-3">
                 <i class="el-icon-lx-goods grid-con-icon el-icon-document-remove" />
                 <div class="grid-cont-right">
-                  <div class="grid-num">5000</div>
+                  <div class="grid-num">{{totalData.rakeback / 100}}</div>
                   <div>返佣(万元)</div>
-                  <p class="grid-sub">昨日 3563</p>
+                  <p v-if="totalData.rakebackYesterday" class="grid-sub">昨日 {{totalData.rakebackYesterday / 100}}</p>
                 </div>
               </div>
             </el-card>
           </el-col>
         </el-row>
         <el-card shadow="hover" style="height:340px;">
-          <div slot="header" class="clearfix">
-            <span>待办事项</span>
-            <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
+          <div slot="header" class="clearfix" style="position: relative;">
+            <span>销售数据</span>
+            <div class="type-ve">
+              <el-radio-group v-model="saleType" @change="getSaleData">
+                <el-radio :label="0">30 天</el-radio>
+                <el-radio :label="1">12 月</el-radio>
+              </el-radio-group>
+            </div>
           </div>
-          <el-table :show-header="false" :data="todoList" style="width:100%;">
-            <el-table-column width="40">
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.status" />
-              </template>
-            </el-table-column>
-            <el-table-column>
-              <template slot-scope="scope">
-                <div
-                  class="todo-item"
-                  :class="{'todo-item-del': scope.row.status}"
-                >{{ scope.row.title }}</div>
-              </template>
-            </el-table-column>
-            <el-table-column width="60">
-              <template>
-                <i class="el-icon-edit" />
-                <i class="el-icon-delete" />
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="ve-echarts">
+            <p class="avgSaleAmount" v-if="saleType === 0">日均销售: <b>￥{{avgSaleAmount}}</b></p>
+            <p class="avgSaleAmount" v-if="saleType === 1">月均销售: <b>￥{{avgSaleAmount}}</b></p>
+            <ve-histogram :data="chartData" :settings="chartSettings"></ve-histogram>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="9">
+          <el-card shadow="hover" >
+          <div slot="header" class="clearfix">
+            <span>待办清单</span>
+          </div>
+          <ul class="todoUl">
+            <!-- 处理过 -->
+            <li class="green">
+              <div class="icon-div"><i class="el-icon-success"></i></div>
+              <div>
+                <p>返佣订单：XXXXXXX(订单商品名）</p>
+                <p>订单金额：￥199 丨  返佣金额：￥19 丨 分销人：xxxx </p>
+              </div>
+            </li>
+            <li>
+              <div class="icon-div"><i class="el-icon-warning"></i></div>
+              <div>
+                <p>退款订单：XXXXXXX(订单商品名） </p>
+                <p> 订单金额：￥199 丨 退款金额：￥159 丨 退款人：xxxx </p>
+              </div>
+              <div class="handle-btn">
+                <p><i class="el-icon-success" title="同意"></i></p>
+                <p><i class="el-icon-error" title="拒绝"></i></p>
+              </div>
+            </li>
+            
+          </ul>
         </el-card>
       </el-col>
     </el-row>
-    <!-- <el-row :gutter="20">
-      <el-col :span="12">
-        <el-card shadow="hover">
-          <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
-        </el-card>
-      </el-col>
-      <el-col :span="12">
-        <el-card shadow="hover">
-          <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
-        </el-card>
-      </el-col>
-    </el-row> -->
   </div>
 </template>
 
 <script>
-// import Schart from 'vue-schart';
-// import bus from '../common/bus';
 import { mapGetters } from 'vuex'
+import {getSaleData, getTotal, undolist, rakeVerify, refundVerify} from '@/api/home'
 export default {
   name: 'Dashboard',
   components: {
     // Schart
   },
   data() {
+    this.chartSettings = {
+      labelMap: {
+        time: '时间',
+        saleAmount: '销售额(￥)'
+      }
+    }
     return {
       indexImg: require('@/static/login-bg.jpg'),
-      todoList: [
-        {
-          title: '今天要核销下10个订单',
-          status: false
-        },
-        {
-          title: '今天要核销下10个订单',
-          status: false
-        },
-        {
-          title: '今天要核销下10个订单',
-          status: false
-        },
-        {
-          title: '今天要核销下10个订单',
-          status: false
-        },
-        {
-          title: '今天要核销下10个订单',
-          status: true
-        }
-      ],
-      data: [
-        {
-          name: '2018/09/04',
-          value: 1083
-        },
-        {
-          name: '2018/09/05',
-          value: 941
-        },
-        {
-          name: '2018/09/06',
-          value: 1139
-        },
-        {
-          name: '2018/09/07',
-          value: 816
-        },
-        {
-          name: '2018/09/08',
-          value: 327
-        },
-        {
-          name: '2018/09/09',
-          value: 228
-        },
-        {
-          name: '2018/09/10',
-          value: 1065
-        }
-      ]
+      todoList: [],
+      data: [],
+      totalData: {}, // 汇总
+      saleType: 0, //  0:近30天数据 1:近12个月数据
+      avgSaleAmount: 0,
+      chartData: {
+        columns: ['time', 'saleAmount'],
+        rows: [
+          // { '日期': '1/1', '当日销售': 1393}
+        ]
+      }
     }
+  },
+  mounted() {
+    // 汇总数据
+    this.getTotal()
+    // 销售数据
+    this.getSaleData()
+    // 代办清单查询
+    this.undolist()
   },
   computed: {
-    ...mapGetters([
-      'name'
-    ])
+    ...mapGetters(['companyId'])
   },
-  // created() {
-  //     this.handleListener();
-  //     this.changeDate();
-  // },
-  // activated() {
-  //     this.handleListener();
-  // },
-  // deactivated() {
-  //     window.removeEventListener('resize', this.renderChart);
-  //     bus.$off('collapse', this.handleBus);
-  // },
   methods: {
-    changeDate() {
-      const now = new Date().getTime()
-      this.data.forEach((item, index) => {
-        const date = new Date(now - (6 - index) * 86400000)
-        item.name = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+    getTotal() {
+      const params = {
+        companyId: this.companyId
+      }
+      getTotal(params).then(res => {
+        this.totalData = res.data
+      })
+    },
+    getSaleData() {
+      // 重置
+      this.chartData.rows = []
+
+      const params = {
+        companyId: this.companyId,
+        type: this.saleType 
+      }
+      getSaleData(params).then(res => {
+        
+
+        const {avgSaleAmount, dataVOS} = res.data
+        this.avgSaleAmount = avgSaleAmount
+        if(dataVOS.length > 0) {
+          dataVOS.map(item => {
+            item.saleAmount = item.saleAmount / 100
+          })
+
+          this.chartData.rows = dataVOS
+        }
+      })
+    },
+    undolist() {
+      const params = {
+        zbPage: {
+          current: 1,
+          size: 100
+        }
+      }
+      undolist(params).then(res => {
+
       })
     }
-    // handleListener() {
-    //     bus.$on('collapse', this.handleBus);
-    //     // 调用renderChart方法对图表进行重新渲染
-    //     window.addEventListener('resize', this.renderChart);
-    // },
-    // handleBus(msg) {
-    //     setTimeout(() => {
-    //         this.renderChart();
-    //     }, 200);
-    // },
-    // renderChart() {
-    //     this.$refs.bar.renderChart();
-    //     this.$refs.line.renderChart();
-    // }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+ul, li{
+  margin: 0;
+  padding: 0;
+  list-style:none;
+}
+.ve-echarts{
+  position: relative;
+  .avgSaleAmount{
+    position: absolute;
+    left: 0;
+    top: -7px;
+    font-size: 13px;
+    color: #999;
+    b{
+      font-size: 16px;
+      color: #666;
+    }
+  }
+}
+.todoUl {
+  li{
+    position: relative;
+    display: flex;
+    
+    font-size: 12px;
+    background: #FAECD8;
+    padding: 0 10px;
+    border:1px solid rgba(250,236,216,1);
+    border-radius:4px;
+    color: #EAA26F;
+    margin-bottom: 15px;
+    .icon-div{
+      
+      padding: 11px 5px 0 0;
+      i{
+        font-size: 16px;
+        color: #EAA26F;
+      }
+    }
+    .handle-btn{
+      position: absolute;
+      right: 5px;
+      top: 7px;
+      p{
+        margin:0;
+        padding:0;
+      }
+      i{
+        cursor: pointer;
+        font-size: 22px;
+        margin: 2px 0;
+      }
+      .el-icon-success{
+        color: #67C23A;
+        
+      }
+      .el-icon-error{
+        color: #FF3F1D;
+      }
+    }
+  }
+  li{
+    &.green{
+      background: #F0F9EB;
+      color: #67C23A;
+      .icon-div{
+        i{
+          font-size: 16px;
+          color: #67C23A;
+        }
+      }
+    }
+  }
+}
+.type-ve{
+  position: absolute;
+  right: 0;
+  top: 0;
+  /deep/ .el-radio{
+    margin-right: 10px;
+  }
+}
 .el-row {
     margin-bottom: 20px;
 }
