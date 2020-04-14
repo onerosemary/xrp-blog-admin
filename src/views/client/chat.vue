@@ -187,7 +187,7 @@ export default {
     createWebSocket(userId, toId) {
       try{
           if('WebSocket' in window){
-              this.wsUrl = `ws://120.25.247.94:8088/webSocket?fid=${userId}&toid=${toId}&eid=0&source=1`
+              this.wsUrl = `${process.env.VUE_APP_BASE_WS}/webSocket?fid=${userId}&toid=${toId}&eid=0&source=1`
               
               this.ws = new WebSocket(this.wsUrl)
           }else if('MozWebSocket' in window){  
