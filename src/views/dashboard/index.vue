@@ -34,7 +34,7 @@
                 <i class="el-icon-lx-goods grid-con-icon el-icon-coin" />
                 <div class="grid-cont-right">
                   <div class="grid-num">{{totalData.totalAmont / 100}}</div>
-                  <div>收入(万元)</div>
+                  <div>收入(元)</div>
                   <p v-if="totalData.totalYesterdayAmont" class="grid-sub">昨日 {{totalData.totalYesterdayAmont  / 100}}</p>
                 </div>
               </div>
@@ -72,7 +72,7 @@
                 <i class="el-icon-lx-goods grid-con-icon el-icon-document-remove" />
                 <div class="grid-cont-right">
                   <div class="grid-num">{{totalData.rakeback / 100}}</div>
-                  <div>返佣(万元)</div>
+                  <div>返佣(元)</div>
                   <p v-if="totalData.rakebackYesterday" class="grid-sub">昨日 {{totalData.rakebackYesterday / 100}}</p>
                 </div>
               </div>
