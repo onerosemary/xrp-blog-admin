@@ -54,6 +54,15 @@ export function seckillUpdate(data) {
     })
 }
 
+// 秒杀 推荐首页
+export function seckillIsShow(params) {
+    return request({
+        url: '/pc/seckill/isShow',
+        method: 'get',
+        params
+    })
+}
+
 //拼团列表
 export function assembleList(data) {
     return request({
@@ -104,6 +113,15 @@ export function assembleUpdown(params) {
 export function assembleDetails(params) {
     return request({
         url: '/pc/assemble/details',
+        method: 'get',
+        params
+    })
+}
+
+// 拼团首页推荐
+export function assembleTopShow(params) {
+    return request({
+        url: '/pc/assemble/topShow',
         method: 'get',
         params
     })

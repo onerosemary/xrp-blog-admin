@@ -144,11 +144,25 @@ export const constantRoutes = [
         component: () => import('@/views/client/list'),
         meta: { title: '客户列表', icon: 'table' }
       },
+      { // 客户详情 (new)
+        path: 'clientDetail',
+        name: 'clientDetail',
+        hidden: true,
+        component: () => import('@/views/client/clientDetail'),
+        meta: { title: '客户详情', icon: 'table' }
+      },
       {
         path: 'chat',
         name: 'Chat',
         component: () => import('@/views/client/chat'),
         meta: { title: '客户咨询', icon: 'table' }
+      },
+      { // 客服聊天设置 (new)
+        path: 'chatSet',
+        name: 'chatSet',
+        hidden: true,
+        component: () => import('@/views/client/chatSet'),
+        meta: { title: '客服设置', icon: 'table' }
       }
     ]
   },
@@ -298,8 +312,8 @@ export const constantRoutes = [
       }
     ]
   },
-  { // 新增
-    path: '/systemLog',
+  {
+    path: '/systemLog', // (new)
     component: Layout,
     redirect: '/systemLog',
     children: [{

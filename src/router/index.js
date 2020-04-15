@@ -7,52 +7,35 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 export const constantRoutes = [
-  {
-    path: '/client',
-    component: Layout,
-    redirect: '/client',
-    name: 'client',
-    meta: { title: '客户管理', icon: 'example' },
-    children: [
-      {
-        path: 'list',
-        name: 'List',
-        component: () => import('@/views/client/list'),
-        meta: { title: '客户列表', icon: 'table' }
-      },
-      { // 客户详情 (new)
-        path: 'clientDetail',
-        name: 'clientDetail',
-        hidden: true,
-        component: () => import('@/views/client/clientDetail'),
-        meta: { title: '客户详情', icon: 'table' }
-      },
-      {
-        path: 'chat',
-        name: 'Chat',
-        component: () => import('@/views/client/chat'),
-        meta: { title: '客户咨询', icon: 'table' }
-      },
-      { // 客服聊天设置 (new)
-        path: 'chatSet',
-        name: 'chatSet',
-        hidden: true,
-        component: () => import('@/views/client/chatSet'),
-        meta: { title: '客服设置', icon: 'table' }
-      }
-    ]
-  },
-  {
-    path: '/systemLog', // (new)
-    component: Layout,
-    redirect: '/systemLog',
-    children: [{
-      path: 'systemLog',
-      name: 'systemLog',
-      component: () => import('@/views/systemLog/index'),
-      meta: { title: '系统日志', icon: 'dashboard' }
-    }]
-  },
+  // {
+  //   path: '/homepage',
+  //   component: Layout,
+  //   redirect: '/homepage',
+  //   name: 'client',
+  //   meta: { title: 'APP首页管理', icon: 'example' },
+  //   children: [
+  //     {
+  //       path: 'banner',
+  //       name: 'banner',
+  //       component: () => import('@/views/homepage/banner'),
+  //       meta: { title: 'banner', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'bannerHandle',
+  //       name: 'bannerHandle',
+  //       hidden: true,
+  //       component: () => import('@/views/homepage/bannerHandle'),
+  //       meta: { title: 'banner管理', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'popups',
+  //       name: 'popups',
+  //       component: () => import('@/views/homepage/popups'),
+  //       meta: { title: '活动弹窗', icon: 'table' }
+  //     }
+  //   ]
+  // },
+  
   {
     path: '/login',
     component: () => import('@/views/login/index'),

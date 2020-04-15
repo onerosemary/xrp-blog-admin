@@ -28,8 +28,9 @@
           {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="封面" width="100">
+      <el-table-column label="封面" width="100" class-name="name-store">
           <template slot-scope="scope">
+            <div class="self" v-if="scope.row.isShow === 1">推荐首页</div>
             <img class="list-img" :src="scope.row.cover" />
           </template>
       </el-table-column>
@@ -71,8 +72,18 @@
           {{scope.row.createTime}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="225">
+      <el-table-column label="操作" width="320">
         <template slot-scope="scope">
+          <el-button  
+            v-if="scope.row.isShow === 0"
+            size="mini"
+            @click="recommendIndex(scope.row)"
+          >推荐首页</el-button>
+          <el-button  
+            v-if="scope.row.isShow === 1"
+            size="mini"
+            @click="recommendIndex(scope.row)"
+          >取消推荐</el-button>
           <el-button
             v-has="'seckillUpDown'"
             v-if="parseInt(scope.row.status) === 0"
@@ -115,7 +126,7 @@
 <script>
 import goodsType from '@/components/goodsType'
 import datePicker from '@/components/datePicker'
-import { seckillList, isNewIndex, seckillIsOn, seckillIsDelete } from '@/api/actives'
+import { seckillList, seckillIsShow, seckillIsOn, seckillIsDelete } from '@/api/actives'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
@@ -145,23 +156,19 @@ export default {
   methods: {
     // 推荐首页
     recommendIndex(row) {
-      const { id, isNew } = row
-      const text = parseInt(isNew) === 0 ? '推荐首页' : '取消推荐'
+      const { id, isShow } = row
+      const text = parseInt(isShow) === 0 ? '推荐首页' : '取消推荐'
       const params = {
         id,
-        isNew: parseInt(isNew) === 0 ? 1 : 0 // 0 不是新品 1 是新品
+        isShow: parseInt(isShow) === 0 ? 1 : 0 // 0 不是首页 1 是首页
       }
-      isNewIndex(params).then(res => {
+      seckillIsShow(params).then(res => {
         this.$message({
           message: `${text}, 成功！`,
           type: 'success'
         })
-        // 更新当前 row
-        this.tableData.forEach((item, index) => {
-           if(parseInt(item.id) === parseInt(id)){
-             this.$set(this.tableData[index], 'isNew', params.isNew)
-           }
-        })
+        // 更新列表
+        this.getList()
       })
     },
     deleteHandle(id) {
@@ -272,5 +279,22 @@ export default {
   .el-dropdown-link{
     cursor: pointer;
     font-size: 12px;
+  }
+  /deep/.name-store{
+    position: relative;
+    overflow: hidden;
+  }
+  .self{
+    position: absolute;
+    background: #409EFF;
+    height: 20px;
+    color: #fff;
+    width: 100px;
+    transform: rotate(45deg);
+    top: 8px;
+    text-align: center;
+    line-height: 20px;
+    right: -33px;
+    font-size: 10px;
   }
 </style>

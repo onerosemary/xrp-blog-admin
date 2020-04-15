@@ -62,8 +62,12 @@
           {{scope.row.createTime}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="225">
+      <el-table-column label="操作" width="320">
         <template slot-scope="scope">
+          <el-button  
+            size="mini"
+            @click="recommendIndex(scope.row)"
+          >推荐首页</el-button>
           <el-button
             v-has="'groupUpDown'"
             v-if="parseInt(scope.row.status) === 0"
@@ -105,7 +109,7 @@
 
 <script>
 import datePicker from '@/components/datePicker'
-import { assembleList, isNewIndex, isOn, assembleDelete, assembleUpdown } from '@/api/actives'
+import { assembleList, assembleTopShow, isOn, assembleDelete, assembleUpdown } from '@/api/actives'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
@@ -134,13 +138,14 @@ export default {
   methods: {
     // 推荐首页
     recommendIndex(row) {
+      // 列表 应该回复 是否推荐首页字段 
       const { id, isNew } = row
       const text = parseInt(isNew) === 0 ? '推荐首页' : '取消推荐'
       const params = {
-        id,
-        isNew: parseInt(isNew) === 0 ? 1 : 0 // 0 不是新品 1 是新品
+        assembleId: id,
+        status: parseInt(isNew) === 0 ? 1 : 0 // 0 不是新品 1 是新品
       }
-      isNewIndex(params).then(res => {
+      assembleTopShow(params).then(res => {
         this.$message({
           message: `${text}, 成功！`,
           type: 'success'
