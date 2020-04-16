@@ -138,7 +138,7 @@ function generaFn(routers, data) {
         path: item.value === '/' ? 'dashboard' : item.value,
         name: item.value === '/' ? 'dashboard' : item.value,
         component: () => import(`@/views${comp}/index.vue`), // (注意坑)(当前解决方案, 指定版本 "babel-eslint": "^7.2.3",)报错 https://blog.csdn.net/weixin_42406046/article/details/103718293
-        meta: { title: item.name, icon: 'example' }
+        meta: { title: item.name, icon: item.icon }
       }]
       let redirectOne = item.value === '/' ? '/dashboard' : ('/' + item.value)
 
@@ -149,7 +149,7 @@ function generaFn(routers, data) {
           component: Layout,
           redirect: redirectOne,
           name: item.value === '/' ? 'dashboard' : item.value,
-          meta: { title: item.name, icon: 'example' },
+          meta: { title: item.name, icon: item.icon },
           children: !item.isNext ? childrenOne : [] // 判断一级单独的一级菜单(主要避免有二级的菜单，没有选列表，只选择 二级菜单 比如添加按钮)
         }
 

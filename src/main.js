@@ -19,6 +19,8 @@ import '@/permission' // permission control
 
 import '@/config/index' // 全局url等配置
 
+import '@/iconfont/iconfont.css'
+
 import VCharts from 'v-charts'
 Vue.use(VCharts)
 

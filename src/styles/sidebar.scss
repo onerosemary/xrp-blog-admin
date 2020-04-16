@@ -69,6 +69,21 @@
       &:hover {
         background-color: $menuHover !important;
       }
+      .iconfont{
+        color: #fff;
+        font-size: 16px;
+        display: inline-block;
+        margin-right: 5px;
+        &.iconshouye{
+          font-size: 13px;
+        }
+        &.iconshangpin{
+          font-size: 17px;
+        }
+        &.iconweb-icon-{
+          font-size: 20px;
+        }
+      }
     }
 
     .is-active>.el-submenu__title {

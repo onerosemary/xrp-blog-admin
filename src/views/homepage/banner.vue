@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="handle-box" v-if="tableData.length < 6">
-      <el-button v-has="'couponAdd'" type="primary" size="small" @click="handle(-1)">添加banner</el-button>
+      <el-button v-has="'bannerAdd'" type="primary" size="small" @click="handle(-1)">添加banner</el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -59,17 +59,17 @@
       <el-table-column label="操作" width="330">
         <template slot-scope="scope">
           <el-button
-            v-has="'couponOrder'"
+            v-has="'bannerOrder'"
             size="mini"
             @click="bannerOrder(scope.row)"
           >修改顺序</el-button>
           <el-button
-            v-has="'couponUpdate'"
+            v-has="'bannerUpdate'"
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
-            v-has="'couponDelete'"
+            v-has="'bannerDelete'"
             size="mini"
             @click="bannerDelete(scope.row.id)"
           >删除</el-button>

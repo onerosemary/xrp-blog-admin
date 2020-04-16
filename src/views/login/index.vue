@@ -105,11 +105,11 @@ export default {
             this.loading = false
 
           }).catch((err) => {
-
+            this.loading = false
             if (err) {
               throw err
             }
-            this.loading = false
+            
           })
         } else {
           console.log('error submit!!')

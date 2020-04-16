@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      title: '瑞澜医美后台管理系统',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: '后台管理系统',
+      logo: require('../../../assets/logo.png')
     }
   }
 }
@@ -55,10 +55,9 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 32px;
-      height: 32px;
+      width: 50px;
+      height: 50px;
       vertical-align: middle;
-      margin-right: 12px;
     }
 
     & .sidebar-title {
@@ -66,7 +65,7 @@ export default {
       margin: 0;
       color: #fff;
       font-weight: lighter;
-      line-height: 50px;
+      // line-height: 50px;
       font-size: 15px;
       font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;

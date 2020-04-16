@@ -103,22 +103,26 @@
           </div>
           <ul class="todoUl">
             <!-- 处理过 -->
-            <li class="green">
+            <!-- <li class="green">
               <div class="icon-div"><i class="el-icon-success"></i></div>
               <div>
                 <p>返佣订单：XXXXXXX(订单商品名）</p>
                 <p>订单金额：￥199 丨  返佣金额：￥19 丨 分销人：xxxx </p>
               </div>
-            </li>
-            <li>
+            </li> -->
+            <li v-for="(item, index) in undolistData" :key="index">
               <div class="icon-div"><i class="el-icon-warning"></i></div>
-              <div>
-                <p>退款订单：XXXXXXX(订单商品名） </p>
-                <p> 订单金额：￥199 丨 退款金额：￥159 丨 退款人：xxxx </p>
+              <div v-if="parseInt(item.undoType) === 1">
+                <p>退款订单：{{item.goodsName}}(订单商品名） </p>
+                <p> 订单金额：￥{{item.orderAmount / 100}} 丨 退款金额：￥{{item.realAmount / 100}} 丨 退款人：{{item.customerName}} </p>
+              </div>
+              <div v-if="parseInt(item.undoType) === 2">
+                <p>返佣订单：{{item.goodsName}}(订单商品名） </p>
+                <p> 订单金额：￥{{item.orderAmount / 100}} 丨 返佣金额：￥{{item.realAmount / 100}} 丨 分销人：{{item.customerName}} </p>
               </div>
               <div class="handle-btn">
-                <p><i class="el-icon-success" title="同意"></i></p>
-                <p><i class="el-icon-error" title="拒绝"></i></p>
+                <p><i class="el-icon-success" title="同意" @click="checkTodo(item)"></i></p>
+                <p><i class="el-icon-error" title="拒绝" @click="checkTodo(item)"></i></p>
               </div>
             </li>
             
@@ -156,7 +160,8 @@ export default {
         rows: [
           // { '日期': '1/1', '当日销售': 1393}
         ]
-      }
+      },
+      undolistData: []
     }
   },
   mounted() {
@@ -171,6 +176,14 @@ export default {
     ...mapGetters(['companyId'])
   },
   methods: {
+    //  待办清单
+    checkTodo(item, isOk) {
+      if(item.undoType === 1 && isOk) { // 退款 同意
+
+      }else if(item.undoType === 1 && isOk) { // 退款 不同意
+
+      }
+    },
     getTotal() {
       const params = {
         companyId: this.companyId
@@ -209,7 +222,8 @@ export default {
         }
       }
       undolist(params).then(res => {
-
+        const {records, pages} = res.data
+        this.undolistData = records
       })
     }
   }
@@ -257,11 +271,12 @@ ul, li{
       }
     }
     .handle-btn{
+      display: flex;
       position: absolute;
       right: 5px;
       top: 7px;
       p{
-        margin:0;
+        margin:0 5px;
         padding:0;
       }
       i{

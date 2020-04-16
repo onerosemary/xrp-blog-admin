@@ -25,8 +25,9 @@
           {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="封面" width="100">
+      <el-table-column label="封面" width="100" class-name="name-store">
           <template slot-scope="scope">
+            <div class="self" v-if="scope.row.topShow === 1">推荐首页</div>
             <img class="list-img" :src="scope.row.cover" />
           </template>
       </el-table-column>
@@ -65,9 +66,15 @@
       <el-table-column label="操作" width="320">
         <template slot-scope="scope">
           <el-button  
+            v-if="scope.row.topShow === 0"
             size="mini"
             @click="recommendIndex(scope.row)"
           >推荐首页</el-button>
+          <el-button  
+            v-if="scope.row.topShow === 1"
+            size="mini"
+            @click="recommendIndex(scope.row)"
+          >取消推荐</el-button>
           <el-button
             v-has="'groupUpDown'"
             v-if="parseInt(scope.row.status) === 0"
@@ -139,23 +146,19 @@ export default {
     // 推荐首页
     recommendIndex(row) {
       // 列表 应该回复 是否推荐首页字段 
-      const { id, isNew } = row
-      const text = parseInt(isNew) === 0 ? '推荐首页' : '取消推荐'
+      const { id, topShow } = row
+      const text = parseInt(topShow) === 0 ? '推荐首页' : '取消推荐'
       const params = {
         assembleId: id,
-        status: parseInt(isNew) === 0 ? 1 : 0 // 0 不是新品 1 是新品
+        status: parseInt(topShow) === 0 ? 1 : 0 // 0 不是首页 1 是首页
       }
       assembleTopShow(params).then(res => {
         this.$message({
           message: `${text}, 成功！`,
           type: 'success'
         })
-        // 更新当前 row
-        this.tableData.forEach((item, index) => {
-           if(parseInt(item.id) === parseInt(id)){
-             this.$set(this.tableData[index], 'isNew', params.isNew)
-           }
-        })
+        // 更新列表
+        this.getList()
       })
     },
     deleteHandle(assembleId) {
@@ -266,5 +269,22 @@ export default {
   .el-dropdown-link{
     cursor: pointer;
     font-size: 12px;
+  }
+  /deep/.name-store{
+    position: relative;
+    overflow: hidden;
+  }
+  .self{
+    position: absolute;
+    background: #409EFF;
+    height: 20px;
+    color: #fff;
+    width: 100px;
+    transform: rotate(45deg);
+    top: 8px;
+    text-align: center;
+    line-height: 20px;
+    right: -33px;
+    font-size: 10px;
   }
 </style>
