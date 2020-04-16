@@ -70,6 +70,12 @@
                 <el-input v-model="form.stock" size="small" placeholder="请填写" />
             </el-form-item>
         </div>
+        <el-form-item label="设为用户资料补充奖励" prop="isPerfect" style="width: 605px">
+            <el-radio-group v-model="form.isPerfect">
+              <el-radio :label="0">否</el-radio>
+              <el-radio :label="1">是</el-radio>
+            </el-radio-group>
+        </el-form-item>
       <el-form-item class="create-btn">
         <el-button type="primary" @click="submitForm('form')">保存</el-button>
       </el-form-item>
@@ -98,6 +104,7 @@ export default {
         minPrice: '', // 满减券：最低消费价格
         stock: '', // 总库存数量
         isShow: 0, // 是否首页弹框展示 0:否 1:是
+        isPerfect: 0, // 0:否 1:是
       },
       pickerOptions: {
           disabledDate(time) { // 禁止当前日期前一天
@@ -151,7 +158,7 @@ export default {
     discountGetInfo() {
       discountGetInfo({id: this.queryId}).then(res => {
         console.log('res.data---', res.data)
-        let { id, title, couponPrice, couponType, endTime, goodsId, limitCnt, minPrice, stock, goodsCover, isShow } = res.data
+        let { id, title, couponPrice, couponType, endTime, goodsId, limitCnt, minPrice, stock, goodsCover, isShow, isPerfect } = res.data
         this.goodsCover = this.imgUrl + goodsCover // 商品封面
         this.form = {
             id, // 编辑id
@@ -163,7 +170,8 @@ export default {
             limitCnt, // 每人限领数量
             minPrice: minPrice / 100, // 满减券：最低消费价格
             stock, // 总库存数量
-            isShow // 是否首页弹框展示 0:否 1:是
+            isShow, // 是否首页弹框展示 0:否 1:是
+            isPerfect
         }
       })
     },
