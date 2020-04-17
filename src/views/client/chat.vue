@@ -26,7 +26,8 @@
              <div class="person-header"><img class="list-img" :src="imgUrl + item.customerrHeadPic" /></div>
              <div class="person-text">
                <div class="person-name">{{item.customerNickname}}</div>
-               <p><el-badge :value="item.messageCount" class="item badge-num">{{item.lastContent}}</el-badge></p>
+               <p  v-if="Number(item.messageCount) > 0" ><el-badge :value="item.messageCount" class="item badge-num">{{item.lastContent}}</el-badge></p>
+               <p v-else>{{item.lastContent}}</p>
              </div>
            </li>
          </ul>
