@@ -80,7 +80,7 @@
             size="mini"
             @click="recommendIndex(scope.row)"
           >取消推荐</el-button>
-          <el-dropdown @command="handleCommand">
+          <el-dropdown @command="handleCommand" v-has="'productDown' || 'productUp' || 'productUpdate' || 'productDelete'">
             <span class="el-dropdown-link cblue">
               更多<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
