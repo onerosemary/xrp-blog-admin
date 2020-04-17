@@ -22,6 +22,10 @@ export default {
         all: { // 是否显示全部
             type: Boolean,
             default: true
+        },
+        door: { // 当前用户是超级管理员roleId=1  选择的companyId不等于1 则角色只显示 门店管理员 选项
+            type: Boolean,
+            default: true
         }
     },
     watch: {
@@ -29,6 +33,9 @@ export default {
             if(val){
                 this.value = parseInt(val)
             }
+        },
+        door(val){
+            this.getList()
         }
     },
     mounted () {
@@ -50,7 +57,12 @@ export default {
                         name: '全部'
                     })
                 }
-                this.dataList = res.data.records
+                if(!this.door) { // 门店管理员
+                   this.dataList =  res.data.records.filter(item => item.id === 2)
+                }else {
+                    this.dataList = res.data.records
+                }
+                
             })
         },
         change() {

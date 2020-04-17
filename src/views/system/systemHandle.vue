@@ -14,10 +14,11 @@
       </el-form-item>
       <div class="group-item">
         <el-form-item label="门店" prop="companyId">
-            <store-list :cid="form.companyId" @change="storeListChange"></store-list>
+            <store-list :cid="String(form.companyId)" @change="storeListChange"></store-list>
         </el-form-item>
         <el-form-item label="角色" prop="roleId">
-            <role-list :cid="form.roleId" :all="false" @change="changeRole"></role-list>
+            <!-- 当前用户是超级管理员roleId=1  选择的companyId不等于1 则角色只显示 门店管理员 选项 -->
+            <role-list :door="$store.getters.companyId === 1 &&  String(form.companyId) === '1'" :cid="form.roleId" :all="false" @change="changeRole"></role-list>
         </el-form-item>
       </div>
       <el-form-item label="备注" prop="remark">
