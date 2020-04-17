@@ -3,6 +3,7 @@
     <div class="handle-box">
       <goods-type @change="goodsTypeChange"></goods-type>
       <el-select v-model="query.status" placeholder="状态" @change="getList" class="handle-select mr10" size="small">
+        <el-option label="全部" value="null" />
         <el-option label="上架" value="1" />
         <el-option label="下架" value="0" />
         <el-option label="推荐首页" value="2" />

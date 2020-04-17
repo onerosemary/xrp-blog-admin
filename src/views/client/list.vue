@@ -20,7 +20,7 @@
 
       <el-input v-model="query.name" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button type="primary" size="small" @click="clientClearAllPoints">清空所有积分</el-button>
+      <el-button v-has="'customerClearAll'"  type="primary" size="small" @click="clientClearAllPoints">清空所有积分</el-button>
 
     </div>
     <el-table
@@ -77,19 +77,23 @@
       <el-table-column label="操作" width="280">
         <template slot-scope="scope">
           <el-button
+             v-has="'clientDetail'" 
             type="text"
             size="mini"
             @click="handleDetail(scope.row.id)"
             >详情</el-button>
           <el-button
+             v-has="'customerClear'" 
             size="mini"
             @click="clientClearPoints(scope.row.id)"
           >清空积分</el-button>
           <el-button
+            v-has="'customerUpdate'" 
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
+            v-has="'customerDelete'" 
             size="mini"
             @click="clientDeletet(scope.row.id)"
           >删除</el-button>

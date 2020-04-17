@@ -2,7 +2,7 @@
   <div class="container">
     <div class="chat-title">
       <h4>客户咨询</h4>
-      <router-link class="set" to="/client/chatSet"><i class="el-icon-setting"></i>设置</router-link>
+      <router-link v-has="'serviceAdd'" class="set" to="/client/chatSet"><i class="el-icon-setting"></i>设置</router-link>
     </div>
     <div class="chat-box" v-if="leftListData.length > 0 || searchText">
       <div class="chat-left">
@@ -23,7 +23,7 @@
          infinite-scroll-disabled="disabled">
            <li v-for="(item, index) in leftListData" :key="index" @click="rightList(item, $event)">
              <div class="chat-time">{{item.receiveTime}}</div>
-             <div class="person-header"><img class="list-img" :src="item.customerrHeadPic" /></div>
+             <div class="person-header"><img class="list-img" :src="imgUrl + item.customerrHeadPic" /></div>
              <div class="person-text">
                <div class="person-name">{{item.customerNickname}}</div>
                <p><el-badge :value="item.messageCount" class="item badge-num">{{item.lastContent}}</el-badge></p>
@@ -50,7 +50,7 @@
               <!-- 商品信息 -->
               <div class="client-msg shopping-msg" v-if="parseInt(Ritem.type) === 1">
                 <div class="client-header">
-                  <img class="list-img" :src="Ritem.customerrHeadPic" />
+                  <img class="list-img" :src="imgUrl + Ritem.customerrHeadPic" />
                   <p>{{Ritem.sendTime}}</p>
                 </div>
                 <div class="shopping-send-msg">
@@ -63,7 +63,7 @@
               <!-- 客户发送过来 -->
               <div class="client-msg" v-if="(parseInt(Ritem.type) === 0 || parseInt(Ritem.type) === 2) && Ritem.fromOrTo === 0">
                 <div class="client-header">
-                  <img class="list-img" :src="Ritem.customerrHeadPic" />
+                  <img class="list-img" :src="imgUrl + Ritem.customerrHeadPic" />
                   <p>{{Ritem.sendTime}}</p>
                 </div>
                 <div class="client-send-msg">
@@ -165,11 +165,15 @@ export default {
   },
   beforeDestroy() {
       window.removeEventListener('resize', this.resize, true)
-      window.removeEventListener('scroll', this.resize, true)
+      window.removeEventListener('scroll', this.onscroll, true)
+      // 离开 关闭ws
+      this.lockReconnect = true
+      this.ws.close()
   },
   methods: {
     //  监听聊天窗口滚动事件
     onscroll: debounce(function() {
+
         // 判断是否滚动到顶部
         const myScrollbar = this.$refs['myScrollbar'].wrap.scrollHeight // 记录滚动条总高度
         const scrollTop = this.$refs['myScrollbar'].wrap.scrollTop // 记录当前滚动位置

@@ -20,7 +20,7 @@
 
       <el-table-column label="封面图片">
         <template slot-scope="scope">
-            <img class="list-img" :src="scope.row.cover" />
+            <img class="list-img" :src="imgUrl + scope.row.cover" />
         </template>
       </el-table-column>
       <el-table-column label="类型">
@@ -30,9 +30,16 @@
             <span v-if="parseInt(scope.row.bannerType) === 2">优惠券列表</span>
           </template>
       </el-table-column>
-      <el-table-column label="外链地址">
+      <el-table-column label="外链地址" width="200">
         <template slot-scope="scope">
-          {{scope.row.bannerUrl}}
+          <el-popover
+            placement="left-end"
+            width="200"
+            title="链接"
+            trigger="hover"
+            :content="scope.row.bannerUrl">
+            <el-button type="text" slot="reference" class="banner-url">{{scope.row.bannerUrl}}</el-button>
+          </el-popover>
         </template>
       </el-table-column>
 
@@ -209,6 +216,15 @@ export default {
 <style lang="scss" scoped>
     .handle-box{
         text-align: right;
+    }
+    /deep/.banner-url{
+     width: 180px;
+     overflow: hidden;
+      text-overflow:ellipsis;
+      white-space: nowrap;
+     span{
+       font-size: 12px;
+     }
     }
   .el-dropdown-link{
     cursor: pointer;
