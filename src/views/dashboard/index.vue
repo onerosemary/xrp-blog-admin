@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <el-radio-group v-model="globalType" size="medium" class="global-box" @change="handleGlobal">
+      <el-radio-button :label="0" >自己店</el-radio-button>
+      <el-radio-button :label="1">所有店汇总</el-radio-button>
+    </el-radio-group>
     <el-row :gutter="20">
       <el-col :span="15">
         <el-row :gutter="20" class="mgb20">
@@ -149,6 +153,7 @@ export default {
       }
     }
     return {
+      globalType: 0, 
       indexImg: require('@/static/login-bg.jpg'),
       todoList: [],
       data: [],
@@ -176,6 +181,13 @@ export default {
     ...mapGetters(['companyId'])
   },
   methods: {
+    handleGlobal() {
+      // 自己店/汇总店 切换
+      // 汇总数据
+      this.getTotal()
+      // 销售数据
+      this.getSaleData()
+    },
     //  待办清单
     checkTodo(item, isOk) {
       if(item.undoType === 1 && isOk) { // 退款 同意
@@ -185,8 +197,9 @@ export default {
       }
     },
     getTotal() {
+      
       const params = {
-        companyId: this.companyId
+        companyId: this.globalType === 0 ? this.companyId: null
       }
       getTotal(params).then(res => {
         this.totalData = res.data
@@ -197,7 +210,7 @@ export default {
       this.chartData.rows = []
 
       const params = {
-        companyId: this.companyId,
+        companyId: this.globalType === 0 ? this.companyId: null,
         type: this.saleType 
       }
       getSaleData(params).then(res => {
@@ -235,6 +248,9 @@ ul, li{
   margin: 0;
   padding: 0;
   list-style:none;
+}
+.global-box{
+  margin-bottom: 15px;
 }
 .ve-echarts{
   position: relative;
@@ -289,7 +305,7 @@ ul, li{
         
       }
       .el-icon-error{
-        color: #FF3F1D;
+        color: #409EFF;
       }
     }
   }
@@ -354,7 +370,7 @@ ul, li{
 }
 
 .grid-con-1 .grid-num {
-    color: #FF3F1D;
+    color: #409EFF;
 }
 
 .grid-con-2 .grid-con-icon {
@@ -363,7 +379,7 @@ ul, li{
 }
 
 .grid-con-2 .grid-num {
-    color: #FF3F1D;
+    color: #409EFF;
 }
 
 .grid-con-3 .grid-con-icon {
@@ -372,7 +388,7 @@ ul, li{
 }
 
 .grid-con-3 .grid-num {
-    color: #FF3F1D;
+    color: #409EFF;
 }
 
 .user-info {
