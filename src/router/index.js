@@ -7,35 +7,18 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 export const constantRoutes = [
-  // {
-  //   path: '/homepage',
-  //   component: Layout,
-  //   redirect: '/homepage',
-  //   name: 'client',
-  //   meta: { title: 'APP首页管理', icon: 'example' },
-  //   children: [
-  //     {
-  //       path: 'banner',
-  //       name: 'banner',
-  //       component: () => import('@/views/homepage/banner'),
-  //       meta: { title: 'banner', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'bannerHandle',
-  //       name: 'bannerHandle',
-  //       hidden: true,
-  //       component: () => import('@/views/homepage/bannerHandle'),
-  //       meta: { title: 'banner管理', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'popups',
-  //       name: 'popups',
-  //       component: () => import('@/views/homepage/popups'),
-  //       meta: { title: '活动弹窗', icon: 'table' }
-  //     }
-  //   ]
-  // },
-  
+  {
+    path: '/password',
+    component: Layout,
+    redirect: '/password',
+    children: [{
+      path: 'password',
+      name: 'password',
+      component: () => import('@/views/password/index'),
+      hidden: true,
+      meta: { title: '修改密码'}
+    }]
+  },
   {
     path: '/login',
     component: () => import('@/views/login/index'),

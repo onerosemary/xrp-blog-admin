@@ -14,11 +14,9 @@
         </div>
 
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              个人中心
-            </el-dropdown-item>
-          </router-link>
+          <el-dropdown-item @click.native="linkUrl">
+            修改密码
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出登录</span>
           </el-dropdown-item>
@@ -47,6 +45,11 @@ export default {
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
+    },
+    linkUrl(){
+      this.$router.push({
+        path: '/password/password'
+      })
     },
     async logout() {
       await this.$store.dispatch('user/logout')

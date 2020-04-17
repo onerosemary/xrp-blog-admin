@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <el-radio-group v-model="globalType" size="medium" class="global-box" @change="handleGlobal">
+    <el-radio-group v-has="'allCompanySum'" v-model="globalType" size="medium" class="global-box" @change="handleGlobal">
       <el-radio-button :label="0" >自己店</el-radio-button>
       <el-radio-button :label="1">所有店汇总</el-radio-button>
     </el-radio-group>

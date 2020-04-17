@@ -17,9 +17,10 @@ export function getInfo() {
 }
 
 // 修改登录人密码
-export function updatePwd() {
+export function updatePwd(params) {
   return request({
     url: '/pc/user/updatePwd',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
