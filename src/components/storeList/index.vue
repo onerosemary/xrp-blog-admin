@@ -44,10 +44,13 @@ export default {
                 }
             }
             storeList(data).then(res => {
-                // res.data.records.unshift({
-                //     id: null,
-                //     name: '全部'
-                // })
+                if(!this.cid) {
+                    res.data.records.unshift({
+                        id: null,
+                        name: '全部'
+                    })
+                }
+                
                 this.dataList = res.data.records
             })
         },
