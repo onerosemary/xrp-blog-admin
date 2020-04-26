@@ -87,11 +87,11 @@
             size="mini"
             @click="clientClearPoints(scope.row.id)"
           >清空积分</el-button>
-          <el-button
+          <!-- <el-button
             v-has="'customerUpdate'" 
             size="mini"
             @click="handle(scope.row.id)"
-          >编辑</el-button>
+          >编辑</el-button> -->
           <el-button
             v-has="'customerDelete'" 
             size="mini"
@@ -288,14 +288,14 @@ export default {
       })
     },
     // 添加/编辑 跳转
-    handle(id) {
-      this.$router.push({
-        path: '/actives/discountHandle',
-        query: {
-          id: id
-        }
-      })
-    }
+    // handle(id) {
+    //   this.$router.push({
+    //     path: '/actives/discountHandle',
+    //     query: {
+    //       id: id
+    //     }
+    //   })
+    // }
   }
 }
 </script>

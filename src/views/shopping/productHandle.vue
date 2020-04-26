@@ -10,7 +10,7 @@
         <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess" :amount="5" :cover="true"></upload>
       </el-form-item>
       <el-form-item label="商品名称" prop="title">
-          <el-input v-model="form.title" size="small" placeholder="请填写" />
+          <el-input v-model="form.title" size="small" placeholder="请填写" maxlength="32" show-word-limit/>
       </el-form-item>
       <el-form-item>
         <div class="title"><span class="first">规格</span><span>原价</span><span>现价</span><span>库存</span></div>
