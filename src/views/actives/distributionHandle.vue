@@ -7,7 +7,7 @@
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="选择分销商品" prop="cover">
-        <select-goods :cover="form.cover" @change="changeGood"></select-goods>
+        <select-goods :cover="form.cover" :goodTitle="form.title" @change="changeGood"></select-goods>
       </el-form-item>
       <div class="group-item">
         <el-form-item label="时间设置" prop="time">
@@ -78,6 +78,7 @@ export default {
         endTime: '', // 结束时间
         goodsId: '', // 商品id
         cover: '', // 商品封面
+        title: '',
         properties: [], // 商品规格
         title: '' // 商品名称
       },
@@ -163,7 +164,7 @@ export default {
     //  获取拼团详情信息
     distributionDetail() {
       distributionDetail({distId: this.queryId}).then(res => {
-        let { id, goodsId, cover, startTime, endTime, properties } = res.data
+        let { id, goodsId, cover, startTime, endTime, properties, title } = res.data
         properties.forEach(item => { // 价格 单位 元
           item.goodsId = goodsId
           item.oriPrice = item.oriPrice / 100
@@ -182,6 +183,7 @@ export default {
             startTime, // 开始时间
             endTime, // 结束时间
             properties, // 商品规格
+            title
         }
       })
     },

@@ -7,7 +7,7 @@
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="选择拼团商品" prop="cover">
-        <select-goods :cover="form.cover" @change="changeGood"></select-goods>
+        <select-goods :cover="form.cover" :goodTitle="form.title" @change="changeGood"></select-goods>
       </el-form-item>
       <div class="group-item">
         <el-form-item label="开团人数" prop="needPeop">
@@ -76,6 +76,7 @@ export default {
       form: {
         goodsId: '', // 商品id
         cover: '', // 商品封面
+        title: '', // 商品标题
         needPeop: '', // 开团人数
         // endTime: '', // 拼团开始时间
         joinPeop: '', // 已参数人数
@@ -155,7 +156,7 @@ export default {
     //  获取拼团详情信息
     assembleDetails() {
       assembleDetails({assembleId: this.queryId}).then(res => {
-        const { id, goodsId, cover, needPeop, joinPeop, properties } = res.data
+        const { id, goodsId, cover, needPeop, joinPeop, properties, title } = res.data
         properties.forEach(item => { // 价格 单位 元
           item.oriPrice = item.oriPrice / 100
           item.price = item.price / 100
@@ -169,6 +170,7 @@ export default {
             // endTime, // 拼团开始时间
             joinPeop, // 已参数人数
             properties, // 商品规格
+            title
         }
       })
     },

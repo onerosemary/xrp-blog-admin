@@ -4,6 +4,9 @@
           <img v-if="chooseImg"  :src="chooseImg" width="100" height="100"/>
           <i v-else class="el-icon-plus"></i>
         </div>
+        <div class="good-title">
+          {{chooseTitle}}
+        </div>
         <el-dialog
           class="dialog-styles"
           title="选择商品 (已上架)"
@@ -73,6 +76,7 @@ export default {
         return {
             dialogVisible: false,
             chooseImg: '', // 展示图片
+            chooseTitle: '', // 商品名称
             goodOne: null, // 选中商品整个详情
             query: {
               cid: null,
@@ -93,12 +97,21 @@ export default {
       cover: {
         type: String,
         default: () => ''
+      },
+      goodTitle: {
+        type: String,
+        default: () => ''
       }
     },
     watch: {
       cover(value) { // 编辑
         if(value) {
           this.chooseImg = value
+        }
+      },
+      goodTitle(value) { // 编辑
+        if(value) {
+          this.chooseTitle = value
         }
       }
     },
@@ -108,8 +121,10 @@ export default {
     methods: {
       // 弹窗选择商品
       async chooseGood(row) {
-        const {id, cover} = row
+  
+        const {id, cover, title} = row
         this.chooseImg = cover // 替换封面
+        this.chooseTitle = title // 商品标题
         // 请求规格
         await this.getGoodsInfo(id)
         if(this.goodOne) {
@@ -183,6 +198,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+  .good-title{
+    font-size: 12px;
+  }
   .dialog-styles{
     /deep/.el-dialog__body{
       padding-top: 10px;

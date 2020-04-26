@@ -7,7 +7,7 @@
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="选择秒杀商品" prop="cover">
-        <select-goods :cover="form.cover" @change="changeGood"></select-goods>
+        <select-goods :cover="form.cover" :goodTitle="form.title" @change="changeGood"></select-goods>
       </el-form-item>
       <div class="group-item">
         <el-form-item label="秒杀时间设置" prop="time">
@@ -95,6 +95,7 @@ export default {
         endTime: '', // 结束时间
         goodsId: '', // 商品id
         cover: '', // 商品封面
+        title: '', // 商品标题
         joinNumber: '', // 参与人数
         purchaseLimit: '', // 每人限购, 0 为不限购
         seckillGoodsProperty: [], // 商品规格
@@ -186,7 +187,7 @@ export default {
     //  获取拼团详情信息
     seckillIsGetInfo() {
       seckillIsGetInfo({id: this.queryId}).then(res => {
-        let { id, goodsId, cover, startTime, endTime, joinNumber, purchaseLimit, propertyVOS:seckillGoodsProperty } = res.data
+        let { id, goodsId, cover, startTime, endTime, joinNumber, purchaseLimit, propertyVOS:seckillGoodsProperty, title } = res.data
         seckillGoodsProperty.forEach(item => { // 价格 单位 元
           item.goodsId = goodsId
           item.oriPrice = item.originalPrice / 100
@@ -207,6 +208,7 @@ export default {
             joinNumber, // 参与人数
             purchaseLimit, // 每人限购, 0 为不限购
             seckillGoodsProperty, // 商品规格
+            title
         }
       })
     },
