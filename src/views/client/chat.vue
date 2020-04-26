@@ -54,7 +54,7 @@
                   <img class="list-img" :src="imgUrl + Ritem.customerrHeadPic" />
                   <p>{{Ritem.sendTime}}</p>
                 </div>
-                <div class="shopping-send-msg">
+                <div class="shopping-send-msg" @click="shopingLink(Ritem)">
                   <img class="list-img" :src="Ritem.titleUrl" />
                   <p class="shopping-send-text">{{Ritem.title}}</p>
                   <p class="shopping-send-icon"><i class="el-icon-arrow-right"></i></p>
@@ -172,6 +172,16 @@ export default {
       this.ws.close()
   },
   methods: {
+    // 商品跳转
+    shopingLink(item){
+      let routeUrl = this.$router.resolve({
+        path: '/shopping/product',
+        query: {
+          name: item.title
+        }
+      })
+      window.open(routeUrl.href, '_blank')
+    },
     //  监听聊天窗口滚动事件
     onscroll: debounce(function() {
 

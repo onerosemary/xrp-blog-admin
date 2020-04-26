@@ -137,6 +137,7 @@ export default {
     datePicker
   },
   created() {
+    this.query.title = this.$route.query.name
     this.getList()
   },
   methods: {
