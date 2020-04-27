@@ -96,7 +96,7 @@
           <div class="ve-echarts">
             <p class="avgSaleAmount" v-if="saleType === 0">日均销售: <b>￥{{avgSaleAmount}}</b></p>
             <p class="avgSaleAmount" v-if="saleType === 1">月均销售: <b>￥{{avgSaleAmount}}</b></p>
-            <ve-histogram :data="chartData" :settings="chartSettings"></ve-histogram>
+            <ve-histogram v-loading="loading" :data="chartData" :settings="chartSettings"  :legend-visible="false" :colors="colors"></ve-histogram>
           </div>
         </el-card>
       </el-col>
@@ -152,6 +152,7 @@ export default {
         saleAmount: '销售额(￥)'
       }
     }
+    this.colors = ['#409EFF']
     return {
       globalType: 0, 
       indexImg: require('@/static/login-bg.jpg'),
@@ -166,6 +167,7 @@ export default {
           // { '日期': '1/1', '当日销售': 1393}
         ]
       },
+      loading: true,
       undolistData: []
     }
   },
@@ -208,23 +210,24 @@ export default {
     getSaleData() {
       // 重置
       this.chartData.rows = []
-
       const params = {
         companyId: this.globalType === 0 ? this.companyId: null,
         type: this.saleType 
       }
+      this.loading = true
       getSaleData(params).then(res => {
-        
-
+        this.loading = false
         const {avgSaleAmount, dataVOS} = res.data
         this.avgSaleAmount = avgSaleAmount
         if(dataVOS.length > 0) {
           dataVOS.map(item => {
             item.saleAmount = item.saleAmount / 100
           })
-
           this.chartData.rows = dataVOS
         }
+      }).catch(err => {
+        console.log('err', err)
+        this.loading = false
       })
     },
     undolist() {

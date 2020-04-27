@@ -166,9 +166,10 @@ export default {
   beforeDestroy() {
       window.removeEventListener('resize', this.resize, true)
       window.removeEventListener('scroll', this.onscroll, true)
-      // 离开 关闭ws
-      this.lockReconnect = true
+      
       if(this.ws){
+        // 离开 关闭ws
+        this.lockReconnect = true
         this.ws.close()
       }
   },
