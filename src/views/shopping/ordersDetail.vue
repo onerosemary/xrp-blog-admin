@@ -27,16 +27,19 @@
             
             <div class="coupon-title">
                 <p style="color: #9EA1A9;">优惠卷</p>
-                <p class="name">需要接口提供字段</p>
+                <p class="name">{{detailData.couponNme}}</p>
             </div>
             <div class="good-spec">
                 <div class="good-spec-item">
                     <p class="gs">类型</p>
-                    <p>{{detailData.couponType}}</p>
+                    <p v-if="parseInt(detailData.couponType) === 1">商品优惠券</p>
+                    <p v-if="parseInt(detailData.couponType) === 2">无门槛抵扣券</p>
+                    <p v-if="parseInt(detailData.couponType) === 3">满减券</p>
+                    <p v-if="parseInt(detailData.couponType) === 4">现金红包</p>
                 </div>
                 <div class="good-pr">
                     <p class="gs">满</p>
-                    <p>{{detailData.minPrice}}</p>
+                    <p>{{detailData.minPrice || 0}}</p>
                 </div>
                 <div class="good-pr">
                     <p class="gs">减</p>
