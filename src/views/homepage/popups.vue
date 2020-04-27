@@ -26,7 +26,7 @@
       </el-form-item>
       <el-form-item v-if="parseInt(form.bannerType) === 0" label="外链地址" 
       :prop="parseInt(form.bannerType) === 0 ? 'bannerUrl' : ''"
-      :rules = "[{ required: true, message: '不能为空', trigger: 'blur' }]">
+      >
           <el-input v-model="form.bannerUrl" size="small" placeholder="请填写" />
       </el-form-item>
       
@@ -47,6 +47,16 @@ export default {
     const attachments = (rule, value, callback) => {
       if (this.form.attachments.length === 0) {
         callback(new Error('轮播图不可为空'))
+      } else {
+        callback()
+      }
+    }
+    const validateBannerType =  (rule, value, callback) => {
+      const reg = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+      if (value === '') {
+        callback(new Error('外链地址不能为空'))
+      } else if (!reg.test(value)) {
+        callback(new Error('URL格式不正确,必须以http:// 或 https:// 开头'))
       } else {
         callback()
       }
@@ -75,6 +85,9 @@ export default {
         ],
         bannerType: [
           { required: true, message: '不能为空', trigger: 'change' }
+        ],
+        bannerUrl:[
+          { required: true, validator: validateBannerType, trigger: 'blur' }
         ]
       }
     }
