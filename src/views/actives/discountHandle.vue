@@ -219,9 +219,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
     /deep/.good-c{
         // position: relative;
         // top: 10px;
+        position: absolute;
+        left: 0;
         .cover-goods{
             width: 60px;
             height: 60px;
@@ -229,6 +232,15 @@ export default {
                 width: 60px;
                 height: 60px;
             }
+        }
+        .good-title{
+          position: absolute;
+          top: 0;
+          left: 70px;
+          width: 460px;
+          display: flex;
+          height: 60px;
+          align-items: center;
         }
     }
     /deep/.handle-select{

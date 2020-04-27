@@ -7,7 +7,7 @@
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="背景图片 (尺寸 700x700)" prop="attachments" class="upload-item">
-        <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess" format="img" :amount="1"></upload>
+        <upload :queryId="queryId" :attachments="form.attachments"  @uploadSuccess="uploadSuccess" format="img" :amount="1"></upload>
       </el-form-item>
       <el-form-item label="类型" prop="bannerType">
           <el-select v-model="form.bannerType" placeholder="请选择" class="handle-select mr10" size="small">
@@ -22,7 +22,7 @@
         :prop="parseInt(form.bannerType) === 1 ? 'businessId' : ''"
         :rules = "[{ required: true, message: '不能为空', trigger: 'change' }]"
         >
-            <select-goods class="good-c" :cover="goodsCover" @change="changeGood"></select-goods>
+            <select-goods class="good-c" :cover="goodsCover" :goodTitle='goodsName' @change="changeGood"></select-goods>
       </el-form-item>
       <el-form-item v-if="parseInt(form.bannerType) === 0" label="外链地址" 
       :prop="parseInt(form.bannerType) === 0 ? 'bannerUrl' : ''"
@@ -54,6 +54,7 @@ export default {
     return {
       selectOne: null, // 选中的商品
       goodsCover: '', // 选中商品封面(编辑)
+      goodsName: '',
       form: {
         btype: 1, // 0: banner 1：活动
         attachments:[], // 分类图片
@@ -127,6 +128,8 @@ export default {
     changeGood(data) {
       this.selectOne = data // 赋值
       this.form.businessId = data.id
+
+      this.goodsName = data.title
       // 校验
       this.$refs.form.validateField('businessId')
       
@@ -135,7 +138,8 @@ export default {
     bannerGetActInfo() {
       bannerGetActInfo().then(res => {
         if(res.data) {
-            const {id, bannerType, cover, bannerUrl, businessId, goodsCover  } = res.data
+            const {id, bannerType, cover, bannerUrl, businessId, goodsCover, goodsName  } = res.data
+          
             this.queryId = id // 编辑id
             this.form = {
                 id,
@@ -152,6 +156,7 @@ export default {
             }
             setTimeout(() => {
                 this.goodsCover = this.imgUrl + goodsCover // 商品封面
+                this.goodsName = goodsName
             }, 500)
         }
         

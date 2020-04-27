@@ -199,7 +199,6 @@ export default {
       }
     },
     getTotal() {
-      
       const params = {
         companyId: this.globalType === 0 ? this.companyId: null
       }
