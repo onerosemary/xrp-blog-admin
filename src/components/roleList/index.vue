@@ -53,7 +53,7 @@ export default {
             roleList(data).then(res => {
                 if(this.all) {
                     res.data.records.unshift({
-                        id: null,
+                        id: '',
                         name: '全部'
                     })
                 }

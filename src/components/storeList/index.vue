@@ -46,7 +46,7 @@ export default {
             storeList(data).then(res => {
                 if(!this.cid) {
                     res.data.records.unshift({
-                        id: null,
+                        id: '',
                         name: '全部'
                     })
                 }

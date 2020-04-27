@@ -84,13 +84,12 @@
           <el-input
             ref="sendMsg"
             class="send-to-client"
-            type="textarea"
-            :rows="2"
+            type="text"
             placeholder="请输入"
             v-model="textarea"
-            @keyup.enter="sendText()">
+            @keyup.enter.native="sendText()">
           </el-input>
-          <div class="send-btn" @click="sendText()">
+          <div class="send-btn" @click="sendText">
             发送
           </div>
         </div>
@@ -169,7 +168,9 @@ export default {
       window.removeEventListener('scroll', this.onscroll, true)
       // 离开 关闭ws
       this.lockReconnect = true
-      this.ws.close()
+      if(this.ws){
+        this.ws.close()
+      }
   },
   methods: {
     // 商品跳转
@@ -186,17 +187,22 @@ export default {
     onscroll: debounce(function() {
 
         // 判断是否滚动到顶部
-        const myScrollbar = this.$refs['myScrollbar'].wrap.scrollHeight // 记录滚动条总高度
-        const scrollTop = this.$refs['myScrollbar'].wrap.scrollTop // 记录当前滚动位置
-        if(!this.noMore2 && parseFloat(scrollTop) === 0) {
+        if(this.$refs['myScrollbar']) {
+          const myScrollbar = this.$refs['myScrollbar'].wrap.scrollHeight // 记录滚动条总高度
+          const scrollTop = this.$refs['myScrollbar'].wrap.scrollTop // 记录当前滚动位置
+
+          if(!this.noMore2 && parseFloat(scrollTop) === 0) {
           // 加载分页
           this.rightList()
 
           setTimeout(() => {
-            // 每次加载，如果有下一页，当前滚动前一页位置
-            this.$refs['myScrollbar'].wrap.scrollTop = this.$refs['myScrollbar'].wrap.scrollHeight - myScrollbar
-          }, 500)
+              // 每次加载，如果有下一页，当前滚动前一页位置
+              this.$refs['myScrollbar'].wrap.scrollTop = this.$refs['myScrollbar'].wrap.scrollHeight - myScrollbar
+            }, 500)
+          }
         }
+        
+        
     }, 300),
     // 初始化ws
     createWebSocket(userId, toId) {
@@ -613,8 +619,9 @@ export default {
       .send{
         position: relative;
         .send-to-client{
-          /deep/.el-textarea__inner{
+          /deep/.el-input__inner{
             font-size: 13px;
+            height: 50px;
           }
         }
         .send-btn{
