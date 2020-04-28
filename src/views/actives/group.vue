@@ -79,13 +79,13 @@
             v-has="'groupUpDown'"
             v-if="parseInt(scope.row.status) === 0"
             size="mini"
-            @click="assembleUpdown(scope.row.id, scope.row.status)"
+            @click="assembleUpdown(scope.row)"
           >上架</el-button>
           <el-button
             v-has="'groupUpDown'"
             v-if="parseInt(scope.row.status) === 1"
             size="mini"
-            @click="assembleUpdown(scope.row.id, scope.row.status)"
+            @click="assembleUpdown(scope.row)"
           >下架</el-button>
 
           <el-button
@@ -144,9 +144,14 @@ export default {
   },
   methods: {
     // 推荐首页
-    recommendIndex(row) {
+    async recommendIndex(row, stop) {
       // 列表 应该回复 是否推荐首页字段 
-      const { id, topShow } = row
+      const { id, topShow, status } = row
+      // 先判断是否上架
+      if(status === 0 && !stop) {
+        // 上架
+        await this.assembleUpdown(row)
+      }
       const text = parseInt(topShow) === 0 ? '推荐首页' : '取消推荐'
       const params = {
         assembleId: id,
@@ -188,7 +193,14 @@ export default {
       })
     },
     // 上下架
-    assembleUpdown(assembleId, status) {
+    async assembleUpdown(row) {
+      // 先判断是否 首页推荐，如是，先取消推荐再 下架
+      // 先判断是否上架
+      const {id:assembleId, status, topShow} = row
+      if(topShow === 1) {
+        // 取消首页推荐
+        await this.recommendIndex(row, true)
+      }
       const text = parseInt(status) === 0 ? '上架' : '下架'
       const params = {
         assembleId,
