@@ -88,13 +88,13 @@
             v-has="'seckillUpDown'"
             v-if="parseInt(scope.row.status) === 0"
             size="mini"
-            @click="seckillIsOn(scope.row.id, scope.row.status)"
+            @click="seckillIsOn(scope.row)"
           >上架</el-button>
           <el-button
             v-has="'seckillUpDown'"
             v-if="parseInt(scope.row.status) > 0"
             size="mini"
-            @click="seckillIsOn(scope.row.id, scope.row.status)"
+            @click="seckillIsOn(scope.row)"
           >下架</el-button>
 
           <el-button
@@ -155,8 +155,13 @@ export default {
   },
   methods: {
     // 推荐首页
-    recommendIndex(row) {
-      const { id, isShow } = row
+    async recommendIndex(row, stop) {
+      const { id, isShow, status } = row
+      // 先判断是否上架
+      if(status === 0 && !stop) {
+        // 上架
+        await this.seckillIsOn(row)
+      }
       const text = parseInt(isShow) === 0 ? '推荐首页' : '取消推荐'
       const params = {
         id,
@@ -198,7 +203,14 @@ export default {
       })
     },
     // 上下架
-    seckillIsOn(id, status) {
+    async seckillIsOn(row) {
+      // 先判断是否 首页推荐，如是，先取消推荐再 下架
+      // 先判断是否上架
+      const {id, status, isShow} = row
+      if(isShow === 1) {
+        // 取消首页推荐
+        await this.recommendIndex(row, true)
+      }
       const text = parseInt(status) === 0 ? '上架' : '下架'
       const params = {
         id,
