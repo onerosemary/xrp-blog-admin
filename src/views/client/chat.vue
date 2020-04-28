@@ -16,11 +16,12 @@
           v-model="searchText">
        </el-input>
        <el-scrollbar v-if="leftListData.length > 0" class="infinite-list-wrapper" :style="{overflowY: 'auto', height: heightV(150)}">
-         <ul 
+         <!-- <ul 
          class="chat-ul-left"
          v-infinite-scroll="leftList"
          infinite-scroll-distance="40"
-         infinite-scroll-disabled="disabled">
+         infinite-scroll-disabled="disabled"> -->
+         <ul  class="chat-ul-left">
            <li v-for="(item, index) in leftListData" :key="index" @click="rightList(item, $event)">
              <div class="chat-time">{{item.receiveTime}}</div>
              <div class="person-header"><img class="list-img" :src="imgUrl + item.customerrHeadPic" /></div>
@@ -55,14 +56,14 @@
                   <p>{{Ritem.sendTime}}</p>
                 </div>
                 <div class="shopping-send-msg" @click="shopingLink(Ritem)">
-                  <img class="list-img" :src="Ritem.titleUrl" />
+                  <img class="list-img" :src="imgUrl + Ritem.titleUrl" />
                   <p class="shopping-send-text">{{Ritem.title}}</p>
                   <p class="shopping-send-icon"><i class="el-icon-arrow-right"></i></p>
                 </div>
               </div>
 
               <!-- 客户发送过来 -->
-              <div class="client-msg" v-if="(parseInt(Ritem.type) === 0 || parseInt(Ritem.type) === 2) && Ritem.fromOrTo === 0">
+              <div class="client-msg" v-if="(parseInt(Ritem.type) === 0 || parseInt(Ritem.type) === 2) && Ritem.fromOrTo === 0 && Ritem.customerId === parseInt(toId)">
                 <div class="client-header">
                   <img class="list-img" :src="imgUrl + Ritem.customerrHeadPic" />
                   <p>{{Ritem.sendTime}}</p>
@@ -144,6 +145,7 @@ export default {
       currentPage2: 1, // 当前页(right)
       sizePage2: 10, // 每页显示条数(right)
       totalPage2: 0, // 总页数(right)
+      timer: null 
     }
   },
 
@@ -162,11 +164,20 @@ export default {
     this.leftList()
     window.addEventListener('resize', this.resize, true)
     window.addEventListener('scroll', this.onscroll, true)
+
+   //  轮询左边列表，监听时时聊天数据    
+   this.timer = window.setInterval(() => {
+      setTimeout(this.leftList, 0)
+      console.log('this.toId', this.toId)
+      console.log('this.timer', this.timer )
+    }, 10000)
+    
   },
   beforeDestroy() {
       window.removeEventListener('resize', this.resize, true)
       window.removeEventListener('scroll', this.onscroll, true)
-      
+
+      clearInterval(this.timer) // 清空定时器
       if(this.ws){
         // 离开 关闭ws
         this.lockReconnect = true
@@ -242,6 +253,7 @@ export default {
           console.log('接受到信息', event.data)
           const serverData = JSON.parse(event.data)
           let showData = {}
+          
           if(parseInt(serverData.type) === 1) { // 商品信息
             // 组装本地显示数据
             showData = {
@@ -258,8 +270,10 @@ export default {
               sendTime: '',
               content: serverData.message,
               type: serverData.type,
-              fromOrTo: 0 // 前端自己的标识，自己对应列表
+              fromOrTo: 0, // 前端自己的标识，自己对应列表
+              customerId: serverData.userId // 对应A 当前的 toId 
             }
+            console.log('showData----', showData)
           }
           
           _this.rightListData.push(showData)
@@ -342,7 +356,8 @@ export default {
             customerName: this.searchText,
             zbPage: {
                 current: this.currentPage,
-                size: this.sizePage
+                // size: this.sizePage
+                size: 999
             }
         }
         serviceList(params).then(res => {
@@ -351,8 +366,9 @@ export default {
               item.receiveTime = formatTime(item.receiveTime)
             })
             if (records.length > 0) {
-                this.currentPage++
-                this.leftListData = this.leftListData.concat(records)
+                // this.currentPage++
+                // this.leftListData = this.leftListData.concat(records)
+                this.leftListData = records
                 this.totalPage = parseInt(pages)
                 this.loading = false
             } else {
@@ -363,7 +379,10 @@ export default {
     },
     // 右边详情列表数据
     rightList(item, event) {
- 
+      if(this.ws){
+        this.ws.close() // 先关闭
+      }
+      
       if(event && event.type === 'click') {
         this.customerNickname = item.customerNickname
         // 重置
@@ -397,7 +416,8 @@ export default {
           })
           if (records.length > 0) {
               this.currentPage2++
-              this.rightListData = [...records, ...this.rightListData]
+              // 倒序下
+              this.rightListData = [...records.sort(this.compare('id')), ...this.rightListData]
 
               this.loading2 = false
               this.totalPage2 = parseInt(pages)
@@ -414,6 +434,13 @@ export default {
           }
 
       })
+    },
+    compare(prop){
+      return function(a, b) {
+        let value1 = a[prop]
+        let value2 = b[prop]
+        return value1 - value2
+      }
     }
   }
 }
