@@ -21,7 +21,7 @@
       <el-input v-model="query.name" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
       <el-button v-has="'customerClearAll'"  type="primary" size="small" @click="clientClearAllPoints">清空所有积分</el-button>
-
+      
     </div>
     <el-table
       v-loading="loading"
@@ -68,7 +68,13 @@
           <span v-if="parseInt(scope.row.level) === 3">Lv 3</span>
         </template>
       </el-table-column>
-      <el-table-column label="身份" prop="identityStr"/>
+      <el-table-column label="身份">
+        <template slot-scope="scope">
+          <span v-if="parseInt(scope.row.identity) === 1">合伙人</span>
+          <span v-if="parseInt(scope.row.identity) === 2">员工</span>
+          <span v-if="parseInt(scope.row.identity) === 0">客户</span>
+        </template>
+      </el-table-column>
       <el-table-column label="注册时间">
           <template slot-scope="scope">
             {{scope.row.createTime}}
@@ -97,6 +103,15 @@
             size="mini"
             @click="clientDeletet(scope.row.id)"
           >删除</el-button>
+          <el-dropdown @command="handleCommand" v-has="'changeIdentity1' || 'changeIdentity2'">
+            <span class="el-dropdown-link cblue">
+              更多<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown" class="dropdow-css">
+              <el-dropdown-item v-has="'changeIdentity1'" :command="beforeHandleCommand(scope.row, 1)">{{scope.row.identity === 1 ? '取消合伙人' : '设为合伙人'}}</el-dropdown-item>
+              <el-dropdown-item v-has="'changeIdentity2'" :command="beforeHandleCommand(scope.row, 2)">{{scope.row.identity === 2 ? '取消员工' : '设为员工'}}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -116,7 +131,7 @@
 <script>
 import storeList from '@/components/storeList'
 import datePicker from '@/components/datePicker'
-import { clientList, clientDeletet, clientClearPoints, clientClearAllPoints } from '@/api/client'
+import { clientList, clientDeletet, clientClearPoints, clientClearAllPoints, changeIdentity } from '@/api/client'
 import { parseTime } from '@/utils'
 export default {
   name: 'Store',
@@ -147,6 +162,94 @@ export default {
     this.getList()
   },
   methods: {
+    beforeHandleCommand(command, num) {
+      return {
+        num: parseInt(num),
+        command
+      }
+    },
+    // 操作
+    handleCommand(command) {
+      // console.log('command--', command)
+      const { num } = command
+      switch(num) {
+        case 1:
+          // 合伙人
+          console.log('合伙人')
+          this.changeIdentity(command)
+          break
+        case 2:
+          // 员工
+          console.log('员工')
+          this.changeIdentity(command)
+          break
+        default:
+          console.log('error')
+      }
+    },
+    changeIdentity(data) {
+      console.log('data', data)
+      // 身份 0:客户 1：合伙人 2:员工
+      let  {num, command} = data
+      let identity = num
+      if(command.identity === 1){ // 取消合伙人
+        if(num === 2) { // 设为员工
+          identity = 2
+        }else { // 取消合伙人
+          identity = 0
+        }
+        
+      }
+
+      if(command.identity === 2){ // 取消员工
+        if(num === 1) { // 设为合伙人
+          identity = 1
+        }else { // 取消员工
+          identity = 0
+        }
+      }
+      // console.log('identity---', identity)
+      // return
+      const params = {
+        id: command.id,
+        identity
+      }
+      changeIdentity(params).then(res => {
+        if(num === 1) { //合伙人
+          if(identity === 1) {
+            this.$message({
+              message: `设为合伙人成功！`,
+              type: 'success'
+            })
+          }else {
+            this.$message({
+              message: `已取消合伙人！`,
+              type: 'success'
+            })
+          } 
+        }else { // 员工
+          if(identity === 2) {
+            this.$message({
+              message: `设为员工成功`,
+              type: 'success'
+            })
+          }else {
+            this.$message({
+              message: `已取消员工`,
+              type: 'success'
+            })
+          } 
+        }
+       
+        // 更新当前 row
+        this.tableData.forEach((item, index) => {
+           if(parseInt(item.id) === parseInt(command.id)){
+             this.$set(this.tableData[index], 'identity', identity)
+           }
+        })
+        
+      })
+    },
     // 获取选择消费门店
     storeListChange(id) {
       this.query.saleCompanyId = id

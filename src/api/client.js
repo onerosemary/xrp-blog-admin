@@ -27,6 +27,15 @@ export function clientClearAllPoints(params) {
     })
 }
 
+// 改变身份
+export function changeIdentity(params) {
+    return request({
+        url: '/pc/customer/changeIdentity',
+        method: 'get',
+        params
+    })
+}
+
 // 清空积分
 export function clientClearPoints(params) {
     return request({

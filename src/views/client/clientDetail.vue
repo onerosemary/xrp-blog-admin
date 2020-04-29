@@ -34,7 +34,7 @@
                     </div>
                     <div class="col">
                         <h5>消费总额</h5>
-                        <p>aaa</p>
+                        <p>{{detailData.totalMoney | price}}</p>
                     </div>
                     <div class="col">
                         <h5>注册时间</h5>
@@ -72,14 +72,14 @@
                     <p v-if="parseInt(detailData.sex) === 1">男</p>
                     <p v-if="parseInt(detailData.sex) === 2">女</p>
                 </div>
-                <div class="col">
+                <!-- <div class="col">
                     <h5>身高（cm）</h5>
                     <p>{{detailData.height}}</p>
                 </div>
                 <div class="col">
                     <h5>体重（kg）</h5>
                     <p>{{detailData.weight}}</p>
-                </div>
+                </div> -->
                 <div class="col">
                     <h5>出生日期</h5>
                     <p>{{detailData.birthday}}</p>
