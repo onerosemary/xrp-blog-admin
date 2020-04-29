@@ -131,7 +131,7 @@ export default {
         attachments:[], // 商品图片
         cover: '', // 商品封面
         title: '', // 商品名称
-        cid: '', // 商品分类
+        cid: null, // 商品分类
         virtualSalesVolume: '', // 销量
         contents: '', // 编辑器
         deliveryType: '', // 取货方式

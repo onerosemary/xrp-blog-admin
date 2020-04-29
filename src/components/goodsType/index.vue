@@ -40,11 +40,17 @@ export default {
                 }
             }
             goodsTypeList(data).then(res => {
-                const all = {
-                    id: null,
-                    name: '全部'
-                }
-                res.data.records.unshift(all)
+               setTimeout(() => {
+                   if(this.cid === ''){
+                        const all = {
+                            id: null,
+                            name: '全部'
+                        }
+                        res.data.records.unshift(all)
+                    }
+               }, 30)
+                
+                
                 this.dataList = res.data.records
             })
         },

@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       form: {
-        companyId: '',
+        companyId: null,
         name: '',
         password: '',
         roleId: '',

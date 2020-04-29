@@ -124,7 +124,6 @@
 </template>
 
 <script>
-import goodsType from '@/components/goodsType'
 import datePicker from '@/components/datePicker'
 import { seckillList, seckillIsShow, seckillIsOn, seckillIsDelete } from '@/api/actives'
 import { parseTime } from '@/utils'
@@ -147,7 +146,6 @@ export default {
     }
   },
   components: {
-    goodsType,
     datePicker
   },
   created() {
