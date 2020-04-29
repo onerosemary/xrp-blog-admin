@@ -18,6 +18,10 @@
                         <p>{{detailData.nickname}}</p>
                     </div>
                     <div class="col">
+                        <h5>账号</h5>
+                        <p>{{detailData.mobile}}</p>
+                    </div>
+                    <div class="col">
                         <h5>身份</h5>
                         <p>{{parseInt(detailData.identity) === 0 ? '客户' : '合伙人'}}</p>
                     </div>
