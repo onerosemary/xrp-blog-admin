@@ -47,13 +47,13 @@
       <el-table-column label="操作" width="220" v-if="$store.getters.companyId === 1">
         <template slot-scope="scope">
           <el-button
-            
+            v-has="'storeUpdown'"
             v-if="parseInt(scope.row.status) === -1"
             size="mini"
             @click="storeUpdown(scope.row.id, scope.row.status)"
           >上架</el-button>
           <el-button
-            
+            v-has="'storeUpdown'"
             v-if="parseInt(scope.row.status)  === 1"
             size="mini"
             @click="storeUpdown(scope.row.id, scope.row.status)"
@@ -116,21 +116,33 @@ export default {
     // 上下架
     storeUpdown(id, status) {
       const text = parseInt(status) === -1 ? '上架' : '下架'
-      const params = {
-        id,
-        status: parseInt(status) === -1 ? 1 : -1 // 1上架， -1下架
-      }
-      updown(params).then(res => {
+      this.$confirm(`门店是否${text} ?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = {
+          id,
+          status: parseInt(status) === -1 ? 1 : -1 // 1上架， -1下架
+        }
+        updown(params).then(res => {
+          this.$message({
+            message: `${text}, 成功！`,
+            type: 'success'
+          })
+          // 更新当前 row
+          this.tableData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(id)){
+              this.$set(this.tableData[index], 'status', params.status)
+            }
+          })
+      }).catch(() => {
         this.$message({
-          message: `${text}, 成功！`,
-          type: 'success'
-        })
-        // 更新当前 row
-        this.tableData.forEach((item, index) => {
-           if(parseInt(item.id) === parseInt(id)){
-             this.$set(this.tableData[index], 'status', params.status)
-           }
-        })
+          type: 'info',
+          message: `已取消${text}`
+        })   
+      })
+      
       })
     },
     // 列表接口

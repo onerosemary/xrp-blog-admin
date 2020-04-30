@@ -156,7 +156,7 @@ export default {
         title: null
       },
       currentPage: 1, // 当前页
-      pageSize: 5, // 每页显示条数
+      pageSize: 10, // 每页显示条数
       total: 0, // 总条数
       loading: false,
       tableData: []
