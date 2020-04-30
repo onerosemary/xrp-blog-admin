@@ -81,6 +81,12 @@
           <span v-else-if="parseInt(scope.row.orderStatus) === 8">退款完成</span>
         </template>
       </el-table-column>
+      
+      <el-table-column label="接待人">
+        <template slot-scope="scope">
+          {{scope.row.recpPeop}}
+        </template>
+      </el-table-column>
       <el-table-column label="消费时间">
         <template slot-scope="scope">
           {{scope.row.payimeTime}}

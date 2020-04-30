@@ -8,6 +8,14 @@ export function addStore(data) {
         data
     })
 }
+// 门店开关
+export function updown(params) {
+    return request({
+        url: '/pc/company/updown',
+        method: 'get',
+        params
+    })
+}
 
 // 修改指定门店(超级管理员 去修改其它门店信息)
 export function elseEditorStore(data) {

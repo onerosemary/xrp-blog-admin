@@ -24,6 +24,11 @@
           <img :src="imgUrl + scope.row.imgUrl" width="60"/>
         </template>
       </el-table-column>
+      <el-table-column label="状态" width="180">
+        <template slot-scope="scope">
+          {{scope.row.status === 1 ? '上架' : '下架'}}
+        </template>
+      </el-table-column>
       <el-table-column label="门店" width="180" class-name="name-store">
         <template slot-scope="scope">
             <!-- 总店 -->
@@ -39,9 +44,20 @@
         </template>
       </el-table-column>
       <el-table-column label="地址" prop="address" />
-      <el-table-column label="操作" width="180" v-if="$store.getters.companyId === 1">
+      <el-table-column label="操作" width="220" v-if="$store.getters.companyId === 1">
         <template slot-scope="scope">
-
+          <el-button
+            
+            v-if="parseInt(scope.row.status) === -1"
+            size="mini"
+            @click="storeUpdown(scope.row.id, scope.row.status)"
+          >上架</el-button>
+          <el-button
+            
+            v-if="parseInt(scope.row.status)  === 1"
+            size="mini"
+            @click="storeUpdown(scope.row.id, scope.row.status)"
+          >下架</el-button>
           <el-button
             v-has="'storeUpdate'"
             size="mini"
@@ -72,7 +88,7 @@
 
 <script>
 import { storeList } from '@/api/common'
-import { deleteStore } from '@/api/store'
+import { deleteStore, updown } from '@/api/store'
 export default {
   name: 'Store',
   data() {
@@ -97,6 +113,26 @@ export default {
     this.getList()
   },
   methods: {
+    // 上下架
+    storeUpdown(id, status) {
+      const text = parseInt(status) === -1 ? '上架' : '下架'
+      const params = {
+        id,
+        status: parseInt(status) === -1 ? 1 : -1 // 1上架， -1下架
+      }
+      updown(params).then(res => {
+        this.$message({
+          message: `${text}, 成功！`,
+          type: 'success'
+        })
+        // 更新当前 row
+        this.tableData.forEach((item, index) => {
+           if(parseInt(item.id) === parseInt(id)){
+             this.$set(this.tableData[index], 'status', params.status)
+           }
+        })
+      })
+    },
     // 列表接口
     getList() {
       const params = {
