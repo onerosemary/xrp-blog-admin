@@ -83,7 +83,7 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-card shadow="hover" style="height:340px;">
+        <el-card shadow="hover" style="height:450px;">
           <div slot="header" class="clearfix" style="position: relative;">
             <span>销售数据</span>
             <div class="type-ve">
@@ -174,7 +174,7 @@ export default {
       saleType: 0, //  0:近30天数据 1:近12个月数据
       avgSaleAmount: 0,
       chartData: {
-        columns: ['time', 'saleAmount'],
+        columns: ['time','saleAmount'],
         rows: [
           // { '日期': '1/1', '当日销售': 1393}
         ]
@@ -270,11 +270,22 @@ export default {
       getSaleData(params).then(res => {
         this.loading = false
         const {avgSaleAmount, dataVOS} = res.data
-        this.avgSaleAmount = avgSaleAmount
+        this.avgSaleAmount = avgSaleAmount / 100
         if(dataVOS.length > 0) {
           dataVOS.map(item => {
+            item.time2 = item.time
+            if(this.saleType === 0){ // 日
+              const newTime = item.time.split('-')
+              item.time = newTime[2]
+            }
+            if(this.saleType === 1) { // 月
+              const newTime = item.time.split('-')
+              item.time = newTime[0].substring(2) +'-'+ newTime[1]
+            }
+            
             item.saleAmount = item.saleAmount / 100
           })
+       
           this.chartData.rows = dataVOS
         }
       }).catch(err => {
