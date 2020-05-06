@@ -120,9 +120,9 @@
                   <p>订单金额：￥199 丨  返佣金额：￥19 丨 分销人：xxxx </p>
                 </div>
               </li> -->
-              <li v-for="(item, index) in undolistData" :key="index">
+              <li :class="{green: item.status === true, red: item.status === false}"  v-for="(item, index) in undolistData" :key="index">
                 <div class="icon-div"><i class="el-icon-warning"></i></div>
-                <div v-if="parseInt(item.undoType) === 1">
+                <div  v-if="parseInt(item.undoType) === 1">
                   <p>退款订单：{{item.goodsName}}(订单商品名） </p>
                   <p> 订单金额：￥{{item.orderAmount / 100}} 丨 退款金额：￥{{item.realAmount / 100}} 丨 退款人：{{item.customerName}} </p>
                 </div>
@@ -130,9 +130,9 @@
                   <p>返佣订单：{{item.goodsName}}(订单商品名） </p>
                   <p> 订单金额：￥{{item.orderAmount / 100}} 丨 返佣金额：￥{{item.realAmount / 100}} 丨 分销人：{{item.customerName}} </p>
                 </div>
-                <div class="handle-btn">
-                  <p><i class="el-icon-success" title="同意" @click="checkTodo(item)"></i></p>
-                  <p><i class="el-icon-error" title="拒绝" @click="checkTodo(item)"></i></p>
+                <div class="handle-btn" v-if="item.status === undefined">
+                  <p><i class="el-icon-success" title="同意" @click="checkTodo(item, 1)"></i></p>
+                  <p><i class="el-icon-error" title="拒绝" @click="checkTodo(item, 0)"></i></p>
                 </div>
               </li>
               
@@ -214,10 +214,41 @@ export default {
     },
     //  待办清单
     checkTodo(item, isOk) {
-      if(item.undoType === 1 && isOk) { // 退款 同意
-
-      }else if(item.undoType === 1 && isOk) { // 退款 不同意
-
+      const {id} = item
+      const params= {
+        confirm: isOk,
+        id
+      }
+      if(item.undoType === 1) { // 退款 同意
+        const text = !!isOk ? '已同意退款' : '已拒绝退款'
+        refundVerify(params).then(res => {
+          this.$message({
+            message: text,
+            type: 'success'
+          })
+          // 更新row数据 新增status属性
+          const status = !!isOk ? true : false
+          this.undolistData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(id)){
+              this.$set(this.undolistData[index], 'status', status)
+            }
+          })
+        })
+      }else if(item.undoType === 2) { // 返佣 同意
+        const text = !!isOk ? '已同意返佣' : '已拒绝返佣'
+        rakeVerify(params).then(res => {
+          this.$message({
+            message: text,
+            type: 'success'
+          })
+          // 更新row数据 新增status属性
+          const status = !!isOk ? true : false
+          this.undolistData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(id)){
+              this.$set(this.undolistData[index], 'status', status)
+            }
+          })
+        })
       }
     },
     getTotal() {
@@ -345,7 +376,7 @@ ul, li{
         
       }
       .el-icon-error{
-        color: #409EFF;
+        color: red;
       }
     }
   }
@@ -357,6 +388,16 @@ ul, li{
         i{
           font-size: 16px;
           color: #67C23A;
+        }
+      }
+    }
+    &.red{
+      background: #FFEDE9;
+      color: #FF3F1D;
+      .icon-div{
+        i{
+          font-size: 16px;
+          color: #FF3F1D;
         }
       }
     }
