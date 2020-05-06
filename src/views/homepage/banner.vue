@@ -20,7 +20,7 @@
 
       <el-table-column label="封面图片">
         <template slot-scope="scope">
-            <img class="list-img" :src="imgUrl + scope.row.cover" />
+            <img class="list-img" :src="scope.row.cover" />
         </template>
       </el-table-column>
       <el-table-column label="类型">
@@ -189,6 +189,7 @@ export default {
         // imgUrl 
         records.forEach((item, index) => {
           item.createTime = item.createTime && parseTime(item.createTime)
+          item.cover = this.imgUrl + item.cover
         })
         this.tableData = records
         this.total = parseInt(total)
