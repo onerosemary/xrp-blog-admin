@@ -273,10 +273,10 @@ export default {
         this.avgSaleAmount = avgSaleAmount / 100
         if(dataVOS.length > 0) {
           dataVOS.map(item => {
-            item.time2 = item.time
+            item.time2 = item.time // 暂时没用
             if(this.saleType === 0){ // 日
               const newTime = item.time.split('-')
-              item.time = newTime[2]
+              item.time = newTime[1]+'-'+newTime[2]
             }
             if(this.saleType === 1) { // 月
               const newTime = item.time.split('-')
