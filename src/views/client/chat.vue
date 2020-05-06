@@ -53,7 +53,7 @@
               <div class="client-msg shopping-msg" v-if="parseInt(Ritem.type) === 1">
                 <div class="client-header">
                   <img class="list-img" :src="imgUrl + Ritem.customerrHeadPic" />
-                  <p>{{Ritem.sendTime}}</p>
+                  <p v-if="Ritem.sendTime">{{Ritem.sendTime}}</p>
                 </div>
                 <div class="shopping-send-msg" @click="shopingLink(Ritem)">
                   <img class="list-img" :src="imgUrl + Ritem.titleUrl" />
@@ -66,7 +66,7 @@
               <div class="client-msg" v-if="(parseInt(Ritem.type) === 0 || parseInt(Ritem.type) === 2) && Ritem.fromOrTo === 0 && Ritem.customerId === parseInt(toId)">
                 <div class="client-header">
                   <img class="list-img" :src="imgUrl + Ritem.customerrHeadPic" />
-                  <p>{{Ritem.sendTime}}</p>
+                  <p v-if="Ritem.sendTime">{{Ritem.sendTime}}</p>
                 </div>
                 <div class="client-send-msg">
                   <p>{{Ritem.content}}</p>
@@ -412,7 +412,7 @@ export default {
       serviceGetLogs(params).then(res => {
           const { records, pages } = res.data
           records.map(item => {
-            item.sendTime = formatTime(item.sendTime)
+            item.sendTime =item.sendTime && formatTime(item.sendTime)
           })
           if (records.length > 0) {
               this.currentPage2++
