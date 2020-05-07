@@ -46,6 +46,11 @@
           </template>
       </el-table-column>
       <el-table-column label="消费门店" prop="storeName" />
+      <el-table-column label="类型">
+        <template slot-scope="scope">
+          {{scope.row.orderType}}
+        </template>
+      </el-table-column>
       <el-table-column label="消费(￥)">
         <template slot-scope="scope">
           {{scope.row.orderAmount | price}}
