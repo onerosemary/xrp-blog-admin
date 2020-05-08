@@ -31,7 +31,7 @@
                     <li v-for="(record, i) in currentRightList" :key="i">
                         <h3><p>{{record.operateName}}</p> <p class="date">{{record.createTime}}</p></h3>
                         <div class="log-msg">
-                            <span>{{record.operateType}}</span> {{record.relateDes}}
+                            <p v-html="record.relateDes"></p>
                         </div>
                     </li>
                 </ul>
@@ -224,11 +224,14 @@ export default {
                     padding: 5px 0;
                     text-indent: 1em;
                     font-size: 13px;
-                    color: #9EA1A9;
-                    span{
+                    //color: #9EA1A9;
+                    p{
                         display: inline-block;
                         margin-right: 10px;
-                        color: #409EFF;   
+                        color: #409EFF;
+                        span{
+                            color: #9EA1A9;
+                        }   
                     }
                 }
             }
