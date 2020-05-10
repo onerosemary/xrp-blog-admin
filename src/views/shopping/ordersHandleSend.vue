@@ -8,7 +8,7 @@
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="" prop="attachments" class="upload-item">
         <div class="good-img">
-            <p><img :src="dataDetail.goodsCover" width="100" height="100" /></p>
+            <p><img :src="imgUrl + dataDetail.goodsCover" width="100" height="100" /></p>
             <dl>
                 <dt>{{dataDetail.goodsName}}</dt>
                 <dd>{{dataDetail.goodsSpecs}} x {{dataDetail.goodsCnt}}</dd>

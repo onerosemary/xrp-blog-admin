@@ -294,9 +294,10 @@ export default {
                 type: 'success'
               })
             })
-            this.$router.push({
-              path: '/shopping/product'
-            })
+            // this.$router.push({
+            //   path: '/shopping/product'
+            // })
+            this.$router.go(-1)
           }else { // 编辑
             this.form.id = this.queryId
             editorGood(this.form).then(res => {
@@ -305,9 +306,10 @@ export default {
                 type: 'success'
               })
             })
-            this.$router.push({
-              path: '/shopping/product'
-            })
+            // this.$router.push({
+            //   path: '/shopping/product'
+            // })
+            this.$router.go(-1)
           }
           
         } else {

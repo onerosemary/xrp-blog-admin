@@ -45,6 +45,11 @@
             <img class="list-img" :src="scope.row.goodsCover" />
           </template>
       </el-table-column>
+      <el-table-column label="标题" width="100">
+          <template slot-scope="scope">
+            {{scope.row.goodsName}}
+          </template>
+      </el-table-column>
       <el-table-column label="消费门店" prop="storeName" />
       <el-table-column label="类型">
         <template slot-scope="scope">
@@ -76,14 +81,17 @@
       </el-table-column>
       <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-          <span v-if="parseInt(scope.row.orderStatus) === 1">付定金</span>
-          <span v-else-if="parseInt(scope.row.orderStatus) === 2">已支付,待使用</span>
-          <span v-else-if="parseInt(scope.row.orderStatus) === 3">已支付,待发货</span>
-          <span v-else-if="parseInt(scope.row.orderStatus) === 4">已完成(发货、使用)</span>
-          <span v-else-if="parseInt(scope.row.orderStatus) === 5">申请退款</span>
-          <span v-else-if="parseInt(scope.row.orderStatus) === 6">退款待财务审核</span>
-          <span v-else-if="parseInt(scope.row.orderStatus) === 7">退款待总经理审核</span>
-          <span v-else-if="parseInt(scope.row.orderStatus) === 8">退款完成</span>
+          <span v-if="parseInt(scope.row.status) === 1">已付定金</span>
+          <span v-else-if="parseInt(scope.row.status) === 2">已支付,待使用</span>
+          <span v-else-if="parseInt(scope.row.status) === 3">待发货</span>
+          <span v-else-if="parseInt(scope.row.status) === 4">已发货</span>
+          <span v-else-if="parseInt(scope.row.status) === 5">已完成</span>
+          <span v-else-if="parseInt(scope.row.status) === 6">退款申请中</span>
+          <span v-else-if="parseInt(scope.row.status) === 7">退款已确认、待退货</span>
+          <span v-else-if="parseInt(scope.row.status) === 8">退款已拒绝</span>
+          <span v-else-if="parseInt(scope.row.status) === 9">已退货、待验收</span>
+          <span v-else-if="parseInt(scope.row.status) === 10">退款完成</span>
+          <span v-else-if="parseInt(scope.row.status) === 11">已完成(关联返佣)</span>
         </template>
       </el-table-column>
       
@@ -92,9 +100,9 @@
           {{scope.row.recpPeop}}
         </template>
       </el-table-column>
-      <el-table-column label="消费时间">
+      <el-table-column label="支付时间">
         <template slot-scope="scope">
-          {{scope.row.payimeTime}}
+          {{scope.row.payTime}}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="280">
@@ -240,7 +248,7 @@ export default {
         const { records, total } = res.data
         records.forEach((item, index) => {
           item.goodsCover = this.imgUrl + item.goodsCover
-          item.payimeTime = item.payimeTime && parseTime(item.payimeTime)
+          item.payTime = item.payTime && parseTime(item.payTime)
         })
         this.tableData = records
         this.total = parseInt(total)

@@ -136,10 +136,12 @@ export default {
     goodsType,
     datePicker
   },
+
   created() {
     this.query.title = this.$route.query.name
     this.getList()
   },
+
   methods: {
     // 推荐首页
     recommendIndex(row) {
