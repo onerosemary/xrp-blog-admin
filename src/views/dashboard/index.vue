@@ -120,7 +120,7 @@
                   <p>订单金额：￥199 丨  返佣金额：￥19 丨 分销人：xxxx </p>
                 </div>
               </li> -->
-              <li :class="{green: item.status === true, red: item.status === false}"  v-for="(item, index) in undolistData" :key="index">
+              <li :class="{green: item.status === true, red: item.status === false}"  v-for="(item, index) in undolistData" :key="index" @click="toPath(item.orderId)">
                 <div class="icon-div"><i class="el-icon-warning"></i></div>
                 <div  v-if="parseInt(item.undoType) === 1">
                   <p>退款订单：{{item.goodsName}}(订单商品名） </p>
@@ -131,8 +131,8 @@
                   <p> 订单金额：￥{{item.orderAmount / 100}} 丨 返佣金额：￥{{item.realAmount / 100}} 丨 分销人：{{item.customerName}} </p>
                 </div>
                 <div class="handle-btn" v-if="item.status === undefined">
-                  <p><i class="el-icon-success" title="同意" @click="checkTodo(item, 1)"></i></p>
-                  <p><i class="el-icon-error" title="拒绝" @click="checkTodo(item, 0)"></i></p>
+                  <p><i class="el-icon-success" title="同意" @click.stop="checkTodo(item, 1)"></i></p>
+                  <p><i class="el-icon-error" title="拒绝" @click.stop="checkTodo(item, 0)"></i></p>
                 </div>
               </li>
               
@@ -211,6 +211,15 @@ export default {
       this.getTotal()
       // 销售数据
       this.getSaleData()
+    },
+    // 跳转订单详情
+    toPath(id) {
+      this.$router.push({
+        path: '/shopping/ordersDetail',
+        query: {
+          id
+        }
+      })
     },
     //  待办清单
     checkTodo(item, isOk) {
@@ -352,7 +361,7 @@ ul, li{
   li{
     position: relative;
     display: flex;
-    
+    cursor: pointer;
     font-size: 12px;
     background: #FAECD8;
     padding: 0 10px;
