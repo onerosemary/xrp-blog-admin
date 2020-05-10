@@ -62,3 +62,21 @@ export function deleteStore(params) {
         params
     })
 }
+
+// 退货地址设置
+export function rtnGoodsAddress(data) {
+    return request({
+        url: '/pc/company/rtnGoodsAddress',
+        method: 'post',
+        data
+    })
+}
+
+// 退货地址详情
+export function getGoodsAddress(params) {
+    return request({
+        url: '/pc/company/getGoodsAddress',
+        method: 'get',
+        params
+    })
+}

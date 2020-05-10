@@ -116,6 +116,11 @@ export const constantRoutes = [
         component: () => import('@/views/shopping/ordersHandleSend'),
         meta: { title: '订单发货', icon: 'dashboard' }
       },{
+        path: 'addrest',
+        name: 'addrest',
+        component: () => import('@/views/shopping/addrest'),
+        meta: { title: '退货地址设置', icon: 'dashboard' }
+      },{
         path: 'ordersDetail',
         name: 'ordersDetail',
         hidden: true,
