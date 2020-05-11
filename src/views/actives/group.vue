@@ -86,7 +86,7 @@
             v-if="parseInt(scope.row.status) === 1"
             size="mini"
             @click="assembleUpdown(scope.row)"
-          >下架</el-button>
+          >结束</el-button>
 
           <el-button
             v-has="'groupUpdate'"
@@ -167,7 +167,7 @@ export default {
       })
     },
     deleteHandle(assembleId) {
-      this.$confirm('此操作将永久删除该拼团商品, 是否继续?', '提示', {
+      this.$confirm('删除拼团后会将参加客户的款项原路退回, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -201,23 +201,55 @@ export default {
         // 取消首页推荐
         await this.recommendIndex(row, true)
       }
-      const text = parseInt(status) === 0 ? '上架' : '下架'
-      const params = {
-        assembleId,
-        status: parseInt(status) === 0 ? 1 : 0 // 1上架， 0下架
+      if(parseInt(status) !== 0) { // 结束
+        this.$confirm('结束拼团后会将参加客户的款项原路退回, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 继续删除
+          const params = {
+            assembleId,
+            status: 2 // 1上架， 2结束
+          }
+          assembleUpdown(params).then(res => {
+            this.$message({
+              message: `结束拼团成功！`,
+              type: 'success'
+            })
+            // 更新当前 row
+            this.tableData.forEach((item, index) => {
+              if(parseInt(item.id) === parseInt(assembleId)){
+                this.$set(this.tableData[index], 'status', params.status)
+              }
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消结束拼团'
+          })       
+        })
+      }else {
+        // 上架
+        const params = {
+          assembleId,
+          status: 1 // 1上架， 2结束
+        }
+        assembleUpdown(params).then(res => {
+          this.$message({
+            message: `上架拼团, 成功！`,
+            type: 'success'
+          })
+          // 更新当前 row
+          this.tableData.forEach((item, index) => {
+            if(parseInt(item.id) === parseInt(assembleId)){
+              this.$set(this.tableData[index], 'status', params.status)
+            }
+          })
+        })
       }
-      assembleUpdown(params).then(res => {
-        this.$message({
-          message: `${text}, 成功！`,
-          type: 'success'
-        })
-        // 更新当前 row
-        this.tableData.forEach((item, index) => {
-           if(parseInt(item.id) === parseInt(assembleId)){
-             this.$set(this.tableData[index], 'status', params.status)
-           }
-        })
-      })
+      
     },
     // 选择日期
     datePickerChange(time){
