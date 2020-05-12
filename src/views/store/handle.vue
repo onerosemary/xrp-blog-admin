@@ -46,23 +46,103 @@
         </div>
         <div class="flex3">
           <fieldset class="fieldset-border">
-            <legend>支付宝接口</legend>
-            <el-form-item label="API" prop="alipayAppid">
-              <el-input v-model="form.alipayAppid" size="small" placeholder="请填写" />
-            </el-form-item>
-            <el-form-item label="密钥" prop="alipayPublicKey">
-              <el-input v-model="form.alipayPublicKey"  size="small" placeholder="请填写" />
-            </el-form-item>
+            <legend><span :class="{active: payIndex === index}" @click="payShow(index)" v-for="(item, index) in payNames" :key="index">{{item}}</span></legend>
+            <div v-if="parseInt(payIndex) === 0">
+              <!-- 微信 -->
+              <el-form-item label="appid" :prop="parseInt(payIndex) === 0 ? 'wxAppid' : ''">
+                <el-input v-model="form.wxAppid" size="small" placeholder="请填写" />
+              </el-form-item>
+              <el-form-item label="app 密钥" :prop="parseInt(payIndex) === 0 ? 'wxAppSecret' : ''">
+                <el-input v-model="form.wxAppSecret"  size="small" placeholder="请填写" />
+              </el-form-item>
+              <el-form-item label="商户号" :prop="parseInt(payIndex) === 0 ? 'wxMerchNo' : ''">
+                <el-input v-model="form.wxMerchNo"  size="small" placeholder="请填写" />
+              </el-form-item>
+              <el-form-item label="商户密钥" :prop="parseInt(payIndex) === 0 ? 'wxMerchKey' : ''">
+                <el-input v-model="form.wxMerchKey"  size="small" placeholder="请填写" />
+              </el-form-item>
+              <div class="certificate">
+                <div>证书文件</div>
+                <ul>
+                  <!-- <li class="active">
+                    <el-upload
+                      class="upload-demo"
+                      :headers="headers"
+                      :action="uploadUrl + (payIndex + 1)"
+                      :before-upload="beforeAvatarUpload"
+                      :on-progress="uploadProgress"
+                      :on-success="handleVideoSuccess"
+                      :show-file-list = false
+                    >
+                      <p>cert.p12</p><div class="bg"><i class="el-icon-upload"></i></div>
+                    </el-upload>
+                  </li>
+                  <li><p>cert.pem</p><div class="bg"><i class="el-icon-upload"></i></div></li> -->
+                  <!-- <li><p>key.pem</p><div class="bg"><i class="el-icon-upload"></i></div></li> -->
+                  <li>
+                    <el-upload
+                      class="upload-demo"
+                      accept=".p12, .pem"
+                      :headers="headers"
+                      :action="uploadUrl + (payIndex + 1)"
+                      :on-preview="handlePreview"
+                      :on-success="handleSuccess"
+                      :on-remove="handleRemove"
+                      :before-remove="beforeRemove"
+                      multiple
+                      :limit="3"
+                      :on-exceed="handleExceed"
+                      :file-list="fileList">
+                      <el-button size="small" type="primary">点击上传</el-button>
+                      <div slot="tip" class="el-upload__tip">只能上传证书文件 <b>.p12, .pem</b> 后缀文件</div>
+                    </el-upload>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div v-if="parseInt(payIndex) === 1"> 
+              <!-- 支付宝 -->
+              <el-form-item label="appid" :prop="parseInt(payIndex) === 1 ? 'alipayAppid' : ''">
+                <el-input v-model="form.alipayAppid" size="small" placeholder="请填写" />
+              </el-form-item>
+              <el-form-item label="应私钥" :prop="parseInt(payIndex) === 1 ? 'privateKey' : ''">
+                <el-input v-model="form.privateKey"  size="small" placeholder="请填写" />
+              </el-form-item>
+              <el-form-item label="应公钥" :prop="parseInt(payIndex) === 1 ? 'publicKey' : ''">
+                <el-input v-model="form.publicKey"  size="small" placeholder="请填写" />
+              </el-form-item>
+              <el-form-item label="签约账号" :prop="parseInt(payIndex) === 1 ? 'alipayPid' : ''">
+                <el-input v-model="form.alipayPid"  size="small" placeholder="请填写" />
+              </el-form-item>
+              <div class="certificate">
+                <div>证书文件</div>
+                <ul>
+                  <!-- <li class="active"><p>RootCert</p><div class="bg"><i class="el-icon-upload"></i></div></li>
+                  <li><p>Key_RSA2</p><div class="bg"><i class="el-icon-upload"></i></div></li>
+                  <li><p>Key_xxxxxx</p><div class="bg"><i class="el-icon-upload"></i></div></li> -->
+                  <li>
+                    <el-upload
+                      class="upload-demo"
+                      accept=".crt"
+                      :headers="headers"
+                      :action="uploadUrl + (payIndex + 1)"
+                      :on-preview="handlePreview"
+                      :on-remove="handleRemove"
+                      :on-success="handleSuccess"
+                      :before-remove="beforeRemove"
+                      multiple
+                      :limit="3"
+                      :on-exceed="handleExceed"
+                      :file-list="fileList2">
+                      <el-button size="small" type="primary">点击上传</el-button>
+                      <div slot="tip" class="el-upload__tip">只能上传证书文件 <b>.crt</b> 后缀文件</div>
+                    </el-upload>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </fieldset>
-          <fieldset class="fieldset-border">
-            <legend>微信接口</legend>
-            <el-form-item label="API" prop="wxAppid">
-              <el-input v-model="form.wxAppid" size="small" placeholder="请填写" />
-            </el-form-item>
-            <el-form-item label="密钥" prop="wxMerchkey">
-              <el-input v-model="form.wxMerchkey" size="small" placeholder="请填写" />
-            </el-form-item>
-          </fieldset>
+
         </div>
       </div>
       <el-form-item class="create-btn">
@@ -73,6 +153,7 @@
   </div>
 </template>
 <script>
+import { getToken } from '@/utils/auth'
 import upload from '@/components/upload'
 import { addStore, elseEditorStore, elseStoreDetail, selfeditorStore, selfStoreDetail } from '@/api/store'
 // https://lbs.amap.com/api/javascript-api/guide/abc/prepare
@@ -86,15 +167,38 @@ export default {
       }
     }
     return {
+      headers: {
+        'Authorization': getToken()
+      }, // 设置上传的请求头部
+      uploadUrl: `${process.env.VUE_APP_BASE_API}/pc/company/uploadcert/`, //你要上传视频到你后台的地址
+      payNames: ['微信接口','支付宝接口'],
+      fileList: [], // 微信
+      fileList2: [], // 支付宝
+      // acceptType: ['.p12', '.pem', '.crt'], // 识别上传证书类型
+
+      payIndex: 0,
       form: {
         attachments:[], // 门店图片
         imgUrl: '', // 门店图片(后端接口需要)
         name: '', // 门店名称
         physicianCnt: '', // 医师数量
+
         alipayAppid: '', // 支付宝接口
-        alipayPublicKey: '',
+        privateKey: '',
+        publicKey: '',
+        alipayPid: '',
+        publicKeyCert: '', // 证书
+        alipayPublicKeyCert: '', // 证书
+        alipayRootCert: '', // 证书
+
         wxAppid: '', // 微信接口
-        wxMerchkey: '',
+        wxAppSecret: '',
+        wxMerchNo: '',
+        wxMerchKey: '',
+        wxCertPem: '', // 证书
+        wxCertificatePath: '', // 证书
+        wxKeyPem: '', // 证书
+
         address: '', // 门店地址
         location: '', // 经纬度（后端接口需要）
         longitude: '', // 经度
@@ -113,10 +217,17 @@ export default {
         physicianCnt: [ { required: true, message: '不能为空', trigger: 'blur' } ],
         userName: [ { required: true, message: '不能为空', trigger: 'blur' } ],
         password: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        alipayAppid: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        alipayPublicKey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+
         wxAppid: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        wxMerchkey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        wxAppSecret: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        wxMerchNo: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        wxMerchKey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+
+        alipayAppid: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        privateKey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        publicKey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        alipayPid: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+
         address: [ { required: true, message: '不能为空', trigger: 'blur' } ]
       },
       map: null, // 地图实例
@@ -156,10 +267,44 @@ export default {
     }
   },
   methods: {
+    payShow(index) {
+      this.payIndex = index
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+
+      if(parseInt(this.payIndex) === 0) { // 微信
+        const sindex = this.fileList.map(item => item.uid).indexOf(file.uid) // 删除的索引
+        this.fileList.splice(sindex, 1)
+        console.log('微信', this.fileList)
+      }else if(parseInt(this.payIndex) === 1) { // 支付宝
+        const sindex2 = this.fileList2.map(item => item.uid).indexOf(file.uid) // 删除的索引
+        this.fileList2.splice(sindex2, 1)
+        console.log('支付宝', this.fileList2)
+      }
+    },
+    handlePreview(file) {
+      // console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    },
+    handleSuccess(response, file, fileList){
+      if(parseInt(this.payIndex) === 0) { // 微信
+        this.fileList = fileList
+      }else if(parseInt(this.payIndex) === 1) { // 支付宝
+        this.fileList2 = fileList
+      }
+      console.log('微信上传后', this.fileList)
+      console.log('支付宝上传后', this.fileList2)
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${ file.name }？`);
+    },
     //  获取本店信息
     getbendianStoreDetailInfo() {
       selfStoreDetail().then(res => {
-        const { imgUrl, name, physicianCnt,  alipayAppid, alipayPublicKey, wxAppid, wxMerchkey, address, location} = res.data
+        const {imgUrl, name, physicianCnt, alipayAppid, alipayPublicKey, publicKey, alipayRootCert, publicKeyCert, alipayPublicKeyCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
         this.form = {
             companyId: this.queryId, // 编辑id
             attachments:[{
@@ -170,10 +315,22 @@ export default {
             imgUrl, // 门店图片(后端接口需要)
             name, // 门店名称
             physicianCnt, // 医师数量
-            alipayAppid, // 支付宝接口
+            alipayAppid,
             alipayPublicKey,
-            wxAppid, // 微信接口
-            wxMerchkey,
+            alipayPublicKeyCert,
+            alipayRootCert,
+            publicKeyCert,
+            alipayPublicKeyCert,
+            alipayRootCert,
+
+            wxAppid,
+            wxAppSecret,
+            wxMerchNo,
+            wxMerchKey,
+            wxCertPem,
+            wxCertificatePath,
+            wxKeyPem,
+            
             address, // 门店地址
             location, // 经纬度（后端接口需要）
             longitude: location && location.split(',')[0], // 经度
@@ -185,7 +342,7 @@ export default {
     //  获取门店信息
     getCurrentStoreDetailInfo() {
       elseStoreDetail({id: this.queryId}).then(res => {
-        const { imgUrl, name, physicianCnt,  alipayAppid, alipayPublicKey, wxAppid, wxMerchkey, address, location} = res.data
+        const { imgUrl, name, physicianCnt,  alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
         this.form = {
             companyId: this.queryId, // 编辑id
             attachments:[{
@@ -197,14 +354,61 @@ export default {
             name, // 门店名称
             physicianCnt, // 医师数量
             alipayAppid, // 支付宝接口
-            alipayPublicKey,
-            wxAppid, // 微信接口
-            wxMerchkey,
+            privateKey,
+            publicKey,
+            alipayPid,
+            publicKeyCert,
+            alipayPublicKeyCert,
+            alipayRootCert,
+            
+            wxAppid,
+            wxAppSecret,
+            wxMerchNo,
+            wxMerchKey,
+            wxCertPem,
+            wxCertificatePath,
+            wxKeyPem,
             address, // 门店地址
             location, // 经纬度（后端接口需要）
             longitude: location.split(',')[0], // 经度
             latitude: location.split(',')[1], // 纬度
         }
+        // 证据文件 微信回选
+        if(wxCertificatePath) {
+          this.fileList = [
+            {
+              name: 'apiclient_cert.p12',
+              url: `${wxCertificatePath}`
+            },
+            {
+              name: 'apiclient_cert.pem',
+              url: `${wxCertPem}`
+            },
+            {
+              name: 'apiclient_key.pem',
+              url: `${wxKeyPem}`
+            }
+          ]
+        }
+        
+        // 证据文件 支付宝回选
+        if(publicKeyCert) {
+          this.fileList2 = [
+            {
+              name: 'alipayCertPublicKey_RSA2.crt',
+              url: `${publicKeyCert}`
+            },
+            {
+              name: 'alipayRootCert.crt',
+              url: `${alipayRootCert}`
+            },
+            {
+              name: 'appCertPublicKey',
+              url: `${alipayPublicKeyCert}`
+            }
+          ]
+        }
+        
       })
     },
     // 门店图片上传成功
@@ -214,6 +418,59 @@ export default {
     },
     // 表单提交
     submitForm(formName) {
+      
+      // console.log('微信--', this.fileList)
+      if(this.fileList.length > 0) {
+        this.fileList.forEach(item => {
+          if(item.name === 'apiclient_cert.p12') {
+            this.form.wxCertificatePath = item.url || item.response.data[0] // item.url 兼容重新编辑处理
+          }
+          if(item.name === 'apiclient_cert.pem') {
+            this.form.wxCertPem = item.url || item.response.data[0]
+          }
+          if(item.name === 'apiclient_key.pem') {
+            this.form.wxKeyPem = item.url || item.response.data[0]
+          }
+        })
+      }
+      
+      // console.log('支付宝--', this.fileList2)
+      if(this.fileList2.length > 0) {
+        this.fileList2.forEach(item => {
+          if(item.name === 'alipayCertPublicKey_RSA2.crt') {
+            this.form.publicKeyCert = item.url || item.response.data[0]
+          }
+          if(item.name === 'alipayRootCert.crt') {
+            this.form.alipayRootCert = item.url || item.response.data[0]
+          }
+          if(item.name.indexOf('appCertPublicKey' === 0)) { // appCertPublicKey_2021001152612533.crt
+            this.form.alipayPublicKeyCert = item.url || item.response.data[0]
+          }
+        })
+      }
+
+      if(this.form.wxAppid || this.form.wxAppSecret || this.form.wxMerchNo || this.form.wxMerchKey) { // 微信判断
+        if(this.fileList.length !== 3) {
+          this.$message({
+            message: '微信相关输入框或微信3个文件证书必须上传',
+            type: 'warning'
+          })
+          return
+        }
+        
+      }
+
+      if(this.form.alipayAppid  || this.form.privateKey || this.form.publicKey || this.form.alipayPid) { // 支付宝判断
+        if(this.fileList2.length !== 3) {
+          this.$message({
+            message: '支付宝相关输入框或支付宝3个文件证书必须上传',
+            type: 'warning'
+          })
+          return
+        }
+      }
+      console.log('form---', this.form)
+      
       this.$refs[formName].validate((valid) => {
         if(this.form.attachments.length > 0){
             this.form.imgUrl = this.form.attachments[0].attachmentUrl
@@ -399,7 +656,62 @@ export default {
             margin-bottom: 20px;
             font-size: 14px;
             legend{
-                color: #29BEC6;
+                span{
+                  cursor: pointer;
+                  display: inline-block;
+                  margin-left: 15px;
+                  color: #D1D5D5;
+                  &.active{
+                    color:  #29BEC6;
+                  }
+                }
+            }
+            .certificate{
+              font-size: 13px;
+              color: #606266;
+              ul{
+                display: flex;
+                justify-content: space-between;
+                margin: 0;
+                padding: 0;
+                li{
+                  font-size: 12px;
+                  list-style: none;
+                  margin-right: 15px;
+                  cursor: pointer;
+                  margin-top: 15px;
+                  p{
+                    margin: 0;
+                    padding: 0;
+                    line-height: 22px;
+                  }
+                  .bg{
+                    width: 48px;
+                    height: 48px;
+                    background: #D1D5D5;
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    .el-icon-upload{
+                      font-size: 22px;
+                      color: #fff;
+                    }
+
+                  }
+                  &.active{
+                    .bg{
+                      background: #67C23A;
+                    }
+                    .el-icon-upload{
+                      font-size: 22px;
+                      color: #fff;
+                    }
+                    
+                  }
+                }
+              }
+              
             }
         }
     }

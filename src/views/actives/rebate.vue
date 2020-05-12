@@ -28,10 +28,10 @@
       </el-table-column>
       <el-table-column label="封面" width="100">
           <template slot-scope="scope">
-            <img class="list-img" :src="scope.row.cover" />
+            <img class="list-img" :src="imgUrl + scope.row.goodsCover" />
           </template>
       </el-table-column>
-      <el-table-column label="商品" prop="title" />
+      <el-table-column label="商品" prop="goodsName" />
 
       <el-table-column label="价格(￥)">
         <template slot-scope="scope">
@@ -44,13 +44,19 @@
           {{scope.row.distAmt | price}}
         </template>
       </el-table-column>
-      <el-table-column label="分销人" prop="customerPhone" />
+      <el-table-column label="分销人" prop="referenceName" />
       <el-table-column label="创建人" prop="createName" />
       <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-          <span v-if="parseInt(scope.row.status) === 1">待审核</span>
-          <span v-if="parseInt(scope.row.status) === 2">已审核</span>
-          <span v-if="parseInt(scope.row.status) === 3">已审批</span>
+          <span v-if="parseInt(scope.row.status) === -1">退款申请中</span>
+          <span v-if="parseInt(scope.row.status) === 0">返佣申请中</span>
+          <span v-if="parseInt(scope.row.status) === 1">返佣拒绝</span>
+          <span v-if="parseInt(scope.row.status) === 2">待审核</span>
+          <span v-if="parseInt(scope.row.status) === 3">已审核</span>
+          <span v-if="parseInt(scope.row.status) === 4">审核不通过</span>
+          <span v-if="parseInt(scope.row.status) === 5">已审批</span>
+          <span v-if="parseInt(scope.row.status) === 6">审批不通过</span>
+          <span v-if="parseInt(scope.row.status) === 8">退款完</span>
         </template>
       </el-table-column>
       <el-table-column label="审核人" prop="verifyName" />

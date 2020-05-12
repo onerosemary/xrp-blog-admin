@@ -66,7 +66,7 @@
       <el-table-column label="操作" width="320">
         <template slot-scope="scope">
           <el-button  
-            v-if="scope.row.topShow === 0"
+            v-if="scope.row.topShow === 0 && scope.row.status !== 2"
             size="mini"
             @click="recommendIndex(scope.row)"
           >推荐首页</el-button>
