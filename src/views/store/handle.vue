@@ -3,10 +3,14 @@
     <div class="head-span">
       <div class="head-span-title">门店信息</div>
       <p class="head-span-sub">请一定要填写支付宝或微信 APPID 等信息，否则客户无法在 APP 中进行支付。</p>
+      <el-steps :active="stepActive" finish-status="success" class="step-class">
+        <el-step title="填写基本店铺信息"></el-step>
+        <el-step title="绑定支付宝/微信"></el-step>
+      </el-steps>
     </div>
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules">
-      <div class="body-span">
+      <div class="body-span" v-show="stepActive === 0">
         <div class="flex1">
           <el-form-item label="门店图片" prop="attachments" class="upload-item">
             <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess" format="img" :amount="1"></upload>
@@ -44,47 +48,34 @@
             </el-col>
           </el-form-item>
         </div>
+      </div>
+      <div class="body-span" v-if="stepActive === 1">
         <div class="flex3">
           <fieldset class="fieldset-border">
             <legend><span :class="{active: payIndex === index}" @click="payShow(index)" v-for="(item, index) in payNames" :key="index">{{item}}</span></legend>
             <div v-if="parseInt(payIndex) === 0">
               <!-- 微信 -->
-              <el-form-item label="appid" :prop="parseInt(payIndex) === 0 ? 'wxAppid' : ''">
+              <el-form-item label="appid" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxAppid' : ''">
                 <el-input v-model="form.wxAppid" size="small" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="app 密钥" :prop="parseInt(payIndex) === 0 ? 'wxAppSecret' : ''">
+              <el-form-item label="app 密钥" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxAppSecret' : ''">
                 <el-input v-model="form.wxAppSecret"  size="small" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="商户号" :prop="parseInt(payIndex) === 0 ? 'wxMerchNo' : ''">
+              <el-form-item label="商户号" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxMerchNo' : ''">
                 <el-input v-model="form.wxMerchNo"  size="small" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="商户密钥" :prop="parseInt(payIndex) === 0 ? 'wxMerchKey' : ''">
+              <el-form-item label="商户密钥" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxMerchKey' : ''">
                 <el-input v-model="form.wxMerchKey"  size="small" placeholder="请填写" />
               </el-form-item>
               <div class="certificate">
                 <div>证书文件</div>
                 <ul>
-                  <!-- <li class="active">
-                    <el-upload
-                      class="upload-demo"
-                      :headers="headers"
-                      :action="uploadUrl + (payIndex + 1)"
-                      :before-upload="beforeAvatarUpload"
-                      :on-progress="uploadProgress"
-                      :on-success="handleVideoSuccess"
-                      :show-file-list = false
-                    >
-                      <p>cert.p12</p><div class="bg"><i class="el-icon-upload"></i></div>
-                    </el-upload>
-                  </li>
-                  <li><p>cert.pem</p><div class="bg"><i class="el-icon-upload"></i></div></li> -->
-                  <!-- <li><p>key.pem</p><div class="bg"><i class="el-icon-upload"></i></div></li> -->
                   <li>
                     <el-upload
                       class="upload-demo"
                       accept=".p12, .pem"
                       :headers="headers"
-                      :action="uploadUrl + (payIndex + 1)"
+                      :action="uploadUrl + (payIndex + 1) + '/' +storeId"
                       :on-preview="handlePreview"
                       :on-success="handleSuccess"
                       :on-remove="handleRemove"
@@ -102,16 +93,16 @@
             </div>
             <div v-if="parseInt(payIndex) === 1"> 
               <!-- 支付宝 -->
-              <el-form-item label="appid" :prop="parseInt(payIndex) === 1 ? 'alipayAppid' : ''">
+              <el-form-item label="appid" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'alipayAppid' : ''">
                 <el-input v-model="form.alipayAppid" size="small" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="应私钥" :prop="parseInt(payIndex) === 1 ? 'privateKey' : ''">
+              <el-form-item label="应私钥" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'privateKey' : ''">
                 <el-input v-model="form.privateKey"  size="small" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="应公钥" :prop="parseInt(payIndex) === 1 ? 'publicKey' : ''">
+              <el-form-item label="应公钥" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'publicKey' : ''">
                 <el-input v-model="form.publicKey"  size="small" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="签约账号" :prop="parseInt(payIndex) === 1 ? 'alipayPid' : ''">
+              <el-form-item label="签约账号" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'alipayPid' : ''">
                 <el-input v-model="form.alipayPid"  size="small" placeholder="请填写" />
               </el-form-item>
               <div class="certificate">
@@ -125,7 +116,7 @@
                       class="upload-demo"
                       accept=".crt"
                       :headers="headers"
-                      :action="uploadUrl + (payIndex + 1)"
+                      :action="uploadUrl + (payIndex + 1) + '/' +storeId"
                       :on-preview="handlePreview"
                       :on-remove="handleRemove"
                       :on-success="handleSuccess"
@@ -146,7 +137,9 @@
         </div>
       </div>
       <el-form-item class="create-btn">
-        <el-button type="primary" @click="submitForm('form')">保存</el-button>
+        <el-button type="primary" v-if="stepActive === 0" @click="submitNext('form')">下一步</el-button>
+        <el-button type="primary" v-if="stepActive === 1" @click="submitForm('form')">保存</el-button>
+        <el-button type="text" v-if="stepActive === 1" @click="stepActive = 0">上一步</el-button>
       </el-form-item>
     </el-form>
 
@@ -177,6 +170,7 @@ export default {
       // acceptType: ['.p12', '.pem', '.crt'], // 识别上传证书类型
 
       payIndex: 0,
+      stepActive: 0, // 步骤
       form: {
         attachments:[], // 门店图片
         imgUrl: '', // 门店图片(后端接口需要)
@@ -230,6 +224,7 @@ export default {
 
         address: [ { required: true, message: '不能为空', trigger: 'blur' } ]
       },
+      storeId: -1, // 门店id
       map: null, // 地图实例
       mapMarker: null, // 地图标记实例
       placeSearch: null, // 地图搜索服务实例
@@ -304,7 +299,7 @@ export default {
     //  获取本店信息
     getbendianStoreDetailInfo() {
       selfStoreDetail().then(res => {
-        const {imgUrl, name, physicianCnt, alipayAppid, alipayPublicKey, publicKey, alipayRootCert, publicKeyCert, alipayPublicKeyCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
+        const {imgUrl, name, physicianCnt, alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
         this.form = {
             companyId: this.queryId, // 编辑id
             attachments:[{
@@ -315,10 +310,11 @@ export default {
             imgUrl, // 门店图片(后端接口需要)
             name, // 门店名称
             physicianCnt, // 医师数量
+
             alipayAppid,
-            alipayPublicKey,
-            alipayPublicKeyCert,
-            alipayRootCert,
+            privateKey,
+            publicKey,
+            alipayPid,
             publicKeyCert,
             alipayPublicKeyCert,
             alipayRootCert,
@@ -336,13 +332,48 @@ export default {
             longitude: location && location.split(',')[0], // 经度
             latitude: location && location.split(',')[1], // 纬度
         }
+        // 证据文件 微信回选
+        if(wxCertificatePath) {
+          this.fileList = [
+            {
+              name: 'apiclient_cert.p12',
+              url: `${wxCertificatePath}`
+            },
+            {
+              name: 'apiclient_cert.pem',
+              url: `${wxCertPem}`
+            },
+            {
+              name: 'apiclient_key.pem',
+              url: `${wxKeyPem}`
+            }
+          ]
+        }
+        
+        // 证据文件 支付宝回选
+        if(publicKeyCert) {
+          this.fileList2 = [
+            {
+              name: 'alipayCertPublicKey_RSA2.crt',
+              url: `${publicKeyCert}`
+            },
+            {
+              name: 'alipayRootCert.crt',
+              url: `${alipayRootCert}`
+            },
+            {
+              name: 'appCertPublicKey',
+              url: `${alipayPublicKeyCert}`
+            }
+          ]
+        }
       })
       console.log('this.form 本店--', this.form)
     },
     //  获取门店信息
     getCurrentStoreDetailInfo() {
       elseStoreDetail({id: this.queryId}).then(res => {
-        const { imgUrl, name, physicianCnt,  alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
+        const { imgUrl, name, physicianCnt, alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
         this.form = {
             companyId: this.queryId, // 编辑id
             attachments:[{
@@ -353,14 +384,14 @@ export default {
             imgUrl, // 门店图片(后端接口需要)
             name, // 门店名称
             physicianCnt, // 医师数量
-            alipayAppid, // 支付宝接口
+            alipayAppid,
             privateKey,
             publicKey,
             alipayPid,
             publicKeyCert,
             alipayPublicKeyCert,
             alipayRootCert,
-            
+
             wxAppid,
             wxAppSecret,
             wxMerchNo,
@@ -416,10 +447,63 @@ export default {
       console.log('list', list)
       this.form.attachments = list
     },
+    // 下一步表单提交
+    submitNext(formName) {
+      console.log('form---', this.form)
+      
+      this.$refs[formName].validate((valid) => {
+        if(this.form.attachments.length > 0){
+            this.form.imgUrl = this.form.attachments[0].attachmentUrl
+        }else {
+            this.form.imgUrl = ''
+        }
+        if (valid) {
+          console.log('this.form---', this.form)
+          // 组装经纬度数据(后台需要)
+          this.form.location = `${this.form.longitude},${this.form.latitude}`
+        
+          if(parseInt(this.queryId) === -1){ // 添加
+            if(this.storeId === -1) { // 新建
+              addStore(this.form).then(res => {
+                this.storeId = res.data // 获取门店id
+                this.stepActive = 1 // 下一步
+              })
+      
+            }else {
+              this.stepActive = 1 // 下一步
+            }
+            
+          }else {
+            this.stepActive = 1 // 下一步
+          }
+          // else { 
+          //   if(this.isbendian) { // 本店编辑
+          //     selfeditorStore(this.form).then(res => {
+          //       this.$message({
+          //         message: '本店编辑成功',
+          //         type: 'success'
+          //       })
+          //     })
+          //   }else {
+          //     // 编辑
+          //     elseEditorStore(this.form).then(res => {
+          //       this.$message({
+          //         message: '门店编辑成功',
+          //         type: 'success'
+          //       })
+          //     })
+          //   }
+          // }
+          
+        } else {
+          console.log('error submit!!');
+          return false
+        }
+      })
+    },
     // 表单提交
     submitForm(formName) {
-      
-      // console.log('微信--', this.fileList)
+     
       if(this.fileList.length > 0) {
         this.fileList.forEach(item => {
           if(item.name === 'apiclient_cert.p12') {
@@ -434,7 +518,6 @@ export default {
         })
       }
       
-      // console.log('支付宝--', this.fileList2)
       if(this.fileList2.length > 0) {
         this.fileList2.forEach(item => {
           if(item.name === 'alipayCertPublicKey_RSA2.crt') {
@@ -469,7 +552,6 @@ export default {
           return
         }
       }
-      console.log('form---', this.form)
       
       this.$refs[formName].validate((valid) => {
         if(this.form.attachments.length > 0){
@@ -478,40 +560,31 @@ export default {
             this.form.imgUrl = ''
         }
         if (valid) {
-          console.log('this.form---', this.form)
           // 组装经纬度数据(后台需要)
           this.form.location = `${this.form.longitude},${this.form.latitude}`
-        
-          if(parseInt(this.queryId) === -1){ // 添加
-            addStore(this.form).then(res => {
+          if(parseInt(this.queryId) !== -1) { // 编辑状态
+            this.form.companyId = parseInt(this.queryId) // 赋值门店id
+          }else {
+            this.form.companyId = this.storeId // 赋值门店id
+          }
+          
+          // 编辑
+          elseEditorStore(this.form).then(res => {
+            this.$message({
+              message: '门店编辑成功',
+              type: 'success'
+            })
+          })
+          this.$router.push({
+            path: '/store/store'
+          })
+
+          if(this.isbendian) { // 本店编辑
+            selfeditorStore(this.form).then(res => {
               this.$message({
-                message: '新增门店成功',
+                message: '本店编辑成功',
                 type: 'success'
               })
-            })
-            this.$router.push({
-              path: '/store/store'
-            })
-          }else { 
-            if(this.isbendian) { // 本店编辑
-              selfeditorStore(this.form).then(res => {
-                this.$message({
-                  message: '本店编辑成功',
-                  type: 'success'
-                })
-              })
-            }else {
-              // 编辑
-              elseEditorStore(this.form).then(res => {
-                this.$message({
-                  message: '门店编辑成功',
-                  type: 'success'
-                })
-              })
-            }
-            
-            this.$router.push({
-              path: '/store/store'
             })
           }
           
@@ -633,6 +706,15 @@ export default {
     .map-container {
         width: 100%;
         height: 368px;
+    }
+    /deep/.step-class{
+      width: 700px;
+      margin: 0 auto;
+      .el-step__title{
+        font-size: 12px;
+        line-height: 16px;
+        padding-bottom: 5px;
+      }
     }
     .body-span{
         display: flex;
