@@ -135,7 +135,7 @@ export default {
         virtualSalesVolume: '', // 销量
         contents: '', // 编辑器
         deliveryType: '', // 取货方式
-        deposit: '', // 定金
+        deposit: 0, // 定金
         goodsPropertys: [{ // 商品类型
           name: '', // 规格
           originalPrice: '', // 原价
@@ -170,10 +170,10 @@ export default {
         ],
         deliveryType: [
           { required: true, message: '不能为空', trigger: 'change' }
-        ],
-        deposit: [
-          { required: true, message: '不能为空', trigger: 'blur' }
         ]
+        // deposit: [
+        //   { required: true, message: '不能为空', trigger: 'blur' }
+        // ]
       }
     }
   },
@@ -222,7 +222,7 @@ export default {
           virtualSalesVolume: data.virtualSalesVolume,
           contents: data.contents,
           deliveryType: String(data.deliveryType),
-          deposit: (data.deposit) / 100,
+          deposit: parseFloat(data.deposit) !== 0 ? (data.deposit) / 100 : data.deposit,
           goodsPropertys: data.goodsPropertys
         }
       })
