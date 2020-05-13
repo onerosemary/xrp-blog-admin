@@ -124,7 +124,7 @@
           <!-- 已完成(发货、使用) -->
           <el-button
           v-has="'ordersDistribution'"
-          v-else-if="parseInt(scope.row.status) === 5"
+          v-else-if="parseInt(scope.row.status) === 5 && scope.row.orderType === '普通'"
           size="mini"
           @click="handleDistribution(scope.row.id)"
           >关联分销</el-button>
