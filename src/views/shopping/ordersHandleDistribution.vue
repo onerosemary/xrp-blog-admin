@@ -37,6 +37,17 @@ import { orderSend, categoryEditor, orderDetail, buildRake } from '@/api/shoppin
 
 export default {
   data() {
+    var checkRakeAmt = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('不能为空'))
+        }else{
+          if (value < 1) {
+            callback(new Error('支付宝/微信 不支持低于1元的返佣'))
+          } else {
+            callback()
+          }
+        }
+      }
     return {
       form: {
         customerPhone: '', // 分销人手机号
@@ -49,7 +60,7 @@ export default {
           { required: true, message: '不能为空', trigger: 'blur' }
         ],
         rakeAmt: [
-          { required: true, message: '不能为空', trigger: 'blur' }
+          { validator: checkRakeAmt, trigger: 'blur' }
         ]
       }
     }
