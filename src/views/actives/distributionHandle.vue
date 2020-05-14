@@ -9,7 +9,7 @@
       <el-form-item label="选择分销商品" prop="cover">
         <select-goods :cover="form.cover" :goodTitle="form.title" @change="changeGood"></select-goods>
       </el-form-item>
-      <div class="group-item">
+      <!-- <div class="group-item">
         <el-form-item label="时间设置" prop="time">
             <el-date-picker
               class="custom-date-picker"
@@ -24,7 +24,7 @@
               >
             </el-date-picker>
         </el-form-item>
-      </div>
+      </div> -->
       <div class="group-property-item" v-if="form.properties.length > 0">
         <ul class="group-property-title">
           <li class="w200">规格</li>
@@ -73,9 +73,9 @@ export default {
       selectOne: null, // 选中的商品
       time: null,
       form: {
-        time: null, // 秒杀时间
-        startTime: '', // 开始时间
-        endTime: '', // 结束时间
+        // time: null, // 秒杀时间
+        // startTime: '', // 开始时间
+        // endTime: '', // 结束时间
         goodsId: '', // 商品id
         cover: '', // 商品封面
         title: '',
@@ -91,12 +91,12 @@ export default {
         cover: [
           { required: true, validator: cover, trigger: 'change' }
         ],
-        time: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        endTime: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ]
+        // time: [
+        //   { required: true, message: '不能为空', trigger: 'blur' }
+        // ],
+        // endTime: [
+        //   { required: true, message: '不能为空', trigger: 'blur' }
+        // ]
       }
     }
   },
@@ -171,17 +171,17 @@ export default {
           item.price = item.price / 100
         })
         // 时间解析格式
-        startTime = parseTime(startTime)
-        endTime = parseTime(endTime)
+        // startTime = parseTime(startTime)
+        // endTime = parseTime(endTime)
       
         this.form = {
             id, // 拼团返回id
             goodsId, // 商品id
             cover: this.imgUrl  + cover, // 商品封面
             cover1: cover, // 备份替换（没有url）
-            time: [startTime, endTime], // 秒杀时间
-            startTime, // 开始时间
-            endTime, // 结束时间
+            // time: [startTime, endTime], // 秒杀时间
+            // startTime, // 开始时间
+            // endTime, // 结束时间
             properties, // 商品规格
             title
         }

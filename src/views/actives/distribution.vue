@@ -6,7 +6,7 @@
         <el-option label="进行中" :value="1" />
         <el-option label="已结束" :value="0" />
       </el-select>
-      <datePicker @change="datePickerChange"></datePicker>
+      <!-- <datePicker @change="datePickerChange"></datePicker> -->
       <el-input v-model="query.title" placeholder="商品名称" class="handle-input mr10" size="small" clearable @clear="getList" />
       <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
       <el-button v-has="'distributionAdd'" type="primary" size="small" @click="handle(-1)">添加分销</el-button>
@@ -42,7 +42,7 @@
           {{scope.row.totalCnt || 0}}
         </template>
       </el-table-column>
-      <el-table-column label="开始时间">
+      <!-- <el-table-column label="开始时间">
         <template slot-scope="scope">
           {{scope.row.startTime}}
         </template>
@@ -51,18 +51,18 @@
         <template slot-scope="scope">
           {{scope.row.endTime}}
         </template>
-      </el-table-column>
-      <el-table-column label="价格" width="70">
+      </el-table-column> -->
+      <el-table-column label="价格">
         <template slot-scope="scope">
           {{scope.row.oriPrice | price}}
         </template>
       </el-table-column>
-      <el-table-column label="佣金" width="70">
+      <el-table-column label="佣金">
         <template slot-scope="scope">
           {{scope.row.distAmt | price}}
         </template>
       </el-table-column>
-      <el-table-column label="状态" prop="status" width="70">
+      <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
           <span v-if="parseInt(scope.row.status) === 0">已结束</span>
           <span v-else class="cblue">进行中</span>
@@ -277,8 +277,8 @@ export default {
         // imgUrl 
         records.forEach((item, index) => {
           item.cover = this.imgUrl + item.cover
-          item.startTime = parseTime(item.startTime)
-          item.endTime = parseTime(item.endTime)
+          // item.startTime = parseTime(item.startTime)
+          // item.endTime = parseTime(item.endTime)
           item.createTime = parseTime(item.createTime)
         })
         this.tableData = records
