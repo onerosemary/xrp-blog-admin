@@ -80,6 +80,14 @@
                 </p>
             </div>
             <div class="good-right">
+                <p class="c1">快递公司</p>
+                <p class="c2">{{detailData.expressCompany}}</p>
+            </div>
+            <div class="good-right">
+                <p class="c1">运单号</p>
+                <p class="c2">{{detailData.expressNo}}</p>
+            </div>
+            <div class="good-right">
                 <p class="c1">收货人</p>
                 <p class="c2">{{detailData.consigneeName}}</p>
             </div>
