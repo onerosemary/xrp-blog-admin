@@ -1,26 +1,17 @@
 import request from '@/utils/request'
 
-export function login(params) {
+export function login(data) {
   return request({
-    url: '/pc/user/login',
-    method: 'get',
-    params
+    url: '/user/login',
+    method: 'post',
+    data
   })
 }
 
 // 获取登录人信息
 export function getInfo() {
   return request({
-    url: '/pc/user/getLoginUserInfo',
+    url: '/user/current',
     method: 'get'
-  })
-}
-
-// 修改登录人密码
-export function updatePwd(params) {
-  return request({
-    url: '/pc/user/updatePwd',
-    method: 'get',
-    params
   })
 }

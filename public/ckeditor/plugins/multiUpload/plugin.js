@@ -80,10 +80,11 @@ CKEDITOR.plugins.add('multiUpload', {
         },
         FileUploaded: function (uploader, file, responseObject) {
           var res = JSON.parse(responseObject.response)
-          if (res && res.data && res.data.length && res.data[0]) {
+
+          if (res.data.filename) {
             showToast('success', '图片 ' + file.name + ' 上传成功')
             console.log('res---', res)
-            htmlElements += "<img style='vertical-align: middle; max-width: 100%;' src='" + editor.config.img_base_url + res.data + "' />"
+            htmlElements += "<img style='vertical-align: middle; max-width: 100%;' src='" + editor.config.img_base_url + res.data.filename + "' />"
           }
           if (uploader.total.uploaded === uploader.files.length) {
             // var root = (editor.editable ? editor.editable() : (editor.mode == 'wysiwyg' ? editor.document && editor.document.getBody() : editor.textarea));

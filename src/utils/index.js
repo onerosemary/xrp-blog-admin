@@ -137,7 +137,8 @@ function generaFn(routers, data) {
       let childrenOne = [{
         path: item.value === '/' ? 'dashboard' : item.value,
         name: item.value === '/' ? 'dashboard' : item.value,
-        component: () => import(`@/views${comp}/index.vue`), // (注意坑)(当前解决方案, 指定版本 "babel-eslint": "^7.2.3",)报错 https://blog.csdn.net/weixin_42406046/article/details/103718293
+        component: resolve => require([`@/views${comp}/index.vue`], resolve), // 此办法非常Ok
+        // component: () => import(`@/views${comp}/index.vue`), // (注意坑)(当前解决方案, 指定版本 "babel-eslint": "^7.2.3",)报错 https://blog.csdn.net/weixin_42406046/article/details/103718293
         meta: { title: item.name, icon: item.icon }
       }]
       let redirectOne = item.value === '/' ? '/dashboard' : ('/' + item.value)
@@ -156,7 +157,8 @@ function generaFn(routers, data) {
       }else if(item.type === 0 &&  item.level === 2) { // 二级菜单
         menu = {
           path: item.value.substring(item.value.indexOf('/') +1 ),
-          component: () => import(`@/views/${item.value}.vue`),
+          // component: () => import(`@/views/${item.value}.vue`),
+          component: resolve => require([`@/views/${item.value}.vue`], resolve), // 此办法非常Ok
           name: item.value.substring(item.value.indexOf('/') +1 ),
           meta: { title: item.name, icon: 'example' },
           children: []
@@ -167,7 +169,8 @@ function generaFn(routers, data) {
         if(item.path) { // 只针对 添加与编辑， 删除，排序等排除
           menu = {
             path: (item.name.indexOf('修改') >= 0 || item.name.indexOf('编辑') >= 0) ? ('/' + item.path.substring(item.path.indexOf('/') +1 )) : item.path.substring(item.path.indexOf('/') +1 ),  // 添加和编辑 只需要一个作为路由，否则报keys重复错误
-            component: () => import(`@/views/${item.path}.vue`),
+            // component: () => import(`@/views/${item.path}.vue`),
+            component: resolve => require([`@/views/${item.path}.vue`], resolve), // 此办法非常Ok
             name: item.path.substring(item.path.indexOf('/') +1 ),
             hidden: true,
             meta: { title: item.name, icon: 'example' },

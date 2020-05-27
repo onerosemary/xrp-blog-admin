@@ -1,6 +1,6 @@
 <template>
   <div>
-    <textarea id="editor" name="editor" rows="10" cols="80" style="display: none"></textarea>
+    <textarea id="editor" name="editor" rows="10" cols="80" style="display: none" />
     <div id="editorMultiUploadContainer" style="display: none">
       <a id="editorMultiUploadPick" href="javascript:void(0)">[点击选择文件]</a>
     </div>

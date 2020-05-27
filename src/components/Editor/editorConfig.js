@@ -1,6 +1,6 @@
 import {
   IMG_UPLOAD_URL,
-  IMG_BASE_URL,
+  IMG_BASE_URL
   // URL_UPLOAD_URL
 } from '@/config'
 const baseConfig = {

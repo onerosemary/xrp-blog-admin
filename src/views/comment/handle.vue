@@ -4,16 +4,16 @@
       <div class="head-span-title">门店信息</div>
       <p class="head-span-sub">请一定要填写支付宝或微信 APPID 等信息，否则客户无法在 APP 中进行支付。</p>
       <el-steps :active="stepActive" finish-status="success" class="step-class">
-        <el-step title="填写基本店铺信息"></el-step>
-        <el-step title="绑定支付宝/微信"></el-step>
+        <el-step title="填写基本店铺信息" />
+        <el-step title="绑定支付宝/微信" />
       </el-steps>
     </div>
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules">
-      <div class="body-span" v-show="stepActive === 0">
+      <div v-show="stepActive === 0" class="body-span">
         <div class="flex1">
           <el-form-item label="门店图片" prop="attachments" class="upload-item">
-            <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess" format="img" :amount="1"></upload>
+            <upload :query-id="queryId" :attachments="form.attachments" format="img" :amount="1" @uploadSuccess="uploadSuccess" />
           </el-form-item>
           <el-form-item label="门店名称" prop="name">
             <el-input v-model="form.name" size="small" placeholder="请填写" />
@@ -26,46 +26,46 @@
           <el-form-item ref="addrDetails" label="地图定位门店地址" prop="address" style="margin-bottom: 15px;">
             <el-col style="width: 378px;">
               <el-input
-                size="small"
                 v-model="form.address"
+                size="small"
                 placeholder="请输入店铺地址"
                 clearable
                 @blur="mapSearch"
-              ></el-input>
+              />
             </el-col>
             <el-col style="width: 90px; margin-left: 12px;">
-              <el-button @click="mapSearch" size="small">搜索地图</el-button>
+              <el-button size="small" @click="mapSearch">搜索地图</el-button>
             </el-col>
           </el-form-item>
           <el-form-item label="">
             <el-col v-if="placeSearch" :span="9">
               <el-scrollbar class="map-panel">
-                <div id="map-panel"></div>
+                <div id="map-panel" />
               </el-scrollbar>
             </el-col>
             <el-col :span="15">
-              <div id="map-container" class="map-container"></div>
+              <div id="map-container" class="map-container" />
             </el-col>
           </el-form-item>
         </div>
       </div>
-      <div class="body-span" v-if="stepActive === 1">
+      <div v-if="stepActive === 1" class="body-span">
         <div class="flex3">
           <fieldset class="fieldset-border">
-            <legend><span :class="{active: payIndex === index}" @click="payShow(index)" v-for="(item, index) in payNames" :key="index">{{item}}</span></legend>
+            <legend><span v-for="(item, index) in payNames" :key="index" :class="{active: payIndex === index}" @click="payShow(index)">{{ item }}</span></legend>
             <div v-if="parseInt(payIndex) === 0">
               <!-- 微信 -->
               <el-form-item label="appid" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxAppid' : ''">
                 <el-input v-model="form.wxAppid" size="small" placeholder="请填写" />
               </el-form-item>
               <el-form-item label="app 密钥" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxAppSecret' : ''">
-                <el-input v-model="form.wxAppSecret"  size="small" placeholder="请填写" />
+                <el-input v-model="form.wxAppSecret" size="small" placeholder="请填写" />
               </el-form-item>
               <el-form-item label="商户号" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxMerchNo' : ''">
-                <el-input v-model="form.wxMerchNo"  size="small" placeholder="请填写" />
+                <el-input v-model="form.wxMerchNo" size="small" placeholder="请填写" />
               </el-form-item>
               <el-form-item label="商户密钥" :prop="stepActive === 1 && parseInt(payIndex) === 0 ? 'wxMerchKey' : ''">
-                <el-input v-model="form.wxMerchKey"  size="small" placeholder="请填写" />
+                <el-input v-model="form.wxMerchKey" size="small" placeholder="请填写" />
               </el-form-item>
               <div class="certificate">
                 <div>证书文件</div>
@@ -83,7 +83,8 @@
                       multiple
                       :limit="3"
                       :on-exceed="handleExceed"
-                      :file-list="fileList">
+                      :file-list="fileList"
+                    >
                       <el-button size="small" type="primary">点击上传</el-button>
                       <div slot="tip" class="el-upload__tip">只能上传证书文件 <b>.p12, .pem</b> 后缀文件</div>
                     </el-upload>
@@ -91,19 +92,19 @@
                 </ul>
               </div>
             </div>
-            <div v-if="parseInt(payIndex) === 1"> 
+            <div v-if="parseInt(payIndex) === 1">
               <!-- 支付宝 -->
               <el-form-item label="appid" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'alipayAppid' : ''">
                 <el-input v-model="form.alipayAppid" size="small" placeholder="请填写" />
               </el-form-item>
               <el-form-item label="应私钥" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'privateKey' : ''">
-                <el-input v-model="form.privateKey"  size="small" placeholder="请填写" />
+                <el-input v-model="form.privateKey" size="small" placeholder="请填写" />
               </el-form-item>
               <el-form-item label="应公钥" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'publicKey' : ''">
-                <el-input v-model="form.publicKey"  size="small" placeholder="请填写" />
+                <el-input v-model="form.publicKey" size="small" placeholder="请填写" />
               </el-form-item>
               <el-form-item label="签约账号" :prop="stepActive === 1 && parseInt(payIndex) === 1 ? 'alipayPid' : ''">
-                <el-input v-model="form.alipayPid"  size="small" placeholder="请填写" />
+                <el-input v-model="form.alipayPid" size="small" placeholder="请填写" />
               </el-form-item>
               <div class="certificate">
                 <div>证书文件</div>
@@ -124,7 +125,8 @@
                       multiple
                       :limit="3"
                       :on-exceed="handleExceed"
-                      :file-list="fileList2">
+                      :file-list="fileList2"
+                    >
                       <el-button size="small" type="primary">点击上传</el-button>
                       <div slot="tip" class="el-upload__tip">只能上传证书文件 <b>.crt</b> 后缀文件</div>
                     </el-upload>
@@ -137,9 +139,9 @@
         </div>
       </div>
       <el-form-item class="create-btn">
-        <el-button type="primary" v-if="stepActive === 0" @click="submitNext('form')">下一步</el-button>
-        <el-button type="primary" v-if="stepActive === 1" @click="submitForm('form')">保存</el-button>
-        <el-button type="text" v-if="stepActive === 1" @click="stepActive = 0">上一步</el-button>
+        <el-button v-if="stepActive === 0" type="primary" @click="submitNext('form')">下一步</el-button>
+        <el-button v-if="stepActive === 1" type="primary" @click="submitForm('form')">保存</el-button>
+        <el-button v-if="stepActive === 1" type="text" @click="stepActive = 0">上一步</el-button>
       </el-form-item>
     </el-form>
 
@@ -148,9 +150,12 @@
 <script>
 import { getToken } from '@/utils/auth'
 import upload from '@/components/upload'
-import { addStore, elseEditorStore, elseStoreDetail, selfeditorStore, selfStoreDetail } from '@/api/store'
+// import { addStore, elseEditorStore, elseStoreDetail, selfeditorStore, selfStoreDetail } from '@/api/store'
 // https://lbs.amap.com/api/javascript-api/guide/abc/prepare
 export default {
+  components: {
+    upload
+  },
   data() {
     const attachments = (rule, value, callback) => {
       if (this.form.attachments.length === 0) {
@@ -163,8 +168,8 @@ export default {
       headers: {
         'Authorization': getToken()
       }, // 设置上传的请求头部
-      uploadUrl: `${process.env.VUE_APP_BASE_API}/pc/company/uploadcert/`, //你要上传视频到你后台的地址
-      payNames: ['微信接口','支付宝接口'],
+      uploadUrl: `${process.env.VUE_APP_BASE_API}/pc/company/uploadcert/`, // 你要上传视频到你后台的地址
+      payNames: ['微信接口', '支付宝接口'],
       fileList: [], // 微信
       fileList2: [], // 支付宝
       // acceptType: ['.p12', '.pem', '.crt'], // 识别上传证书类型
@@ -172,7 +177,7 @@ export default {
       payIndex: 0,
       stepActive: 0, // 步骤
       form: {
-        attachments:[], // 门店图片
+        attachments: [], // 门店图片
         imgUrl: '', // 门店图片(后端接口需要)
         name: '', // 门店名称
         physicianCnt: '', // 医师数量
@@ -207,22 +212,22 @@ export default {
             trigger: 'change'
           }
         ],
-        name: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        physicianCnt: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        userName: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        password: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        name: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        physicianCnt: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        userName: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        password: [{ required: true, message: '不能为空', trigger: 'blur' }],
 
-        wxAppid: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        wxAppSecret: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        wxMerchNo: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        wxMerchKey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        wxAppid: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        wxAppSecret: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        wxMerchNo: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        wxMerchKey: [{ required: true, message: '不能为空', trigger: 'blur' }],
 
-        alipayAppid: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        privateKey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        publicKey: [ { required: true, message: '不能为空', trigger: 'blur' } ],
-        alipayPid: [ { required: true, message: '不能为空', trigger: 'blur' } ],
+        alipayAppid: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        privateKey: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        publicKey: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        alipayPid: [{ required: true, message: '不能为空', trigger: 'blur' }],
 
-        address: [ { required: true, message: '不能为空', trigger: 'blur' } ]
+        address: [{ required: true, message: '不能为空', trigger: 'blur' }]
       },
       storeId: -1, // 门店id
       map: null, // 地图实例
@@ -230,28 +235,6 @@ export default {
       placeSearch: null, // 地图搜索服务实例
       geocoder: null // 地图地理信息编码转换实例
     }
-  },
-  components: {
-    upload
-  },
-  watch: {
-    'form.attachments': {
-      handler(value) {
-        if(value.length > 0){
-          // 校验 图片方法
-          this.$refs.form.validateField('attachments')
-        }
-      },
-      deep: true
-    }
-  },
-  mounted() {
-    this.initMap()
-    if(parseInt(this.queryId) !== -1 && this.isbendian !== 1){ // 编辑
-      this.getCurrentStoreDetailInfo()
-    }else if(parseInt(this.queryId) !== -1 && this.isbendian === 1) { // 本店 编辑
-      this.getbendianStoreDetailInfo()
-    }    
   },
   computed: {
     queryId() { // -1 为添加， 其它为 编辑
@@ -261,6 +244,25 @@ export default {
       return parseInt(this.$route.query.isbendian)
     }
   },
+  watch: {
+    'form.attachments': {
+      handler(value) {
+        if (value.length > 0) {
+          // 校验 图片方法
+          this.$refs.form.validateField('attachments')
+        }
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.initMap()
+    if (parseInt(this.queryId) !== -1 && this.isbendian !== 1) { // 编辑
+      this.getCurrentStoreDetailInfo()
+    } else if (parseInt(this.queryId) !== -1 && this.isbendian === 1) { // 本店 编辑
+      this.getbendianStoreDetailInfo()
+    }
+  },
   methods: {
     payShow(index) {
       this.payIndex = index
@@ -268,11 +270,11 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList)
 
-      if(parseInt(this.payIndex) === 0) { // 微信
+      if (parseInt(this.payIndex) === 0) { // 微信
         const sindex = this.fileList.map(item => item.uid).indexOf(file.uid) // 删除的索引
         this.fileList.splice(sindex, 1)
         console.log('微信', this.fileList)
-      }else if(parseInt(this.payIndex) === 1) { // 支付宝
+      } else if (parseInt(this.payIndex) === 1) { // 支付宝
         const sindex2 = this.fileList2.map(item => item.uid).indexOf(file.uid) // 删除的索引
         this.fileList2.splice(sindex2, 1)
         console.log('支付宝', this.fileList2)
@@ -282,58 +284,58 @@ export default {
       // console.log(file);
     },
     handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
-    handleSuccess(response, file, fileList){
-      if(parseInt(this.payIndex) === 0) { // 微信
+    handleSuccess(response, file, fileList) {
+      if (parseInt(this.payIndex) === 0) { // 微信
         this.fileList = fileList
-      }else if(parseInt(this.payIndex) === 1) { // 支付宝
+      } else if (parseInt(this.payIndex) === 1) { // 支付宝
         this.fileList2 = fileList
       }
       console.log('微信上传后', this.fileList)
       console.log('支付宝上传后', this.fileList2)
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
+      return this.$confirm(`确定移除 ${file.name}？`)
     },
     //  获取本店信息
     getbendianStoreDetailInfo() {
       selfStoreDetail().then(res => {
-        const {imgUrl, name, physicianCnt, alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
+        const { imgUrl, name, physicianCnt, alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location } = res.data
         this.form = {
-            companyId: this.queryId, // 编辑id
-            attachments:[{
-                attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
-                attachmentType: 0, // 回选文件类型
-                attachmentUrl: imgUrl // 回选文件地址
-            }], // 分类图片
-            imgUrl, // 门店图片(后端接口需要)
-            name, // 门店名称
-            physicianCnt, // 医师数量
+          companyId: this.queryId, // 编辑id
+          attachments: [{
+            attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
+            attachmentType: 0, // 回选文件类型
+            attachmentUrl: imgUrl // 回选文件地址
+          }], // 分类图片
+          imgUrl, // 门店图片(后端接口需要)
+          name, // 门店名称
+          physicianCnt, // 医师数量
 
-            alipayAppid,
-            privateKey,
-            publicKey,
-            alipayPid,
-            publicKeyCert,
-            alipayPublicKeyCert,
-            alipayRootCert,
+          alipayAppid,
+          privateKey,
+          publicKey,
+          alipayPid,
+          publicKeyCert,
+          alipayPublicKeyCert,
+          alipayRootCert,
 
-            wxAppid,
-            wxAppSecret,
-            wxMerchNo,
-            wxMerchKey,
-            wxCertPem,
-            wxCertificatePath,
-            wxKeyPem,
-            
-            address, // 门店地址
-            location, // 经纬度（后端接口需要）
-            longitude: location && location.split(',')[0], // 经度
-            latitude: location && location.split(',')[1], // 纬度
+          wxAppid,
+          wxAppSecret,
+          wxMerchNo,
+          wxMerchKey,
+          wxCertPem,
+          wxCertificatePath,
+          wxKeyPem,
+
+          address, // 门店地址
+          location, // 经纬度（后端接口需要）
+          longitude: location && location.split(',')[0], // 经度
+          latitude: location && location.split(',')[1] // 纬度
         }
         // 证据文件 微信回选
-        if(wxCertificatePath) {
+        if (wxCertificatePath) {
           this.fileList = [
             {
               name: 'apiclient_cert.p12',
@@ -349,9 +351,9 @@ export default {
             }
           ]
         }
-        
+
         // 证据文件 支付宝回选
-        if(publicKeyCert) {
+        if (publicKeyCert) {
           this.fileList2 = [
             {
               name: 'alipayCertPublicKey_RSA2.crt',
@@ -372,40 +374,40 @@ export default {
     },
     //  获取门店信息
     getCurrentStoreDetailInfo() {
-      elseStoreDetail({id: this.queryId}).then(res => {
-        const { imgUrl, name, physicianCnt, alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location} = res.data
+      elseStoreDetail({ id: this.queryId }).then(res => {
+        const { imgUrl, name, physicianCnt, alipayAppid, privateKey, publicKey, alipayPid, publicKeyCert, alipayPublicKeyCert, alipayRootCert, wxAppid, wxAppSecret, wxMerchNo, wxMerchKey, wxCertPem, wxCertificatePath, wxKeyPem, address, location } = res.data
         this.form = {
-            companyId: this.queryId, // 编辑id
-            attachments:[{
-                attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
-                attachmentType: 0, // 回选文件类型
-                attachmentUrl: imgUrl // 回选文件地址
-            }], // 分类图片
-            imgUrl, // 门店图片(后端接口需要)
-            name, // 门店名称
-            physicianCnt, // 医师数量
-            alipayAppid,
-            privateKey,
-            publicKey,
-            alipayPid,
-            publicKeyCert,
-            alipayPublicKeyCert,
-            alipayRootCert,
+          companyId: this.queryId, // 编辑id
+          attachments: [{
+            attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
+            attachmentType: 0, // 回选文件类型
+            attachmentUrl: imgUrl // 回选文件地址
+          }], // 分类图片
+          imgUrl, // 门店图片(后端接口需要)
+          name, // 门店名称
+          physicianCnt, // 医师数量
+          alipayAppid,
+          privateKey,
+          publicKey,
+          alipayPid,
+          publicKeyCert,
+          alipayPublicKeyCert,
+          alipayRootCert,
 
-            wxAppid,
-            wxAppSecret,
-            wxMerchNo,
-            wxMerchKey,
-            wxCertPem,
-            wxCertificatePath,
-            wxKeyPem,
-            address, // 门店地址
-            location, // 经纬度（后端接口需要）
-            longitude: location.split(',')[0], // 经度
-            latitude: location.split(',')[1], // 纬度
+          wxAppid,
+          wxAppSecret,
+          wxMerchNo,
+          wxMerchKey,
+          wxCertPem,
+          wxCertificatePath,
+          wxKeyPem,
+          address, // 门店地址
+          location, // 经纬度（后端接口需要）
+          longitude: location.split(',')[0], // 经度
+          latitude: location.split(',')[1] // 纬度
         }
         // 证据文件 微信回选
-        if(wxCertificatePath) {
+        if (wxCertificatePath) {
           this.fileList = [
             {
               name: 'apiclient_cert.p12',
@@ -421,9 +423,9 @@ export default {
             }
           ]
         }
-        
+
         // 证据文件 支付宝回选
-        if(publicKeyCert) {
+        if (publicKeyCert) {
           this.fileList2 = [
             {
               name: 'alipayCertPublicKey_RSA2.crt',
@@ -439,44 +441,41 @@ export default {
             }
           ]
         }
-        
       })
     },
     // 门店图片上传成功
-    uploadSuccess(list){
+    uploadSuccess(list) {
       console.log('list', list)
       this.form.attachments = list
     },
     // 下一步表单提交
     submitNext(formName) {
       console.log('form---', this.form)
-      
+
       this.$refs[formName].validate((valid) => {
-        if(this.form.attachments.length > 0){
-            this.form.imgUrl = this.form.attachments[0].attachmentUrl
-        }else {
-            this.form.imgUrl = ''
+        if (this.form.attachments.length > 0) {
+          this.form.imgUrl = this.form.attachments[0].attachmentUrl
+        } else {
+          this.form.imgUrl = ''
         }
         if (valid) {
           console.log('this.form---', this.form)
           // 组装经纬度数据(后台需要)
           this.form.location = `${this.form.longitude},${this.form.latitude}`
-        
-          if(parseInt(this.queryId) === -1){ // 添加
-            if(this.storeId === -1) { // 新建
+
+          if (parseInt(this.queryId) === -1) { // 添加
+            if (this.storeId === -1) { // 新建
               addStore(this.form).then(res => {
                 this.storeId = res.data // 获取门店id
                 this.stepActive = 1 // 下一步
               })
-      
-            }else {
+            } else {
               this.stepActive = 1 // 下一步
             }
-            
-          }else {
+          } else {
             this.stepActive = 1 // 下一步
           }
-          // else { 
+          // else {
           //   if(this.isbendian) { // 本店编辑
           //     selfeditorStore(this.form).then(res => {
           //       this.$message({
@@ -494,57 +493,54 @@ export default {
           //     })
           //   }
           // }
-          
         } else {
-          console.log('error submit!!');
+          console.log('error submit!!')
           return false
         }
       })
     },
     // 表单提交
     submitForm(formName) {
-     
-      if(this.fileList.length > 0) {
+      if (this.fileList.length > 0) {
         this.fileList.forEach(item => {
-          if(item.name === 'apiclient_cert.p12') {
+          if (item.name === 'apiclient_cert.p12') {
             this.form.wxCertificatePath = item.url || item.response.data[0] // item.url 兼容重新编辑处理
           }
-          if(item.name === 'apiclient_cert.pem') {
+          if (item.name === 'apiclient_cert.pem') {
             this.form.wxCertPem = item.url || item.response.data[0]
           }
-          if(item.name === 'apiclient_key.pem') {
+          if (item.name === 'apiclient_key.pem') {
             this.form.wxKeyPem = item.url || item.response.data[0]
           }
         })
       }
-      
-      if(this.fileList2.length > 0) {
+
+      if (this.fileList2.length > 0) {
         this.fileList2.forEach(item => {
-          if(item.name === 'alipayCertPublicKey_RSA2.crt') {
+          if (item.name === 'alipayCertPublicKey_RSA2.crt') {
             this.form.publicKeyCert = item.url || item.response.data[0]
           }
-          if(item.name === 'alipayRootCert.crt') {
+          if (item.name === 'alipayRootCert.crt') {
             this.form.alipayRootCert = item.url || item.response.data[0]
           }
-          if(item.name.indexOf('appCertPublicKey' === 0)) { // appCertPublicKey_2021001152612533.crt
+          if (item.name.indexOf('appCertPublicKey' === 0)) { // appCertPublicKey_2021001152612533.crt
             this.form.alipayPublicKeyCert = item.url || item.response.data[0]
           }
         })
       }
 
-      if(this.form.wxAppid || this.form.wxAppSecret || this.form.wxMerchNo || this.form.wxMerchKey) { // 微信判断
-        if(this.fileList.length !== 3) {
+      if (this.form.wxAppid || this.form.wxAppSecret || this.form.wxMerchNo || this.form.wxMerchKey) { // 微信判断
+        if (this.fileList.length !== 3) {
           this.$message({
             message: '微信相关输入框或微信3个文件证书必须上传',
             type: 'warning'
           })
           return
         }
-        
       }
 
-      if(this.form.alipayAppid  || this.form.privateKey || this.form.publicKey || this.form.alipayPid) { // 支付宝判断
-        if(this.fileList2.length !== 3) {
+      if (this.form.alipayAppid || this.form.privateKey || this.form.publicKey || this.form.alipayPid) { // 支付宝判断
+        if (this.fileList2.length !== 3) {
           this.$message({
             message: '支付宝相关输入框或支付宝3个文件证书必须上传',
             type: 'warning'
@@ -552,22 +548,22 @@ export default {
           return
         }
       }
-      
+
       this.$refs[formName].validate((valid) => {
-        if(this.form.attachments.length > 0){
-            this.form.imgUrl = this.form.attachments[0].attachmentUrl
-        }else {
-            this.form.imgUrl = ''
+        if (this.form.attachments.length > 0) {
+          this.form.imgUrl = this.form.attachments[0].attachmentUrl
+        } else {
+          this.form.imgUrl = ''
         }
         if (valid) {
           // 组装经纬度数据(后台需要)
           this.form.location = `${this.form.longitude},${this.form.latitude}`
-          if(parseInt(this.queryId) !== -1) { // 编辑状态
+          if (parseInt(this.queryId) !== -1) { // 编辑状态
             this.form.companyId = parseInt(this.queryId) // 赋值门店id
-          }else {
+          } else {
             this.form.companyId = this.storeId // 赋值门店id
           }
-          
+
           // 编辑
           elseEditorStore(this.form).then(res => {
             this.$message({
@@ -579,7 +575,7 @@ export default {
             path: '/store/store'
           })
 
-          if(this.isbendian) { // 本店编辑
+          if (this.isbendian) { // 本店编辑
             selfeditorStore(this.form).then(res => {
               this.$message({
                 message: '本店编辑成功',
@@ -587,9 +583,8 @@ export default {
               })
             })
           }
-          
         } else {
-          console.log('error submit!!');
+          console.log('error submit!!')
           return false
         }
       })
@@ -674,7 +669,7 @@ export default {
         // this.placeSearch.setCity(
         //   this.value.merchantForm.addr[this.value.merchantForm.addr.length - 1]
         // )
-        
+
         this.placeSearch.search(
           this.form.address,
           (status, result) => {
@@ -686,7 +681,7 @@ export default {
                 result.poiList.pois[0].location.lng
               this.form.latitude =
                 result.poiList.pois[0].location.lat
-                console.log('this.form', this.form)
+              console.log('this.form', this.form)
             } else {
               // 搜索不到地址
               this.form.longitude = ''
@@ -789,11 +784,11 @@ export default {
                       font-size: 22px;
                       color: #fff;
                     }
-                    
+
                   }
                 }
               }
-              
+
             }
         }
     }

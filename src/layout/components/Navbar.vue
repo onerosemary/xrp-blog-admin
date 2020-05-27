@@ -8,7 +8,7 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!-- <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar"> -->
-          <div class="user-name">{{ name }}</div>
+          <div class="user-name">{{ decodeURIComponent($store.state.user.userInfo.name)}}</div>
           <i class="el-icon-caret-bottom" />
 
         </div>
@@ -38,15 +38,14 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'sidebar',
-      'name'
+      'sidebar'
     ])
   },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    linkUrl(){
+    linkUrl() {
       this.$router.push({
         path: '/password/password'
       })

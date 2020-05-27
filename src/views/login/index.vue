@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
     <div class="ms-login">
-      <div class="ms-title">瑞澜医美后台管理系统</div>
+      <div class="ms-title">向瑞平博客后台管理系统</div>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="ms-content" auto-complete="on" label-position="left" label-width="0px">
         <el-form-item prop="username">
           <el-input
@@ -50,7 +50,7 @@ export default {
     const validateUsername = (rule, value, callback) => {
       if (!value) {
         callback(new Error('用户名不能为空'))
-      } else {
+      }else {
         callback()
       }
     }
@@ -99,17 +99,22 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          if(this.loginForm.username !== 'onerosemary@163.com') { // 定义为 管理员账号
+            this.$message({
+              message: '账号没有登录权限',
+              type: 'warning'
+            })
+            return
+          }
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
-
           }).catch((err) => {
             this.loading = false
             if (err) {
               throw err
             }
-            
           })
         } else {
           console.log('error submit!!')

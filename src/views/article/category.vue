@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <div class="handle-box">
-      <el-input v-model="query.name" placeholder="角色" class="handle-input mr10" size="small" clearable @clear="getList" />
-      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button>
-      <el-button v-has="'roleAdd'" type="primary" size="small" @click="handle(-1)">添加角色</el-button>
+      <!-- <el-input v-model="query.name" placeholder="搜索名称" class="handle-input mr10" size="small" clearable @clear="getList" />
+      <el-button type="primary" icon="el-icon-search" class="search-btn" size="small" @click="getList">搜索</el-button> -->
+      <el-button type="primary" size="small" @click="handle(-1)">添加文章分类</el-button>
+
     </div>
     <el-table
       v-loading="loading"
       class="base-table"
       :data="tableData"
-
     >
       <el-table-column
         label="序号"
@@ -19,32 +19,20 @@
           {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="角色" prop="name" />
 
-      <el-table-column label="备注">
-        <template slot-scope="scope">
-          {{scope.row.companyName}}
-        </template>
-      </el-table-column>
-      
-      <el-table-column label="创建时间">
-        <template slot-scope="scope">
-          {{scope.row.createTime}}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150">
+      <el-table-column label="名称" prop="name" />
+  
+      <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button
-            v-has="'roleUpdate'"
-            v-if="scope.row.companyId !== 0"
+
             size="mini"
             @click="handle(scope.row.id)"
           >编辑</el-button>
           <el-button
-            v-has="'roleDelete'"
+
             size="mini"
-            v-if="scope.row.companyId !== 0"
-            @click="deleteHandle(scope.row.id)"
+            @click="categorydelete(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -63,10 +51,10 @@
 </template>
 
 <script>
-import { list, delete1 } from '@/api/role'
-import { parseTime } from '@/utils'
+import { articleType } from '@/api/article'
 export default {
-  name: 'Rebate',
+  name: 'Category',
+
   data() {
     return {
       query: {
@@ -79,32 +67,51 @@ export default {
       tableData: []
     }
   },
-  components: {
-
-  },
   created() {
     this.getList()
   },
   methods: {
+    categorydelete(id) {
+      this.$confirm('此操作将永久删除该文章分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 继续删除
+        categorydelete({ id }).then(res => {
+          this.$message({
+            message: `删除成功！`,
+            type: 'success'
+          })
+          // 删除当前 row
+          this.tableData.forEach((item, index) => {
+            if (parseInt(item.id) === parseInt(id)) {
+              this.tableData.splice(index, 1)
+            }
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     // 列表接口
     getList() {
-      const {name} = this.query
-
-      const params = {
-        name,
-        zbPage: {
-          current: this.currentPage,
-          size: this.pageSize
-        }
-
-      }
-      list(params).then(res => {
-        const { records, total } = res.data
-        records.forEach((item, index) => {
-          item.createTime = parseTime(item.createTime)
-        })
-        this.tableData = records
-        this.total = parseInt(total)
+      // const { name } = this.query
+      // const params = {
+      //   name,
+      //   zbPage: {
+      //     current: this.currentPage,
+      //     size: this.pageSize
+      //   }
+      // }
+      articleType().then(res => {
+        this.tableData = res.data
+        // const { records, total } = res.data
+        // this.tableData = records
+        // this.total = parseInt(total)
       })
     },
     handleSearch() {
@@ -114,35 +121,10 @@ export default {
       this.currentPage = val
       this.getList()
     },
-    deleteHandle(roleId) {
-      this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 继续删除
-        delete1({roleId}).then(res => {
-          this.$message({
-            message: `删除成功！`,
-            type: 'success'
-          })
-          // 删除当前 row
-          this.tableData.forEach((item, index) => {
-            if(parseInt(item.id) === parseInt(roleId)){
-              this.tableData.splice(index, 1)
-            }
-          })
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })       
-      })
-    },
+    // 添加/编辑 跳转
     handle(id) {
       this.$router.push({
-        path: '/role/roleHandle',
+        path: '/shopping/categoryHandle',
         query: {
           id: id
         }
@@ -155,5 +137,23 @@ export default {
   .el-dropdown-link{
     cursor: pointer;
     font-size: 12px;
+  }
+  .sort-box{
+    display: flex;
+    align-items: center;
+    /deep/ .el-input{
+      width: 100px;
+      margin-right: 20px;
+    }
+    /deep/.el-input__inner{
+      line-height: 30px;
+      height: 30px;
+    }
+    /deep/.el-button--text{
+      font-size: 13px;
+    }
+    .order-cancel{
+      color: #999;
+    }
   }
 </style>

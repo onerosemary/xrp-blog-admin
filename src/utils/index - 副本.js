@@ -118,8 +118,8 @@ export function debounce(fn, delay) {
 }
 
 // 组装动态路由
-let myPermissionBtns = []
-export function generaMenu (routers, data) {
+const myPermissionBtns = []
+export function generaMenu(routers, data) {
   return new Promise((resolve, reject) => {
     const myrouters = generaFn(routers, data)
     resolve({
@@ -131,17 +131,17 @@ export function generaMenu (routers, data) {
 // 递归组装路由
 function generaFn(routers, data) {
   data.forEach((item) => {
-    if(item.type !== 1) { // 排除按钮
+    if (item.type !== 1) { // 排除按钮
       const comp = item.value === '/' ? '/dashboard' : ('/' + item.value)
-      let childrenOne = [{
+      const childrenOne = [{
         path: item.value === '/' ? 'dashboard' : item.value,
         name: item.value === '/' ? 'dashboard' : item.value,
         component: () => import(`@/views${comp}/index.vue`), // (注意坑)(当前解决方案, 指定版本 "babel-eslint": "^7.2.3",)报错 https://blog.csdn.net/weixin_42406046/article/details/103718293
         meta: { title: item.name, icon: 'example' }
       }]
-      let redirectOne = item.value === '/' ? '/dashboard' : ('/' + item.value)
+      const redirectOne = item.value === '/' ? '/dashboard' : ('/' + item.value)
       let menu = {}
-      if(item.type === 0 &&  item.level === 1) { // 一级菜单
+      if (item.type === 0 && item.level === 1) { // 一级菜单
         menu = {
           path: item.value === '/' ? item.value : ('/' + item.value),
           component: Layout,
@@ -150,7 +150,7 @@ function generaFn(routers, data) {
           meta: { title: item.name, icon: 'example' },
           children: !item.isNext ? childrenOne : [] // 判断一级单独的一级菜单(主要避免有二级的菜单，没有选列表，只选择 二级菜单 比如添加按钮)
         }
-      }else { // 二级菜单
+      } else { // 二级菜单
         menu = {
           path: ('/' + item.value),
           component: () => import(`@/views/${item.value}.vue`),
@@ -159,16 +159,15 @@ function generaFn(routers, data) {
           children: []
         }
       }
-      
+
       if (item.childMenus) {
-        let arr = generaFn(menu.children, item.childMenus)
+        const arr = generaFn(menu.children, item.childMenus)
         menu.children = arr
       }
       routers.push(menu)
-    }else { // 收集所有权限按钮
+    } else { // 收集所有权限按钮
       myPermissionBtns.push(item)
     }
-    
   })
   return routers
 }

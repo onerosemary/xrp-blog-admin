@@ -17,11 +17,11 @@ export function isExternal(path) {
 export function checkAccount(rule, value, callback) {
   const reg = /^[0-9A-Za-z]{6,}$/
 
-  if(!value) {
+  if (!value) {
     return callback(new Error('不能为空'))
-  }else if(!reg.test(value)){
+  } else if (!reg.test(value)) {
     return callback(new Error('只支持英文, 数字, 并不能少于6个字符'))
-  }else {
+  } else {
     callback()
   }
 }

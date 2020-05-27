@@ -1,53 +1,35 @@
 <template>
   <div class="container">
     <div class="head-span">
-      <div class="head-span-title">{{queryId === -1 ? '积分商品添加': '积分商品编辑'}}</div>
-      <!-- <p class="head-span-sub">如商品无折扣，价格栏只填写现价即可。</p> -->
+      <div class="head-span-title">{{ queryId === -1 ? '文章添加': '文章编辑' }}</div>
     </div>
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
-      <el-form-item label="积分商品图片" prop="attachments" class="upload-item">
-        <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess" :amount="5" :cover="true"></upload>
+      <el-form-item label="文章图片"  class="upload-item">
+        <upload :query-id="queryId"  :attachments="form.attachments" :amount="1" format="img" :cover="true" @uploadSuccess="uploadSuccess" />
       </el-form-item>
-      <el-form-item label="积分商品名称" prop="title">
-          <el-input v-model="form.title" size="small" placeholder="请填写" />
-      </el-form-item>      
-      <div class="goods-type">
-        <el-form-item label="兑换积分" 
-        prop="goodsPropertys[0].points"
-        >
-            <el-input v-model="form.goodsPropertys[0].points" size="small" placeholder="请填写" />
+      <el-form-item label="文章名称" prop="title">
+        <el-input v-model="form.title" size="small" placeholder="请填写" maxlength="32" show-word-limit />
+      </el-form-item>
+   
+     <div class="delivery-type">
+        <el-form-item label="文章分类" prop="type">
+          <article-type :cid="form.type" @change="articleTypeChange" />
         </el-form-item>
-        <el-form-item 
-          label="库存数量" 
-          prop="goodsPropertys[0].stock"
-        >
-            <el-input v-model="form.goodsPropertys[0].stock" size="small" placeholder="请填写" />
-        </el-form-item>
-        <el-form-item label="限购" prop="purchaseLimit">
-            <el-input v-model="form.purchaseLimit" size="small" placeholder="请填写" />
-        </el-form-item>
-        <el-form-item label="销量(注水)" prop="virtualSalesVolume">
-            <el-input v-model="form.virtualSalesVolume" size="small" placeholder="请填写" />
+        <el-form-item label="浏览量" prop="looks">
+          <el-input v-model="form.looks" size="small" placeholder="请填写" />
         </el-form-item>
       </div>
-      <el-form-item label="详情介绍" class="detail-msg" prop="contents">
+      <el-form-item label="详情介绍" class="detail-msg" prop="content">
         <editor
           ref="editor"
-          v-model="form.contents"
+          v-model="form.content"
           :receive-config="editorConfig"
           class="editor"
           @blur="blur"
-        ></editor>
+        />
       </el-form-item>
-      <div class="delivery-type">
-        <el-form-item label="取货方式" prop="deliveryType">
-            <el-radio-group v-model="form.deliveryType">
-              <el-radio label="0">门店自提</el-radio>
-              <el-radio label="1">快递到家</el-radio>
-            </el-radio-group>
-        </el-form-item>
-      </div>
+      
       <el-form-item class="create-btn">
         <el-button type="primary" @click="submitForm('form')">保存</el-button>
       </el-form-item>
@@ -56,19 +38,25 @@
   </div>
 </template>
 <script>
+import articleType from '@/components/articleType'
 import upload from '@/components/upload'
 import editor from '@/components/Editor'
-import { addIntegral, updateIntegral, getInfoIntegral } from '@/api/integral'
+import { articleAdd, getInfo, articleUpdate } from '@/api/article'
 export default {
+  components: {
+    upload,
+    articleType,
+    editor
+  },
   data() {
     const attachments = (rule, value, callback) => {
       if (this.form.attachments.length === 0) {
-        callback(new Error('积分商品图片不可为空'))
+        callback(new Error('文章图片不可为空'))
       } else {
         callback()
       }
     }
-    const contents = (rule, value, callback) => {
+    const content = (rule, value, callback) => {
       if (!value) {
         callback(new Error('不能为空'))
       } else {
@@ -82,18 +70,14 @@ export default {
         autoGrow_maxHeight: 300
       },
       form: {
-        attachments: [], // 商品图片
-        cover: '', // 商品封面
-        title: '', // 商品名称
-        purchaseLimit: '', // 商品限购
-        virtualSalesVolume: '', // 销量(注水)
-        contents: '', // 编辑器
-        deliveryType: '', // 取货方式
-        goodsPropertys: [{ // 商品类型
-          name: '', // 取title
-          points: '', // 兑换积分
-          stock: '', // 库存数量
-        }]
+        attachments: [], // 分类图片
+        cover: '', // 文章封面
+        title: '', // 文章名称
+        // cid: null, // 文章分类
+        type: '',
+        looks: 0, // 取货方式
+        content: '', // 编辑器
+        author: 'xrp'
       },
       rules: {
         attachments: [
@@ -107,35 +91,24 @@ export default {
         title: [
           { required: true, message: '不能为空', trigger: 'blur' }
         ],
-        virtualSalesVolume: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        contents: [
-          { required: true, validator: contents, trigger: 'blur' }
-        ],
-        deliveryType: [
+        type: [
           { required: true, message: '不能为空', trigger: 'change' }
         ],
-        'goodsPropertys[0].points': [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        'goodsPropertys[0].stock': [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        purchaseLimit: [
-          { required: true, message: '不能为空', trigger: 'blur' }
+        content: [
+          { required: true, validator: content, trigger: 'blur' }
         ]
       }
     }
   },
-  components: {
-    upload,
-    editor
+  computed: {
+    queryId() { // -1 为添加， 其它为 编辑
+      return this.$route.query.id
+    }
   },
   watch: {
     'form.attachments': {
       handler(value) {
-        if(value.length > 0){
+        if (value.length > 0) {
           // 校验 图片方法
           this.$refs.form.validateField('attachments')
         }
@@ -144,76 +117,84 @@ export default {
     }
   },
   mounted() {
-    if(parseInt(this.queryId) !== -1){ // 编辑
-      this.getInfoIntegral()
-    }
-  },
-  computed: {
-    queryId() { // -1 为添加， 其它为 编辑
-      return parseInt(this.$route.query.id)
+    if (this.queryId !== -1) { // 编辑
+      this.getArticleInfo()
     }
   },
   methods: {
-    //  获取积分商品信息
-    getInfoIntegral() {
-      getInfoIntegral({id: this.queryId}).then(res => {
+    // 获取选择分类
+    articleTypeChange(id) {
+      this.form.type= id
+    },
+    //  获取文章信息
+    getArticleInfo() {
+      getInfo({ id: this.queryId }).then(res => {
         const { data } = res
+        // 赋值
+
         this.form = {
-          id: this.queryId,
-          attachments: data.attachments, // 积分商品图片
-          cover: data.cover, // 积分商品封面
-          title: data.title, // 积分商品名称
-          purchaseLimit: data.purchaseLimit, // 积分商品限购
-          virtualSalesVolume: data.virtualSalesVolume, // 销量(注水)
-          contents: data.contents, // 编辑器
-          deliveryType: String(data.deliveryType), // 取货方式
-          goodsPropertys: data.goodsPropertys
+          attachments: [{
+            attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
+            attachmentType: 0, // 回选文件类型
+            attachmentUrl: data.cover // 回选文件地址
+          }], // 分类图片
+          cover: data.cover, // 文章封面
+          title: data.title, // 文章名称
+          type: data.type,
+          looks: data.looks, // 取货方式
+          content: data.content, // 编辑器
+          author: data.author
         }
       })
     },
     blur() { // 校验编辑器内容
-      this.$refs.form.validateField('contents')
+      this.$refs.form.validateField('content')
     },
-    // 商品图片
-    uploadSuccess(list){
-      this.form.attachments = list
+    // 获取选择分类
+    goodsTypeChange(id) {
+      this.form.cid = id
     },
-    submitForm(formName) {
-      if(this.form.attachments.length > 0) { // 封面设置 提交赋值，取第一张
-        this.form.cover = this.form.attachments[0].attachmentUrl
-      }else{
-        this.form.cover = ''
+    // 文章图片
+    uploadSuccess(list) {
+      console.log('list', list)
+      if(list.length > 0) {
+        this.form.cover = list[0].attachmentUrl.filename
+        console.log('this.form.cover', this.form.cover)
       }
+      
+    },
 
-      if(this.form.title){ // 赋值
-        this.form.goodsPropertys[0].name = this.form.title
-      }
+    submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if(parseInt(this.queryId) === -1){ // 添加
-            addIntegral(this.form).then(res => {
+          this.form.type = String(this.form.type)
+          this.form.looks = parseInt(this.form.looks)
+          if (parseInt(this.queryId) === -1) { // 添加
+            articleAdd(this.form).then(res => {
               this.$message({
-                message: '积分商品添加成功',
+                message: '文章添加成功',
                 type: 'success'
               })
             })
-            this.$router.push({
-              path: '/integral/mall'
-            })
-          }else { // 编辑
-            updateIntegral(this.form).then(res => {
+            // this.$router.push({
+            //   path: '/shopping/product'
+            // })
+            this.$router.go(-1)
+          } else { // 编辑
+            this.form.id = this.queryId
+            articleUpdate(this.form).then(res => {
               this.$message({
-                message: '积分商品编辑成功',
+                message: '文章编辑成功',
                 type: 'success'
               })
             })
-            this.$router.push({
-              path: '/integral/mall'
-            })
+            // this.$router.push({
+            //   path: '/shopping/product'
+            // })
+            this.$router.go(-1)
           }
-          
         } else {
-          console.log('error submit!!');
+          console.log('error submit!!')
           return false
         }
       })
@@ -245,7 +226,7 @@ export default {
           }
         }
       }
-      
+
       .el-form-item{
           margin-bottom: 0;
       }
@@ -362,9 +343,6 @@ export default {
       }
       .goods-type{
         display: flex;
-        /deep/.el-form-item{
-          margin-right: 20px;
-        }
       }
       .delivery-type{
         display: flex;

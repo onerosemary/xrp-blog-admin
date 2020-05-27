@@ -7,10 +7,10 @@
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="旧密码" prop="oldPwd" style="width: 200px">
-          <el-input show-password v-model="form.oldPwd" size="small" clearable placeholder="请填写" />
+        <el-input v-model="form.oldPwd" show-password size="small" clearable placeholder="请填写" />
       </el-form-item>
       <el-form-item label="新密码" prop="newPwd" style="width: 200px">
-          <el-input show-password v-model="form.newPwd" size="small" clearable placeholder="请填写" />
+        <el-input v-model="form.newPwd" show-password size="small" clearable placeholder="请填写" />
       </el-form-item>
       <el-form-item class="create-btn">
         <el-button type="primary" @click="submitForm('form')">保存</el-button>
@@ -40,30 +40,28 @@ export default {
       }
     }
   },
+  computed: {
+  },
 
   mounted() {
-  },
-  computed: {
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
-
         if (valid) {
           updatePwd(this.form).then(res => {
-              this.$message({
-                message: '密码修改成功, 需要重新登录',
-                type: 'success'
-              })
-              setTimeout(()=> {
-                // 退出重新登录
-                this.$store.dispatch('user/logout')
-                window.location.reload()
-              }, 1000)
+            this.$message({
+              message: '密码修改成功, 需要重新登录',
+              type: 'success'
             })
-          
+            setTimeout(() => {
+              // 退出重新登录
+              this.$store.dispatch('user/logout')
+              window.location.reload()
+            }, 1000)
+          })
         } else {
-          console.log('error submit!!');
+          console.log('error submit!!')
           return false
         }
       })
@@ -84,6 +82,6 @@ export default {
           margin-right: 20px;
         }
       }
-      
+
     }
 </style>

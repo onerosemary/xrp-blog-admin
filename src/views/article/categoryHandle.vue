@@ -2,17 +2,17 @@
   <div class="container">
     <div class="head-span">
       <div class="head-span-title">分类设置</div>
-      <p class="head-span-sub">{{queryId === -1 ? '添加分类信息': '编辑分类信息'}}</p>
+      <p class="head-span-sub">{{ queryId === -1 ? '添加分类信息': '编辑分类信息' }}</p>
     </div>
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
       <el-form-item label="分类图标" prop="attachments" class="upload-item">
-        <upload :queryId="queryId" :attachments="form.attachments" @uploadSuccess="uploadSuccess" format="img" :amount="1"></upload>
+        <upload :query-id="queryId" :attachments="form.attachments" format="img" :amount="1" @uploadSuccess="uploadSuccess" />
       </el-form-item>
       <el-form-item label="分类名称" prop="name">
-          <el-input v-model="form.name" size="small" placeholder="请填写" />
+        <el-input v-model="form.name" size="small" placeholder="请填写" />
       </el-form-item>
-      
+
       <el-form-item class="create-btn">
         <el-button type="primary" @click="submitForm('form')">保存</el-button>
       </el-form-item>
@@ -22,8 +22,11 @@
 </template>
 <script>
 import upload from '@/components/upload'
-import { categoryAdd, categoryEditor, getCategoryInfo } from '@/api/shopping'
+// import { categoryAdd, categoryEditor, getCategoryInfo } from '@/api/shopping'
 export default {
+  components: {
+    upload
+  },
   data() {
     const attachments = (rule, value, callback) => {
       if (this.form.attachments.length === 0) {
@@ -34,7 +37,7 @@ export default {
     }
     return {
       form: {
-        attachments:[], // 分类图片
+        attachments: [], // 分类图片
         imgUrl: '', // 分类图片（后端）
         name: '', // 分类名称
         order: 0 // 默认
@@ -54,13 +57,15 @@ export default {
       }
     }
   },
-  components: {
-    upload
+  computed: {
+    queryId() { // -1 为添加， 其它为 编辑
+      return parseInt(this.$route.query.id)
+    }
   },
   watch: {
     'form.attachments': {
       handler(value) {
-        if(value.length > 0){
+        if (value.length > 0) {
           // 校验 图片方法
           this.$refs.form.validateField('attachments')
         }
@@ -69,48 +74,43 @@ export default {
     }
   },
   mounted() {
-    if(parseInt(this.queryId) !== -1){ // 编辑
+    if (parseInt(this.queryId) !== -1) { // 编辑
       this.getCategoryInfo()
-    }
-  },
-  computed: {
-    queryId() { // -1 为添加， 其它为 编辑
-      return parseInt(this.$route.query.id)
     }
   },
   methods: {
     //  获取商品信息
     getCategoryInfo() {
-      getCategoryInfo({id: this.queryId}).then(res => {
-        const { name, imgUrl, sort  } = res.data
+      getCategoryInfo({ id: this.queryId }).then(res => {
+        const { name, imgUrl, sort } = res.data
         this.form = {
-            id: this.queryId,
-            attachments:[{
-                attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
-                attachmentType: 0, // 回选文件类型
-                attachmentUrl: imgUrl // 回选文件地址
-            }], // 分类图片
-            imgUrl, // 分类图片（后端）
-            name, // 分类名称
-            order: sort // 排序
+          id: this.queryId,
+          attachments: [{
+            attachmentExt: 'image/png', // 回选文件格式, 不提交，仅供回选使用
+            attachmentType: 0, // 回选文件类型
+            attachmentUrl: imgUrl // 回选文件地址
+          }], // 分类图片
+          imgUrl, // 分类图片（后端）
+          name, // 分类名称
+          order: sort // 排序
         }
       })
     },
     // 商品图片
-    uploadSuccess(list){
+    uploadSuccess(list) {
       console.log('list', list)
       this.form.attachments = list
     },
 
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
-        if(this.form.attachments.length > 0){
-            this.form.imgUrl = this.form.attachments[0].attachmentUrl
-        }else {
-            this.form.imgUrl = ''
+        if (this.form.attachments.length > 0) {
+          this.form.imgUrl = this.form.attachments[0].attachmentUrl
+        } else {
+          this.form.imgUrl = ''
         }
         if (valid) {
-          if(parseInt(this.queryId) === -1){ // 添加
+          if (parseInt(this.queryId) === -1) { // 添加
             categoryAdd(this.form).then(res => {
               this.$message({
                 message: '商品分类新增成功',
@@ -120,7 +120,7 @@ export default {
             this.$router.push({
               path: '/shopping/category'
             })
-          }else { // 编辑
+          } else { // 编辑
             this.form.id = this.queryId
             categoryEditor(this.form).then(res => {
               this.$message({
@@ -132,9 +132,8 @@ export default {
               path: '/shopping/category'
             })
           }
-          
         } else {
-          console.log('error submit!!');
+          console.log('error submit!!')
           return false
         }
       })
@@ -166,7 +165,7 @@ export default {
           }
         }
       }
-      
+
       .el-form-item{
           margin-bottom: 0;
       }
@@ -179,7 +178,7 @@ export default {
           }
         }
       }
-      
+
       /deep/ .form-item-header{
         color: #ADB1B5;
         margin-bottom: 0;

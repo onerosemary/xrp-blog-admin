@@ -1,84 +1,59 @@
 <template>
-    <div>
-        <!-- 放大 -->
-        <div v-show="currentZoomURI" class="zoom-in-bg" @click="zoomInClose"></div>
-        <div v-show="currentZoomURI" class="zoom-in-show">
-        <i class="el-icon-close" @click="zoomInClose"></i>
-        <img v-if="isTypePic(zoomInType)" :src="currentZoomURI" />
-        <video v-else :src="currentZoomURI" class="avatar video-avatar-zoom" controls="controls">您的浏览器不支持视频播放</video>
-        </div>
-        <el-upload
-            class="upload-demo"
-            :accept="format ? String(acceptImg) : String(acceptImgVideo)"
-            :headers="headers"
-            :action="uploadUrl"
-            :before-upload="beforeAvatarUpload"
-            :on-progress="uploadProgress"
-            :on-success="handleVideoSuccess"
-            :show-file-list = false
-            >
-            <div v-if="fileList.length < amount" class="upload-file">
-              <el-progress v-if="isShowPercent && imgIndex === -1" type="circle" :percentage="uploadPercent"></el-progress>
-              <i v-else class="el-icon-plus"></i>
-            </div>
-            <div slot="tip" class="el-upload__tip">
-              <span v-if="format">只能上传{{String(acceptImg)}}，且图片不超过2M</span>
-              <span v-else>只能上传{{String(acceptImgVideo)}}文件，且图片不超过2M, 视频不超过20M</span>
-            </div>
-            <ul v-if="fileList.length > 0" class="upload-preview">
-              <li v-for="(item, index) in fileList" :key="index">
-                <el-progress v-if="isShowPercent && imgIndex === index" type="circle" :percentage="uploadPercent"></el-progress>
-                <div class="cover" v-if="cover && index === 0">封面</div>
-                <div class="layer-mask" @click="layerHandle($event)">
-                  <i class="el-icon-edit" @click="editorUpload(index)"></i>
-                  <i class="el-icon-zoom-in" @click.stop="zoomInUpload(index)"></i>
-                  <i class="el-icon-delete" @click.stop="delUpload(index)"></i>
-                </div>
-                <div v-if="isTypePic(item)">
-                    <img :src="imgUrl + item.response.data" width="100" height="100" />
-                </div>
-                <video v-else
-                :src="imgUrl + item.response.data"
-                class="avatar video-avatar"
-                controls="controls">您的浏览器不支持视频播放</video> 
-              </li>
-            </ul>
-          </el-upload>
+  <div>
+    <!-- 放大 -->
+    <div v-show="currentZoomURI" class="zoom-in-bg" @click="zoomInClose" />
+    <div v-show="currentZoomURI" class="zoom-in-show">
+      <i class="el-icon-close" @click="zoomInClose" />
+      <img v-if="isTypePic(zoomInType)" :src="currentZoomURI">
+      <video v-else :src="currentZoomURI" class="avatar video-avatar-zoom" controls="controls">您的浏览器不支持视频播放</video>
     </div>
+    <el-upload
+      class="upload-demo"
+      :accept="format ? String(acceptImg) : String(acceptImgVideo)"
+      :headers="headers"
+      :action="uploadUrl"
+      :before-upload="beforeAvatarUpload"
+      :on-progress="uploadProgress"
+      :on-success="handleVideoSuccess"
+      :show-file-list="false"
+    >
+      <div v-if="fileList.length < amount" class="upload-file">
+        <el-progress v-if="isShowPercent && imgIndex === -1" type="circle" :percentage="uploadPercent" />
+        <i v-else class="el-icon-plus" />
+      </div>
+      <div slot="tip" class="el-upload__tip">
+        <span v-if="format">只能上传{{ String(acceptImg) }}，且图片不超过2M</span>
+        <span v-else>只能上传{{ String(acceptImgVideo) }}文件，且图片不超过2M, 视频不超过20M</span>
+      </div>
+      <ul v-if="fileList.length > 0" class="upload-preview">
+        <li v-for="(item, index) in fileList" :key="index">
+          <el-progress v-if="isShowPercent && imgIndex === index" type="circle" :percentage="uploadPercent" />
+          <div v-if="cover && index === 0" class="cover">封面</div>
+          <div class="layer-mask" @click="layerHandle($event)">
+            <i class="el-icon-edit" @click="editorUpload(index)" />
+            <i class="el-icon-zoom-in" @click.stop="zoomInUpload(index)" />
+            <i class="el-icon-delete" @click.stop="delUpload(index)" />
+          </div>
+          <div v-if="isTypePic(item)">
+            <img :src="imgUrl + item.response.data.filename" width="100" height="100">
+          </div>
+          <video
+            v-else
+            :src="imgUrl + item.response.data.filename"
+            class="avatar video-avatar"
+            controls="controls"
+          >您的浏览器不支持视频播放</video>
+        </li>
+      </ul>
+    </el-upload>
+  </div>
 </template>
 <script>
 import { getToken } from '@/utils/auth'
 export default {
-  data() {
-    return {
-      headers: {
-        'Authorization': getToken()
-      }, // 设置上传的请求头部
-      uploadUrl: `${process.env.VUE_APP_BASE_API}/pc/file/upload`,//你要上传视频到你后台的地址
-      imgIndex: -1, // 放大/删除/编辑索引
-      currentZoomURI: '', // 当前放大图片/视频
-      zoomInType: '', // 当前放大类型（图片/视频）
-      arrType: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'], // 图片类型聚焦管理
-      uploadPercent: 0, // 上传加载进度
-      isShowPercent: false, // 是否显示进度条
-      acceptImgVideo: ['.mp4','.jpg', '.png', '.gif', '.jpeg'], // 识别上传图片和视频类型
-      acceptImg: ['.jpg', '.png', '.gif', '.jpeg'], // 识别上传图片类型
-      acceptVideo: ['video/mp4'], // 识别上传视频类型
-      fileList: [],
-      form: {
-        name: '',
-      },
-      flag: true, // 编辑使用
-      rules: {
-        name: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ]
-      }
-    }
-  },
   props: {
     queryId: { // 编辑回传id
-      type: Number,
+      type: String,
       default: () => 0
     },
     attachments: { // 编辑回传接受的数据
@@ -98,20 +73,50 @@ export default {
       default: () => false
     }
   },
+  data() {
+    return {
+      headers: {
+        'Authorization': getToken()
+      }, // 设置上传的请求头部
+      uploadUrl: `${process.env.VUE_APP_BASE_API}/article/uploadfile`, // 你要上传视频到你后台的地址
+      imgIndex: -1, // 放大/删除/编辑索引
+      currentZoomURI: '', // 当前放大图片/视频
+      zoomInType: '', // 当前放大类型（图片/视频）
+      arrType: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'], // 图片类型聚焦管理
+      uploadPercent: 0, // 上传加载进度
+      isShowPercent: false, // 是否显示进度条
+      acceptImgVideo: ['.mp4', '.jpg', '.png', '.gif', '.jpeg'], // 识别上传图片和视频类型
+      acceptImg: ['.jpg', '.png', '.gif', '.jpeg'], // 识别上传图片类型
+      acceptVideo: ['video/mp4'], // 识别上传视频类型
+      fileList: [],
+      form: {
+        name: ''
+      },
+      flag: true, // 编辑使用
+      rules: {
+        name: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ]
+      }
+    }
+  },
   watch: {
     attachments: {
-      handler(value){
+      handler(value) {
         // 编辑
-        if(this.queryId !== -1 && value && this.flag) {
+        if (this.queryId !== -1 && value && this.flag) {
           this.flag = false // 只执行一次
           // 组装下数据格式
           value.forEach(item => {
+            console.log('item.attachmentUrl', item.attachmentUrl)
             this.fileList.push({
               raw: {
                 type: item.attachmentExt
               },
               response: {
-                data: item.attachmentUrl
+                data: {
+                  filename: item.attachmentUrl
+                }
               }
             })
           })
@@ -124,7 +129,7 @@ export default {
   },
   methods: {
     // 上传进度条
-    uploadProgress (event, file, fileList) {
+    uploadProgress(event, file, fileList) {
       this.isShowPercent = true
       this.uploadPercent = Math.floor(event.loaded / event.total * 100)
     },
@@ -132,48 +137,48 @@ export default {
     beforeAvatarUpload(file) {
       let isOk = true
       const isVideo = this.acceptVideo.includes(file.type) // 是否支持的视频格式
-      
+
       const isIMG = this.arrType.includes(file.type) // 是否支持的图片格式
       const isLt2M = file.size / 1024 / 1024 < 2 // 图片大小
       const isLt20M = file.size / 1024 / 1024 < 20 // 视频大小
-      if(this.format === 'img') { // 仅支持图片
+      if (this.format === 'img') { // 仅支持图片
         if (isIMG) { // 图片
-          if(!isLt2M){
+          if (!isLt2M) {
             this.$message.error('上传图片大小不能超过 2MB!')
             isOk = false
           }
-        }else {
+        } else {
           this.$message.error(`上传格式只支持 ${String(this.acceptImg)} 格式!`)
           isOk = false
         }
-      }else { // 支持的多格式
+      } else { // 支持的多格式
         if (isIMG) { // 图片
-          if(!isLt2M){
+          if (!isLt2M) {
             this.$message.error('上传图片大小不能超过 2MB!')
             isOk = false
           }
-        }else if(isVideo) { // 视频
-          if(!isLt20M){
+        } else if (isVideo) { // 视频
+          if (!isLt20M) {
             this.$message.error('上传视频大小不能超过 20MB!')
             isOk = false
           }
-        }else { // 其它格式
+        } else { // 其它格式
           this.$message.error(`上传格式只支持 ${String(this.acceptImgVideo)} 格式!`)
           isOk = false
         }
       }
-      
+
       // 通过验证
-      if(isOk){
+      if (isOk) {
         return true
-      }else{
+      } else {
         return false
       }
     },
     // 组装后端需要的接口数据
     assembleData() {
       const newFileList = []
-      if(this.fileList.length > 0) {
+      if (this.fileList.length > 0) {
         this.fileList.forEach(item => {
           newFileList.push({
             attachmentExt: item.raw.type, // 附件扩展名
@@ -187,10 +192,10 @@ export default {
     },
     // 上传成功回调
     handleVideoSuccess(response, file, fileList) {
-      if(this.imgIndex !== -1){ // 编辑
-        this.fileList.splice(this.imgIndex,1,file)
+      if (this.imgIndex !== -1) { // 编辑
+        this.fileList.splice(this.imgIndex, 1, file)
         this.imgIndex = -1
-      }else { // 添加
+      } else { // 添加
         this.fileList.push(file)
       }
       this.isShowPercent = false // 隐藏进度条
@@ -203,7 +208,7 @@ export default {
     zoomInUpload(index) {
       const curr = this.fileList[index]
       this.zoomInType = curr
-      this.currentZoomURI = this.imgUrl + curr.response.data
+      this.currentZoomURI = this.imgUrl + curr.response.data.filename
     },
     // 关闭
     zoomInClose() {
@@ -211,11 +216,11 @@ export default {
     },
     // 判断是否图片类型
     isTypePic(item) {
-      if(!item) return
+      if (!item) return
       return this.arrType.includes(item.raw.type.trim())
     },
     // 编辑图片/小视频
-    editorUpload(index){
+    editorUpload(index) {
       this.imgIndex = parseInt(index)
     },
     // 删除点击的图片/小视频
@@ -236,14 +241,14 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        })        
+        })
       })
     },
     // 阻止点击layer层
     layerHandle(e) {
       const event = e || window.event
       const target = event.target || event.srcElement
-      if(target.className === 'layer-mask') {
+      if (target.className === 'layer-mask') {
         // 阻止冒泡
         window.event ? window.event.cancelBubble = true : event.stopPropagation()
       }

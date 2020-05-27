@@ -5,7 +5,7 @@ import Vue from 'vue'
 // const hosts = process.env.NODE_ENV === 'development' ? devHosts : process.env.VUE_APP_BASE_API
 
 // 地址写死先, 这个是sw上地址
-const imgUrl = 'http://medicalbeauty-back.bx-cy.com'
+const imgUrl = 'http://localhost:4000/uploads/'
 
 // 编辑器图片 上传配置
 
@@ -13,11 +13,11 @@ const imgUrl = 'http://medicalbeauty-back.bx-cy.com'
 const IMG_BASE_URL = `${imgUrl}`
 
 // 图片上传地址
-const IMG_UPLOAD_URL = `${process.env.VUE_APP_BASE_API}/pc/file/upload`
+const IMG_UPLOAD_URL = `${process.env.VUE_APP_BASE_API}/article/uploadfile`
 
 Vue.prototype.imgUrl = imgUrl
 
 export {
-    IMG_BASE_URL,
-    IMG_UPLOAD_URL,
+  IMG_BASE_URL,
+  IMG_UPLOAD_URL
 }
