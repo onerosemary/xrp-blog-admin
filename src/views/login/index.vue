@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
     <div class="ms-login">
-      <div class="ms-title">向瑞平博客后台管理系统</div>
+      <div class="ms-title">向瑞平博客后台管理系统---CentOS </div>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="ms-content" auto-complete="on" label-position="left" label-width="0px">
         <el-form-item prop="username">
           <el-input
