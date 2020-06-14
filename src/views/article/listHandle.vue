@@ -11,7 +11,9 @@
       <el-form-item label="文章名称" prop="title">
         <el-input v-model="form.title" size="small" placeholder="请填写" maxlength="32" show-word-limit />
       </el-form-item>
-   
+      <el-form-item label="文章摘要" prop="sub">
+        <el-input v-model="form.sub" size="small" placeholder="请填写" maxlength="32" show-word-limit />
+      </el-form-item>
      <div class="delivery-type">
         <el-form-item label="文章分类" prop="type">
           <article-type :cid="form.type" @change="articleTypeChange" />
@@ -73,6 +75,7 @@ export default {
         attachments: [], // 分类图片
         cover: '', // 文章封面
         title: '', // 文章名称
+        sub: '',
         // cid: null, // 文章分类
         type: '',
         looks: 0, // 取货方式
@@ -117,7 +120,7 @@ export default {
     }
   },
   mounted() {
-    if (this.queryId !== -1) { // 编辑
+    if (parseInt(this.queryId) !== -1) { // 编辑
       this.getArticleInfo()
     }
   },
@@ -140,6 +143,7 @@ export default {
           }], // 分类图片
           cover: data.cover, // 文章封面
           title: data.title, // 文章名称
+          sub: data.sub,
           type: data.type,
           looks: data.looks, // 取货方式
           content: data.content, // 编辑器

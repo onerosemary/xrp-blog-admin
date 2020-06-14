@@ -5,7 +5,8 @@ import Vue from 'vue'
 // const hosts = process.env.NODE_ENV === 'development' ? devHosts : process.env.VUE_APP_BASE_API
 
 // 地址写死先, 这个是sw上地址
-const imgUrl = 'http://localhost:8080/uploads/'
+// const imgUrl = 'http://localhost:4000/uploads/'
+const imgUrl = 'http://xiangruiping.cn/uploads/'
 
 // 编辑器图片 上传配置
 
