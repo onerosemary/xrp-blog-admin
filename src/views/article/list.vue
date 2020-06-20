@@ -190,11 +190,12 @@ export default {
             type: 'success'
           })
           // 删除当前 row
-          this.tableData.forEach((item, index) => {
-            if (parseInt(item._id) === parseInt(id)) {
-              this.tableData.splice(index, 1)
-            }
-          })
+          // this.tableData.forEach((item, index) => {
+          //   if (parseInt(item._id) === parseInt(id)) {
+          //     this.tableData.splice(index, 1)
+          //   }
+          // })
+          this.getList()
         })
       }).catch(() => {
         this.$message({

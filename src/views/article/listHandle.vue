@@ -5,7 +5,7 @@
     </div>
 
     <el-form ref="form" :model="form" label-position="top" status-icon :rules="rules" class="body-span">
-      <el-form-item label="文章图片"  class="upload-item">
+      <el-form-item label="文章图片"  class="upload-item" prop="attachments">
         <upload :query-id="queryId"  :attachments="form.attachments" :amount="1" format="img" :cover="true" @uploadSuccess="uploadSuccess" />
       </el-form-item>
       <el-form-item label="文章名称" prop="title">
@@ -97,6 +97,9 @@ export default {
         type: [
           { required: true, message: '不能为空', trigger: 'change' }
         ],
+        sub: [
+          { required: true, message: '不能为空', trigger: 'change' }
+        ],
         content: [
           { required: true, validator: content, trigger: 'blur' }
         ]
@@ -163,6 +166,7 @@ export default {
       console.log('list', list)
       if(list.length > 0) {
         this.form.cover = list[0].attachmentUrl.filename
+        this.form.attachments = list
         console.log('this.form.cover', this.form.cover)
       }
       
@@ -170,6 +174,7 @@ export default {
 
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
+        console.log('this.form', this.form)
         if (valid) {
           this.form.type = String(this.form.type)
           this.form.looks = parseInt(this.form.looks)

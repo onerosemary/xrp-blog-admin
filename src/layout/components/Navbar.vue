@@ -8,7 +8,7 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!-- <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar"> -->
-          <div class="user-name">{{ decodeURIComponent($store.state.user.userInfo.name)}}</div>
+          <div class="user-name">{{ this.name && decodeURIComponent(this.name) || 'onerosemary'}}</div>
           <i class="el-icon-caret-bottom" />
 
         </div>
@@ -38,7 +38,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'sidebar'
+      'sidebar',
+      'name'
     ])
   },
   methods: {
